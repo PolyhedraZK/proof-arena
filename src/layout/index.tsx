@@ -37,7 +37,7 @@ function ProofLayout() {
     //   return navigate('/login', { replace: true });
     // } else {
     //   update('user', { id: userIdCookie });
-      if (localStorage.getItem('token')!== undefined) {
+      if (localStorage.getItem('token')!== null) {
         return navigate('/problems', { replace: true });
       }else{
         return navigate('/login', { replace: true });
