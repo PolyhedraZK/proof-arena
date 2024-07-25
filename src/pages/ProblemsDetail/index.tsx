@@ -29,7 +29,7 @@ const ProblemsDetail = () => {
     {
       key: '1',
       label: <span className={styles.tabsLabel}>Submissions</span>,
-      children: checkedUI ? <SubmissionsTable dataSource={detaileData?.submissionsTableData} /> : <div><SubmissionsChart chartData={detaileData?.chartData || []} goBack={setCheckedUI} /></div>,
+      children: checkedUI ? <SubmissionsTable dataSource={detaileData?.submissionsTableData} /> : <div><SubmissionsChart chartData={detaileData?.submissionsTableData || []} goBack={setCheckedUI} /></div>,
     },
     {
       disabled: true,

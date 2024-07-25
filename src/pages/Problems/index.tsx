@@ -95,7 +95,10 @@ function ProversPage() {
           //   </Flex>
           // ) :
           problemsListData?.data?.length ? (
-            <Flex vertical style={{ height: 680, overflow: 'hidden', overflowY: 'auto' }} gap={12} wrap="wrap">
+            <Flex
+              vertical
+              style={{ height: 'calc(100vh - 300px)', overflow: 'hidden', overflowY: 'auto' }}
+              gap={12} wrap="nowrap">
               {problemsListData.data.map((item) => {
                 const { id } = item;
                 return (
@@ -111,9 +114,9 @@ function ProversPage() {
       </div>
       {problemsListData && problemsListData.total && problemsListData.total > 0 ? (
         <Pagination
+          style={{ marginTop: 30, marginBottom: 20 }}
           onChange={onPageChange}
           defaultPage={1}
-          style={{ margin: -40 }}
           page={currentPage}
           count={Math.ceil(problemsListData.total / pageSize)}
         />

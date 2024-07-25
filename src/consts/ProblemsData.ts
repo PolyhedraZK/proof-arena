@@ -57,11 +57,11 @@ export const problemsDetailData = [
         proof_system: 'Expander',
         algorithm: 'algo 2',
         status: 'running',
-        setup_time: 3.5,
+        setup_time: 6.5,
         witness_generation_time: 3.5,
-        proof_generation_time: 3.5,
-        verify_time: 3.5,
-        peak_memory: 644,
+        proof_generation_time: 8.5,
+        verify_time: 5.5,
+        peak_memory: 1044,
         proof_size: 542,
       },
       {
@@ -70,208 +70,38 @@ export const problemsDetailData = [
         proof_system: 'Expander',
         algorithm: 'algo 3',
         status: 'completed',
-        setup_time: 3.5,
-        witness_generation_time: 3.5,
-        proof_generation_time: 3.5,
+        setup_time: 12.5,
+        witness_generation_time: 6.5,
+        proof_generation_time: 10.5,
         verify_time: 3.5,
-        peak_memory: 644,
-        proof_size: 542,
-      },
-    ],
-    chartData: [
-      {
-        name: 'Setup time',
-        value: [
-          {
-            name: 'alpa-algo1',
-            value: 6000,
-          },
-          {
-            name: 'alpa-algo3',
-            value: 7500,
-          },
-          {
-            name: 'beta-algo1',
-            value: 8000,
-          },
-          {
-            name: 'beta-algo2',
-            value: 9500,
-          },
-          {
-            name: 'gamma-algo1',
-            value: 10500,
-          },
-          {
-            name: 'gamma-algo2',
-            value: 4121,
-          },
-          {
-            name: 'gamma-algo3',
-            value: 5143,
-          },
-        ],
+        peak_memory: 1644,
+        proof_size: 202,
       },
       {
-        name: 'Witness generation time',
-        value: [
-          {
-            name: 'alpa-algo1',
-            value: 6000,
-          },
-          {
-            name: 'alpa-algo3',
-            value: 7500,
-          },
-          {
-            name: 'beta-algo1',
-            value: 8000,
-          },
-          {
-            name: 'beta-algo2',
-            value: 9500,
-          },
-          {
-            name: 'gamma-algo1',
-            value: 10500,
-          },
-          {
-            name: 'expander,algo 6',
-            value: 2121,
-          },
-          {
-            name: 'expander,algo 7',
-            value: 2143,
-          },
-        ],
+        id: 4,
+        prover_name: 'expander,algo 4',
+        proof_system: 'Expander',
+        algorithm: 'algo 4',
+        status: 'completed',
+        setup_time: 12.5,
+        witness_generation_time: 6.5,
+        proof_generation_time: 10.5,
+        verify_time: 3.5,
+        peak_memory: 1644,
+        proof_size: 202,
       },
       {
-        name: 'Proof generation time',
-        value: [
-          {
-            name: 'expander,algo 1',
-            value: 3798,
-          },
-          {
-            name: 'expander,algo 2',
-            value: 3106,
-          },
-          {
-            name: 'alpa-algo1',
-            value: 6000,
-          },
-          {
-            name: 'alpa-algo3',
-            value: 7500,
-          },
-          {
-            name: 'beta-algo1',
-            value: 8000,
-          },
-          {
-            name: 'beta-algo2',
-            value: 9500,
-          },
-          {
-            name: 'gamma-algo1',
-            value: 10500,
-          },
-        ],
-      },
-      {
-        name: 'Verification time',
-        value: [
-          {
-            name: 'alpa-algo1',
-            value: 6000,
-          },
-          {
-            name: 'alpa-algo3',
-            value: 7500,
-          },
-          {
-            name: 'beta-algo1',
-            value: 8000,
-          },
-          {
-            name: 'beta-algo2',
-            value: 9500,
-          },
-          {
-            name: 'gamma-algo1',
-            value: 10500,
-          },
-          {
-            name: 'expander,algo 7',
-            value: 3143,
-          },
-        ],
-      },
-      {
-        name: 'Peak memory',
-        value: [
-          {
-            name: 'expander,algo 1',
-            value: 7008,
-          },
-          {
-            name: 'alpa-algo1',
-            value: 6000,
-          },
-          {
-            name: 'alpa-algo3',
-            value: 7500,
-          },
-          {
-            name: 'beta-algo1',
-            value: 8000,
-          },
-          {
-            name: 'beta-algo2',
-            value: 9500,
-          },
-          {
-            name: 'gamma-algo1',
-            value: 10500,
-          },
-          {
-            name: 'expander,algo 6',
-            value: 121,
-          },
-        ],
-      },
-      {
-        name: 'proof size',
-        value: [
-          {
-            name: 'expander,algo 1',
-            value: 7855,
-          },
-          {
-            name: 'alpa-algo1',
-            value: 6000,
-          },
-          {
-            name: 'alpa-algo3',
-            value: 7500,
-          },
-          {
-            name: 'beta-algo1',
-            value: 8000,
-          },
-          {
-            name: 'beta-algo2',
-            value: 9500,
-          },
-          {
-            name: 'gamma-algo1',
-            value: 10500,
-          },
-          {
-            name: 'expander,algo 7',
-            value: 1430,
-          },
-        ],
+        id: 5,
+        prover_name: 'expander,algo 5',
+        proof_system: 'Expander',
+        algorithm: 'algo 5',
+        status: 'completed',
+        setup_time: 16.5,
+        witness_generation_time: 2.5,
+        proof_generation_time: 6.5,
+        verify_time: 7.5,
+        peak_memory: 1404,
+        proof_size: 202,
       },
     ],
   },
@@ -290,12 +120,12 @@ export const problemsDetailData = [
         proof_system: 'Expander',
         algorithm: 'algo 1',
         status: 'pending',
-        setup_time: 3.5,
-        witness_generation_time: 3.5,
-        proof_generation_time: 3.5,
-        verify_time: 3.5,
-        peak_memory: 644,
-        proof_size: 542,
+        setup_time: 5.5,
+        witness_generation_time: 5,
+        proof_generation_time: 2.5,
+        verify_time: 7,
+        peak_memory: 144,
+        proof_size: 342,
       },
       {
         id: 2,
@@ -303,12 +133,12 @@ export const problemsDetailData = [
         proof_system: 'Expander',
         algorithm: 'algo 2',
         status: 'running',
-        setup_time: 3.5,
-        witness_generation_time: 3.5,
-        proof_generation_time: 3.5,
-        verify_time: 3.5,
-        peak_memory: 644,
-        proof_size: 542,
+        setup_time: 4.5,
+        witness_generation_time: 7.5,
+        proof_generation_time: 2.5,
+        verify_time: 8.5,
+        peak_memory: 444,
+        proof_size: 842,
       },
       {
         id: 3,
@@ -316,208 +146,38 @@ export const problemsDetailData = [
         proof_system: 'Expander',
         algorithm: 'algo 3',
         status: 'completed',
-        setup_time: 3.5,
-        witness_generation_time: 3.5,
-        proof_generation_time: 3.5,
-        verify_time: 3.5,
-        peak_memory: 644,
+        setup_time: 5.5,
+        witness_generation_time: 7.5,
+        proof_generation_time: 9.5,
+        verify_time: 8.5,
+        peak_memory: 944,
         proof_size: 542,
       },
-    ],
-    chartData: [
       {
-        name: 'Setup time',
-        value: [
-          {
-            name: 'alpa-algo1',
-            value: 6000,
-          },
-          {
-            name: 'alpa-algo3',
-            value: 7500,
-          },
-          {
-            name: 'beta-algo1',
-            value: 8000,
-          },
-          {
-            name: 'beta-algo2',
-            value: 9500,
-          },
-          {
-            name: 'gamma-algo1',
-            value: 10500,
-          },
-          {
-            name: 'gamma-algo2',
-            value: 4121,
-          },
-          {
-            name: 'gamma-algo3',
-            value: 5143,
-          },
-        ],
+        id: 4,
+        prover_name: 'expander,algo 4',
+        proof_system: 'Expander',
+        algorithm: 'algo 4',
+        status: 'completed',
+        setup_time: 4.5,
+        witness_generation_time: 6.5,
+        proof_generation_time: 4.5,
+        verify_time: 6.5,
+        peak_memory: 1944,
+        proof_size: 552,
       },
       {
-        name: 'Witness generation time',
-        value: [
-          {
-            name: 'alpa-algo1',
-            value: 6000,
-          },
-          {
-            name: 'alpa-algo3',
-            value: 7500,
-          },
-          {
-            name: 'beta-algo1',
-            value: 8000,
-          },
-          {
-            name: 'beta-algo2',
-            value: 9500,
-          },
-          {
-            name: 'gamma-algo1',
-            value: 10500,
-          },
-          {
-            name: 'expander,algo 6',
-            value: 2121,
-          },
-          {
-            name: 'expander,algo 7',
-            value: 2143,
-          },
-        ],
-      },
-      {
-        name: 'Proof generation time',
-        value: [
-          {
-            name: 'expander,algo 1',
-            value: 3798,
-          },
-          {
-            name: 'expander,algo 2',
-            value: 3106,
-          },
-          {
-            name: 'alpa-algo1',
-            value: 6000,
-          },
-          {
-            name: 'alpa-algo3',
-            value: 7500,
-          },
-          {
-            name: 'beta-algo1',
-            value: 8000,
-          },
-          {
-            name: 'beta-algo2',
-            value: 9500,
-          },
-          {
-            name: 'gamma-algo1',
-            value: 10500,
-          },
-        ],
-      },
-      {
-        name: 'Verification time',
-        value: [
-          {
-            name: 'alpa-algo1',
-            value: 6000,
-          },
-          {
-            name: 'alpa-algo3',
-            value: 7500,
-          },
-          {
-            name: 'beta-algo1',
-            value: 8000,
-          },
-          {
-            name: 'beta-algo2',
-            value: 9500,
-          },
-          {
-            name: 'gamma-algo1',
-            value: 10500,
-          },
-          {
-            name: 'expander,algo 7',
-            value: 3143,
-          },
-        ],
-      },
-      {
-        name: 'Peak memory',
-        value: [
-          {
-            name: 'expander,algo 1',
-            value: 7008,
-          },
-          {
-            name: 'alpa-algo1',
-            value: 6000,
-          },
-          {
-            name: 'alpa-algo3',
-            value: 7500,
-          },
-          {
-            name: 'beta-algo1',
-            value: 8000,
-          },
-          {
-            name: 'beta-algo2',
-            value: 9500,
-          },
-          {
-            name: 'gamma-algo1',
-            value: 10500,
-          },
-          {
-            name: 'expander,algo 6',
-            value: 121,
-          },
-        ],
-      },
-      {
-        name: 'proof size',
-        value: [
-          {
-            name: 'expander,algo 1',
-            value: 7855,
-          },
-          {
-            name: 'alpa-algo1',
-            value: 6000,
-          },
-          {
-            name: 'alpa-algo3',
-            value: 7500,
-          },
-          {
-            name: 'beta-algo1',
-            value: 8000,
-          },
-          {
-            name: 'beta-algo2',
-            value: 9500,
-          },
-          {
-            name: 'gamma-algo1',
-            value: 10500,
-          },
-          {
-            name: 'expander,algo 7',
-            value: 1430,
-          },
-        ],
+        id: 5,
+        prover_name: 'expander,algo 5',
+        proof_system: 'Expander',
+        algorithm: 'algo 5',
+        status: 'completed',
+        setup_time: 7.5,
+        witness_generation_time: 3.5,
+        proof_generation_time: 4.5,
+        verify_time: 6.5,
+        peak_memory: 1944,
+        proof_size: 552,
       },
     ],
   },
@@ -536,12 +196,12 @@ export const problemsDetailData = [
         proof_system: 'Expander',
         algorithm: 'algo 1',
         status: 'pending',
-        setup_time: 3.5,
-        witness_generation_time: 3.5,
-        proof_generation_time: 3.5,
-        verify_time: 3.5,
-        peak_memory: 644,
-        proof_size: 542,
+        setup_time: 4.5,
+        witness_generation_time: 2.5,
+        proof_generation_time: 5.5,
+        verify_time: 7.5,
+        peak_memory: 844,
+        proof_size: 342,
       },
       {
         id: 2,
@@ -549,12 +209,12 @@ export const problemsDetailData = [
         proof_system: 'Expander',
         algorithm: 'algo 2',
         status: 'running',
-        setup_time: 3.5,
-        witness_generation_time: 3.5,
-        proof_generation_time: 3.5,
-        verify_time: 3.5,
-        peak_memory: 644,
-        proof_size: 542,
+        setup_time: 2.5,
+        witness_generation_time: 5.5,
+        proof_generation_time: 4.5,
+        verify_time: 4.5,
+        peak_memory: 844,
+        proof_size: 742,
       },
       {
         id: 3,
@@ -562,113 +222,38 @@ export const problemsDetailData = [
         proof_system: 'Expander',
         algorithm: 'algo 3',
         status: 'completed',
-        setup_time: 3.5,
-        witness_generation_time: 3.5,
+        setup_time: 13.5,
+        witness_generation_time: 5.5,
         proof_generation_time: 3.5,
-        verify_time: 3.5,
-        peak_memory: 644,
-        proof_size: 542,
-      },
-    ],
-    chartData: [
-      {
-        name: 'Setup time',
-        value: [
-          {
-            name: 'alpa-algo1',
-            value: 6000,
-          },
-          {
-            name: 'alpa-algo3',
-            value: 7500,
-          },
-          {
-            name: 'beta-algo1',
-            value: 8000,
-          },
-          {
-            name: 'beta-algo2',
-            value: 9500,
-          },
-          {
-            name: 'gamma-algo1',
-            value: 10500,
-          },
-          {
-            name: 'gamma-algo2',
-            value: 4121,
-          },
-          {
-            name: 'gamma-algo3',
-            value: 5143,
-          },
-        ],
+        verify_time: 8.5,
+        peak_memory: 844,
+        proof_size: 342,
       },
       {
-        name: 'Witness generation time',
-        value: [
-          {
-            name: 'alpa-algo1',
-            value: 6000,
-          },
-          {
-            name: 'alpa-algo3',
-            value: 7500,
-          },
-          {
-            name: 'beta-algo1',
-            value: 8000,
-          },
-          {
-            name: 'beta-algo2',
-            value: 9500,
-          },
-          {
-            name: 'gamma-algo1',
-            value: 10500,
-          },
-          {
-            name: 'expander,algo 6',
-            value: 2121,
-          },
-          {
-            name: 'expander,algo 7',
-            value: 2143,
-          },
-        ],
+        id: 4,
+        prover_name: 'expander,algo 4',
+        proof_system: 'Expander',
+        algorithm: 'algo 4',
+        status: 'completed',
+        setup_time: 4.5,
+        witness_generation_time: 6.5,
+        proof_generation_time: 4.5,
+        verify_time: 6.5,
+        peak_memory: 1944,
+        proof_size: 552,
       },
       {
-        name: 'Proof generation time',
-        value: [
-          {
-            name: 'expander,algo 1',
-            value: 3798,
-          },
-          {
-            name: 'expander,algo 2',
-            value: 3106,
-          },
-          {
-            name: 'alpa-algo1',
-            value: 6000,
-          },
-          {
-            name: 'alpa-algo3',
-            value: 7500,
-          },
-          {
-            name: 'beta-algo1',
-            value: 8000,
-          },
-          {
-            name: 'beta-algo2',
-            value: 9500,
-          },
-          {
-            name: 'gamma-algo1',
-            value: 10500,
-          },
-        ],
+        id: 5,
+        prover_name: 'expander,algo 5',
+        proof_system: 'Expander',
+        algorithm: 'algo 5',
+        status: 'completed',
+        setup_time: 7.5,
+        witness_generation_time: 3.5,
+        proof_generation_time: 4.5,
+        verify_time: 6.5,
+        peak_memory: 1944,
+        proof_size: 552,
       },
     ],
   },
