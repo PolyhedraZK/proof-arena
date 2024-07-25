@@ -31,16 +31,18 @@ function ProofLayout() {
 
   // 监听路由变化的时候
   useEffect(() => {
-    const userIdCookie = Cookies.get('accountId');
-    if (!userIdCookie) {
-      update('user', undefined);
-      return navigate('/login', { replace: true });
-    } else {
-      update('user', { id: userIdCookie });
-      if (location.pathname == '/') {
+    // const userIdCookie = Cookies.get('accountId');
+    // if (!userIdCookie) {
+    //   update('user', undefined);
+    //   return navigate('/login', { replace: true });
+    // } else {
+    //   update('user', { id: userIdCookie });
+      if (localStorage.getItem('token')!== undefined) {
         return navigate('/problems', { replace: true });
+      }else{
+        return navigate('/login', { replace: true });
       }
-    }
+    // }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location]);
 
