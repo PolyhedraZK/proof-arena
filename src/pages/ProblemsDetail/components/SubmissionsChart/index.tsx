@@ -49,7 +49,7 @@ const SubmissionsChart = ({ goBack, chartData }: SubmissionsChartType) => {
   }
   useEffect(() => {
     setSubmissionsChartData(chartData[0])
-  },[chartData])
+  }, [chartData])
   return <div className={styles.submissionsChartBox}>
     <div className={styles.boxSpace}>
       <div>
@@ -77,7 +77,7 @@ const SubmissionsChart = ({ goBack, chartData }: SubmissionsChartType) => {
             const chartDataList = chartData.find(item => item.name === value)
             setSubmissionsChartData(chartDataList)
           }}
-          value={submissionsChartData?.name||chartData[0].name}
+          value={submissionsChartData?.name || chartData[0].name}
         />
       </ConfigProvider>
 

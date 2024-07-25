@@ -3,7 +3,7 @@ import { Flex } from 'antd';
 import classNames from 'clsx';
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
-import {problemsListData} from '@/consts/ProblemsData'
+import { problemsListData } from '@/consts/ProblemsData'
 import Pagination from '@/components/biz/pagination';
 import { CreateProverModalId } from '@/components/biz/problems/CreateProverModal';
 import Empty from '@/components/biz/problems/Empty';
@@ -81,19 +81,19 @@ function ProversPage() {
           setLayoutType={setLayoutType}
           handleCreate={showCreateProverModal}
         />
-        { 
-        // l1 && !isSlienceLoad ? (
-        //   <Flex
-        //     justify="center"
-        //     align="center"
-        //     style={{
-        //       margin: 'auto',
-        //       height: '500px',
-        //     }}
-        //   >
-        //     <ProofSpin width={50} />
-        //   </Flex>
-        // ) :
+        {
+          // l1 && !isSlienceLoad ? (
+          //   <Flex
+          //     justify="center"
+          //     align="center"
+          //     style={{
+          //       margin: 'auto',
+          //       height: '500px',
+          //     }}
+          //   >
+          //     <ProofSpin width={50} />
+          //   </Flex>
+          // ) :
           problemsListData?.data?.length ? (
             <Flex vertical style={{ height: 680, overflow: 'hidden', overflowY: 'auto' }} gap={12} wrap="wrap">
               {problemsListData.data.map((item) => {

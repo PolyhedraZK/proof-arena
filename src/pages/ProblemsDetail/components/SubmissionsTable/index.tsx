@@ -50,13 +50,13 @@ const SubmissionsTable = ({ dataSource }: { dataSource: IProblemsDetail['submiss
       title: createTableHead('Status'),
       dataIndex: 'status',
       key: 'status',
-      render: (status:string) => (createStatus(status))
+      render: (status: string) => (createStatus(status))
     },
     {
       title: createTableHead('Setup time'),
       dataIndex: 'setup_time',
       key: 'setup_time',
-      render: (text:string) => (`${text}s`)
+      render: (text: string) => (`${text}s`)
     },
     {
       title: <div className={styles.TableTitle}>
@@ -65,7 +65,7 @@ const SubmissionsTable = ({ dataSource }: { dataSource: IProblemsDetail['submiss
       </div>,
       dataIndex: 'witness_generation_time',
       key: 'witness_generation_time',
-      render: (text:string) => (`${text}s`)
+      render: (text: string) => (`${text}s`)
     },
     {
       title: <div className={styles.TableTitle}>
@@ -74,7 +74,7 @@ const SubmissionsTable = ({ dataSource }: { dataSource: IProblemsDetail['submiss
       </div>,
       dataIndex: 'proof_generation_time',
       key: 'proof_generation_time',
-      render: (text:string) => (`${text}s`)
+      render: (text: string) => (`${text}s`)
     },
     {
       title: <div className={styles.TableTitle}>
@@ -83,19 +83,19 @@ const SubmissionsTable = ({ dataSource }: { dataSource: IProblemsDetail['submiss
       </div>,
       dataIndex: 'verify_time',
       key: 'verify_time',
-      render: (text:string) => (`${text}s`)
+      render: (text: string) => (`${text}s`)
     },
     {
       title: createTableHead('Peak memory'),
       dataIndex: 'peak_memory',
       key: 'peak_memory',
-      render: (text:string) => (`${text}MB`)
+      render: (text: string) => (`${text}MB`)
     },
     {
       title: createTableHead('Proof size'),
       dataIndex: 'proof_size',
       key: 'proof_size',
-      render: (text:string) => (`${text}KB`)
+      render: (text: string) => (`${text}KB`)
     },
   ]
 

@@ -2,26 +2,26 @@ import { createStyles } from 'antd-style';
 
 export const useStyles = createStyles(() => {
   return {
-    title:{
+    title: {
       display: 'inline-block',
       fontSize: 24,
       fontWeight: 500,
-      lineHeight:1
+      lineHeight: 1,
     },
-    problemsDetailHeadBox:{
+    problemsDetailHeadBox: {
       width: '100%',
       background: 'white',
       padding: '24px 20px 16px',
       border: '1px solid rgba(43, 51, 45, 0.05)',
-      backdropFilter:'blur(25px)',
+      backdropFilter: 'blur(25px)',
       borderRadius: 16,
-      cursor: 'pointer'
+      cursor: 'pointer',
     },
-    problemsDetailMainBox:{
+    problemsDetailMainBox: {
       background: 'white',
       padding: '5px 24px 16px',
       border: '1px solid rgba(43, 51, 45, 0.05)',
-      backdropFilter:'blur(25px)',
+      backdropFilter: 'blur(25px)',
       borderRadius: 16,
       marginTop: 24,
     },
@@ -38,24 +38,24 @@ export const useStyles = createStyles(() => {
       alignItems: 'center',
       justifyContent: 'space-between',
     },
-    headBoxBtom:{
+    headBoxBtom: {
       borderRadius: '8px',
       background: 'rgba(43, 51, 45, 0.03)',
-      padding: '12px 16px'
+      padding: '12px 16px',
     },
-    headBoxBtomItem:{
+    headBoxBtomItem: {
       display: 'flex',
-      gap: 12
+      gap: 12,
     },
-    headBoxBtomTitle:{
+    headBoxBtomTitle: {
       color: '#2B332D',
       fontSize: 16,
       fontWeight: 400,
       display: 'flex',
       alignItems: 'center',
-      gap: 8
+      gap: 8,
     },
-    mt16:{
+    mt16: {
       marginTop: 16,
     },
     icon: {
@@ -66,8 +66,8 @@ export const useStyles = createStyles(() => {
       top: '50%',
       transform: 'translateY(-50%)',
     },
-    secondary:{
-      color: 'rgba(43, 51, 45, .6)'
-    }
+    secondary: {
+      color: 'rgba(43, 51, 45, .6)',
+    },
   };
 });

@@ -9,7 +9,7 @@ const ProblemsListItem = ({ info }: { info: IProblems }) => {
 
   return <div className={styles.problemsDetailHeadBox}>
     <div className={styles.boxSpace}>
-      <span className={styles.title}>{info.problem_name||'--'}</span>
+      <span className={styles.title}>{info.problem_name || '--'}</span>
       <Text>
         <span className={styles.secondary}>ID: </span>
         <Paragraph className={styles.copyStyle}
@@ -27,11 +27,11 @@ const ProblemsListItem = ({ info }: { info: IProblems }) => {
       </div>
       <div className={styles.headBoxBtomItem}>
         <span className={styles.secondary}>Number of Execution:</span>
-        <span>{info.execution_number||'--'}</span>
+        <span>{info.execution_number || '--'}</span>
       </div>
       <div className={styles.headBoxBtomItem}>
         <span className={styles.secondary}>CreateTime:</span>
-        <span>{info.create_time||'--'}</span>
+        <span>{info.create_time || '--'}</span>
       </div>
     </div>
   </div>
