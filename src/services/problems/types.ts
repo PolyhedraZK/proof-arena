@@ -16,5 +16,4 @@ export interface IProblems {
 export interface IProblemsDetail extends IProblems {
   submissionsTableData: any[];
   desc: string;
-  chartData: { name: string; value: any[] }[];
 }

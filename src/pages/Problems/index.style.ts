@@ -14,8 +14,6 @@ export const useProverStyles = createStyles(({ css, responsive, isDarkMode }) =>
         margin: '30px auto 0',
       },
       '.my-provers': {
-        minHeight: '624px',
-        marginBottom: 60,
         [responsive.md]: {
           marginBottom: 24,
         },

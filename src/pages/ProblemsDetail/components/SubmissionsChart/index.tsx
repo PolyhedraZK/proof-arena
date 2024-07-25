@@ -6,11 +6,53 @@ import { useEffect, useState } from 'react';
 
 type SubmissionsChartType = {
   goBack: (open: boolean) => void;
-  chartData: { name: string; value: any[]; }[];
+  chartData: any[];
 }
+
+const createUnit = (type: string) => {
+  switch (type) {
+    case 'setup_time':
+    case 'witness_generation_time':
+    case 'proof_generation_time':
+    case 'verify_time':
+      return 's';
+    case 'peak_memory':
+      return 'MB';
+    case 'proof_size':
+      return 'KB';
+    default:
+      return '';
+  }
+}
+const segmentedOptions = [
+  {
+    label: 'Setup time',
+    value: 'setup_time'
+  },
+  {
+    label: 'Witness generation time',
+    value: 'witness_generation_time'
+  },
+  {
+    label: 'Proof generation time',
+    value: 'proof_generation_time'
+  },
+  {
+    label: 'Verification time',
+    value: 'verify_time'
+  },
+  {
+    label: 'Peak memory',
+    value: 'peak_memory'
+  },
+  {
+    label: 'Proof size',
+    value: 'proof_size'
+  }
+]
 const SubmissionsChart = ({ goBack, chartData }: SubmissionsChartType) => {
   const { styles } = useStyles()
-  const [submissionsChartData, setSubmissionsChartData] = useState<any>()
+  const [segmentedValue, setSegmentedValue] = useState<any>()
   const options = {
     height: '95%',
     grid: {
@@ -22,13 +64,13 @@ const SubmissionsChart = ({ goBack, chartData }: SubmissionsChartType) => {
     },
     xAxis: {
       type: 'category',
-      data: submissionsChartData?.value?.map(item => item.name)
+      data: chartData?.map(item => item.prover_name)
     },
     yAxis: {
       type: 'value'
     },
     series: [{
-      data: submissionsChartData?.value?.map(item => item.value),
+      data: chartData?.map(item => item[segmentedValue]),
       type: 'bar',
       barWidth: 60,
       itemStyle: {
@@ -42,13 +84,13 @@ const SubmissionsChart = ({ goBack, chartData }: SubmissionsChartType) => {
         label: {
           show: true,
           position: 'top',
-          formatter: (params) => `${params.value}s`
+          formatter: (params) => `${params.value}${createUnit(segmentedValue)}`
         },
       }
     }]
   }
   useEffect(() => {
-    setSubmissionsChartData(chartData[0])
+    setSegmentedValue(segmentedOptions[0].value)
   }, [chartData])
   return <div className={styles.submissionsChartBox}>
     <div className={styles.boxSpace}>
@@ -71,13 +113,11 @@ const SubmissionsChart = ({ goBack, chartData }: SubmissionsChartType) => {
       }}>
         <Segmented<string>
           className={styles.segmentedStyle}
-          // options={['Setup time', 'Witness generation time', 'Proof generation time', 'Verification time', 'Peak memory', 'Proof size']}
-          options={chartData.map(item => item.name)}
+          options={segmentedOptions}
           onChange={(value) => {
-            const chartDataList = chartData.find(item => item.name === value)
-            setSubmissionsChartData(chartDataList)
+            setSegmentedValue(value)
           }}
-          value={submissionsChartData?.name || chartData[0].name}
+          value={segmentedValue}
         />
       </ConfigProvider>
 
