@@ -3,12 +3,12 @@ import { useThemeMode } from 'antd-style';
 import Cookies from 'js-cookie';
 import { useNavigate } from 'react-router';
 
-import GoogleIcon from '@/assets/icons/google.svg';
+// import GoogleIcon from '@/assets/icons/google.svg';
 import LoginLogo from '@/assets/images/login/login-logo.svg';
 import WhiteLoginLogo from '@/assets/images/login/white-login-logo.png';
-import BaseButton from '@/components/base/BaseButton';
+// import BaseButton from '@/components/base/BaseButton';
 import { get, post } from '@/services/Request';
-import { useGlobalStore } from '@/store/global';
+// import { useGlobalStore } from '@/store/global';
 
 import useStyles from './login.style';
 
@@ -18,7 +18,7 @@ function LoginPage() {
   const [form] = Form.useForm();
   const FormItem = Form.Item
   const navigate = useNavigate();
-  const { update } = useGlobalStore();
+  // const { update } = useGlobalStore();
 
   // const login = useGoogleLogin({
   //   onSuccess: async codeResponse => {
@@ -38,22 +38,23 @@ function LoginPage() {
   const login = async () => {
     const value = await form.validateFields()
     console.log(value)
-    if (import.meta.env.DEV) {
-      const user = {
-        userId: 'test-account-1',
-        name: 'mock',
-      };
-      const ret = await post('/mock/login', user);
-      if (ret?.code == 200) {
+    // if (import.meta.env.DEV) {
+    //   const user = {
+    //     userId: 'test-account-1',
+    //     name: 'mock',
+    //   };
+    //   const ret = await post('/mock/login', user);
+    //   if (ret?.code == 200) {
+      localStorage.setItem('token', value.password)
         navigate('/');
-      }
-    } else {
-      const redirectUrl = `${window.location.origin}/`;
-      const encodedUrl = encodeURIComponent(redirectUrl);
-      window.location.href =
-        import.meta.env.VITE_BASE_URL +
-        `/google/login?redirect_uri=${encodedUrl}`;
-    }
+      // }
+    // } else {
+    //   const redirectUrl = `${window.location.origin}/`;
+    //   const encodedUrl = encodeURIComponent(redirectUrl);
+    //   window.location.href =
+    //     import.meta.env.VITE_BASE_URL +
+    //     `/google/login?redirect_uri=${encodedUrl}`;
+    // }
   };
 
 
