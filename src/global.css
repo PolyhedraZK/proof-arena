@@ -1,0 +1,53 @@
+@layer reset, antd;
+
+@import url('reset.css') layer(reset);
+
+* {
+  box-sizing: border-box;
+}
+body {
+  font-family: 'Poppins', sans-serif !important;
+}
+.main-container {
+  width: 1200px;
+  margin: 50px auto 0;
+}
+
+@media screen and (max-width: 475px) {
+  .main-container {
+    width: 100%;
+    margin: 30px auto 0;
+  }
+}
+
+.elp {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+/* 2行ellipsis */
+.elp-2 {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/** 重写 message 样式**/
+.proof-message-success .anticon {
+  color: #52c41a;
+}
+.proof-message-error .anticon {
+  color: #f53f3f;
+}
+
+.proof-message-warning .anticon {
+  color: #f53f3f;
+}

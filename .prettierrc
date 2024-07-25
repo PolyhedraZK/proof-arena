@@ -1,0 +1,32 @@
+{
+  "singleQuote": true,
+  "printWidth": 80,
+  "proseWrap": "never",
+  "arrowParens": "avoid",
+  "overrides": [
+    {
+      "files": ".prettierrc",
+      "options": {
+        "parser": "typescript"
+      }
+    },
+     {
+      "files": "*.tsx",
+      "options": {
+        "printWidth": 80
+      }
+    },
+    {
+      "files": "*.ts",
+      "options": {
+        "printWidth": 100
+      }
+    },
+    {
+      "files": "const.ts",
+      "options": {
+        "printWidth": 130
+      }
+    }
+  ]
+}

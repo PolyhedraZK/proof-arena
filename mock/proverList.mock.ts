@@ -1,0 +1,72 @@
+import { defineMock } from 'vite-plugin-mock-dev-server';
+
+export default defineMock({
+  url: '/api/v1/prover/list',
+  method: 'GET',
+  response(req, res, next) {
+    res.end(
+      JSON.stringify({
+        data: [
+          {
+            id: '1812781047763439616',
+            account: '101701927354447676431',
+            prover_name: 'keccak256',
+            internal_name: 'keccak256',
+            prover_type: 1,
+            api_key: 'hjkadhkaskdhaksdnkasndklansldnasldsadad',
+            description: 'test_description keccak256',
+            binary_path: 'https://storage.googleapis.com/proof-cloud-dev/keccak256',
+            data_directory_path: 'https://storage.googleapis.com/proof-cloud-dev/output',
+            pk_size: 100020202,
+            r1cs_size: 10299332,
+            circuit_name: 'keccak256',
+            visibility: 1,
+            createTime: 0,
+            status: 3,
+            cpu: 1,
+            memory: 1024,
+          },
+          {
+            id: '1814224970893496320',
+            account: '101701927354447676431',
+            prover_name: 'gnark test',
+            internal_name: 'gnark-test-101701927354447676431',
+            prover_type: 1,
+            api_key: '53d2be5e7ff0c656ce6b856828f8f37c69e5cc442ef3ef59570231d20f2a23de',
+            description: '111111',
+            binary_path: 'https://storage.googleapis.com/proof-cloud/keccak256',
+            data_directory_path: 'https://storage.googleapis.com/proof-cloud/output',
+            pk_size: 74788813,
+            r1cs_size: 22855293,
+            circuit_name: 'keccak256',
+            visibility: 1,
+            createTime: 1721379914,
+            status: 1,
+            cpu: 1,
+            memory: 1024,
+          },
+          {
+            id: '1814224335678738432',
+            account: '101701927354447676431',
+            prover_name: 'test',
+            internal_name: 'test-101701927354447676431',
+            prover_type: 1,
+            api_key: '1f51876ca7a9ede4310982a14c89d106a80acc44c983ab0b397ac463a6157743',
+            description: '1212321',
+            binary_path: 'https://storage.googleapis.com/proof-cloud-dev/mpt',
+            data_directory_path: 'https://storage.googleapis.com/proof-cloud-dev/output',
+            pk_size: 7869823291,
+            r1cs_size: 3054776429,
+            circuit_name: 'mpt',
+            visibility: 1,
+            createTime: 1721379762,
+            status: 1,
+            cpu: 1,
+            memory: 1024,
+          },
+        ],
+        total: 13,
+      })
+    );
+  },
+});
