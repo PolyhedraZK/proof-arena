@@ -22,7 +22,6 @@
     "@babel/preset-react": "^7.22.15",
     "@babel/preset-typescript": "^7.23.2",
     "@ebay/nice-modal-react": "^1.2.13",
-    "@react-oauth/google": "^0.12.1",
     "@vitejs/plugin-react": "^4.2.1",
     "ahooks": "^3.7.11",
     "antd": "5.17.4",
