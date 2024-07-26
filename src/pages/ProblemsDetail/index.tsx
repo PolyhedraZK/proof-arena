@@ -12,6 +12,7 @@ import BaseButton from '@/components/base/BaseButton.tsx';
 import { problemsDetailData } from '@/consts/ProblemsData.ts'
 import { IProblemsDetail } from '@/services/problems/types.ts';
 import SubmissionsChart from './components/SubmissionsChart';
+import Giscus from '@giscus/react';
 
 const ProblemsDetail = () => {
   const navigate = useNavigate()
@@ -19,7 +20,7 @@ const ProblemsDetail = () => {
   const { Paragraph, Text } = Typography
   const { styles, cx } = useStyles()
   const [checkedUI, setCheckedUI] = useState(true)
-  const [tabKey, setTabKey] = useState('1')
+  const [tabKey, setTabKey] = useState(localStorage.getItem('tabKey') || '1')
   const [iconUrl, setIconUrl] = useState(analysisCharts)
   const [detaileData, setDetaileData] = useState<IProblemsDetail>()
   useEffect(() => {
@@ -32,12 +33,25 @@ const ProblemsDetail = () => {
       children: checkedUI ? <SubmissionsTable dataSource={detaileData?.submissionsTableData} /> : <div><SubmissionsChart chartData={detaileData?.submissionsTableData || []} goBack={setCheckedUI} /></div>,
     },
     {
-      disabled: true,
+      // disabled: true,
       key: '2',
-      label: <span className={styles.tabsLabel}>Discussions 
-      {/* <span className={styles.badgeStyle}>{detaileData?.execution_number}</span> */}
+      label: <span className={styles.tabsLabel}>Discussions
+        {/* <span className={styles.badgeStyle}>{detaileData?.execution_number}</span> */}
       </span>,
-      children: 'Content of Tab Pane 2',
+      children: <Giscus
+        repo="zkbridge-testnet/proof-arena"
+        repoId="R_kgDOMY9PxQ"
+        category="General"
+        categoryId="DIC_kwDOMY9Pxc4ChCf4"
+        mapping="url"
+        term="Welcome to Proof Arena"
+        strict="0"
+        reactionsEnabled="1"
+        emitMetadata="1"
+        inputPosition="top"
+        lang="en"
+        loading="lazy"
+      />,
     },
     // {
     //   disabled: true,
@@ -46,12 +60,15 @@ const ProblemsDetail = () => {
     //   children: 'Content of Tab Pane 3',
     // },
   ];
-
+  const onGoBack = () => {
+    navigate('/problems');
+    localStorage.removeItem('tabKey')
+  }
   return <div className={styles.ProblemsDetailBox}>
     <div className={styles.problemsDetailHeadBox}>
       <div className={styles.boxSpace}>
         <div className={styles.boxSpace}>
-          <LeftOutlined onClick={() => navigate(-1)} />
+          <LeftOutlined onClick={onGoBack} />
           <span className={styles.title}>{detaileData?.problem_name}</span>
           <Text>
             <Text type='secondary'>ID: </Text>
@@ -105,7 +122,10 @@ const ProblemsDetail = () => {
 
         activeKey={tabKey}
         items={items}
-        onChange={(key) => setTabKey(key)}
+        onChange={(key) => {
+          setTabKey(key)
+          localStorage.setItem('tabKey', key)
+        }}
       />
     </div>
   </div>;
