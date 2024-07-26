@@ -82,14 +82,14 @@ const SubTitle = memo(({ handleCreate, layoutType, setLayoutType }: IProps) => {
           </Flex>
         )} */}
       </Flex>
-      <div className="tit-right">
+      {/* <div className="tit-right">
         <LightButton
           icon={<PlusOutlined />}
           onClick={handleCreate}
           className={styles.createBtn}>
           Create
         </LightButton>
-      </div>
+      </div> */}
     </Flex>
   );
 });

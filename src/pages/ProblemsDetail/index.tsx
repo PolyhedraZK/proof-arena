@@ -28,21 +28,23 @@ const ProblemsDetail = () => {
   const items: TabsProps['items'] = [
     {
       key: '1',
-      label: <span className={styles.tabsLabel}>Submissions</span>,
+      label: <span className={styles.tabsLabel}>Solutions</span>,
       children: checkedUI ? <SubmissionsTable dataSource={detaileData?.submissionsTableData} /> : <div><SubmissionsChart chartData={detaileData?.submissionsTableData || []} goBack={setCheckedUI} /></div>,
     },
     {
       disabled: true,
       key: '2',
-      label: <span className={styles.tabsLabel}>Discussions <span className={styles.badgeStyle}>{detaileData?.execution_number}</span></span>,
+      label: <span className={styles.tabsLabel}>Discussions 
+      {/* <span className={styles.badgeStyle}>{detaileData?.execution_number}</span> */}
+      </span>,
       children: 'Content of Tab Pane 2',
     },
-    {
-      disabled: true,
-      key: '3',
-      label: <span className={styles.tabsLabel}>Solution Submit</span>,
-      children: 'Content of Tab Pane 3',
-    },
+    // {
+    //   disabled: true,
+    //   key: '3',
+    //   label: <span className={styles.tabsLabel}>Solution Submit</span>,
+    //   children: 'Content of Tab Pane 3',
+    // },
   ];
 
   return <div className={styles.ProblemsDetailBox}>
@@ -62,7 +64,7 @@ const ProblemsDetail = () => {
             </Paragraph>
           </Text>
         </div>
-        <BaseButton className={styles.baseBtnLink}>
+        <BaseButton onClick={() => window.open('https://github.com/niconiconi/ProofArena/blob/main/SHA256.md')} className={styles.baseBtnLink}>
           Details Link
         </BaseButton>
       </div>
@@ -76,14 +78,14 @@ const ProblemsDetail = () => {
           <Avatar size={24} icon={<img src={detaileData?.user_avatar} />} />
           <span>{detaileData?.user_name}</span>
         </div>
-        <div className={styles.headBoxBtomItem}>
+        {/* <div className={styles.headBoxBtomItem}>
           <Text type='secondary'>Number of Execution:</Text>
           <span>{detaileData?.execution_number}</span>
-        </div>
-        <div className={styles.headBoxBtomItem}>
+        </div> */}
+        {/* <div className={styles.headBoxBtomItem}>
           <Text type='secondary'>CreateTime:</Text>
           <span>{detaileData?.create_time}</span>
-        </div>
+        </div> */}
       </div>
     </div>
     <div className={styles.problemsDetailMainBox}>
