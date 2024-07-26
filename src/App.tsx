@@ -16,7 +16,7 @@ function App() {
     <BrowserRouter>
       <React.Suspense>
         <Routes>
-          <Route path="login" element={<LoginPage />} />
+          {/* <Route path="login" element={<LoginPage />} /> */}
           <Route path="/" element={<Layout />}>
             <Route path="problems" element={<ProblemsPage />} />
             <Route path="problemsDetail/:detailId" element={<ProblemsDetail />} />
