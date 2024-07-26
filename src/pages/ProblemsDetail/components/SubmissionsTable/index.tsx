@@ -54,7 +54,7 @@ const SubmissionsTable = ({ dataSource }: { dataSource: IProblemsDetail['submiss
     // },
     {
       title: createTableHead('Setup time（seconds）'),
-      width: 180,
+      width: 190,
       dataIndex: 'setup_time',
       key: 'setup_time',
     },
@@ -72,7 +72,7 @@ const SubmissionsTable = ({ dataSource }: { dataSource: IProblemsDetail['submiss
         <div>Proof generation</div>
         <div>time（seconds）</div>
       </div>,
-      width: 180,
+      width: 200,
       dataIndex: 'proof_generation_time',
       key: 'proof_generation_time',
     },
@@ -93,7 +93,7 @@ const SubmissionsTable = ({ dataSource }: { dataSource: IProblemsDetail['submiss
     },
     {
       title: createTableHead('Proof size（KB）'),
-      width: 130,
+      width: 150,
       dataIndex: 'proof_size',
       key: 'proof_size',
     },

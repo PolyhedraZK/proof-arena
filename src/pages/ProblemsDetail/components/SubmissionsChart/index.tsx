@@ -15,7 +15,7 @@ const createUnit = (type: string) => {
     case 'witness_generation_time':
     case 'proof_generation_time':
     case 'verify_time':
-      return 's';
+      return 'seconds';
     case 'peak_memory':
       return 'MB';
     case 'proof_size':
@@ -91,7 +91,7 @@ const SubmissionsChart = ({ goBack, chartData }: SubmissionsChartType) => {
         label: {
           show: true,
           position: 'top',
-          formatter: (params) => `${params.value}${createUnit(segmentedValue)}`
+          // formatter: (params) => `${params.value}${createUnit(segmentedValue)}`
         },
       }
     }]

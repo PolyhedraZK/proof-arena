@@ -56,7 +56,7 @@ export const problemsDetailData = [
     submissionsTableData: [
       {
         id: 1,
-        prover_name: 'expander,algo 1',
+        prover_name: 'Alph,algo 1',
         proof_system: 'Expander',
         algorithm: 'algo 1',
         status: 'pending',
@@ -69,7 +69,7 @@ export const problemsDetailData = [
       },
       {
         id: 2,
-        prover_name: 'expander,algo 2',
+        prover_name: 'Alph,algo 2',
         proof_system: 'Expander',
         algorithm: 'algo 2',
         status: 'running',
@@ -82,7 +82,7 @@ export const problemsDetailData = [
       },
       {
         id: 3,
-        prover_name: 'expander,algo 3',
+        prover_name: 'Alph,algo 3',
         proof_system: 'Expander',
         algorithm: 'algo 3',
         status: 'completed',
@@ -95,7 +95,7 @@ export const problemsDetailData = [
       },
       {
         id: 4,
-        prover_name: 'expander,algo 4',
+        prover_name: 'beta,algo 4',
         proof_system: 'Expander',
         algorithm: 'algo 4',
         status: 'completed',
@@ -108,7 +108,7 @@ export const problemsDetailData = [
       },
       {
         id: 5,
-        prover_name: 'expander,algo 5',
+        prover_name: 'beta,algo 5',
         proof_system: 'Expander',
         algorithm: 'algo 5',
         status: 'completed',
@@ -132,7 +132,7 @@ export const problemsDetailData = [
     submissionsTableData: [
       {
         id: 1,
-        prover_name: 'expander,algo 1',
+        prover_name: 'beta,algo 1',
         proof_system: 'Expander',
         algorithm: 'algo 1',
         status: 'pending',
@@ -145,7 +145,7 @@ export const problemsDetailData = [
       },
       {
         id: 2,
-        prover_name: 'expander,algo 2',
+        prover_name: 'gamma,algo 2',
         proof_system: 'Expander',
         algorithm: 'algo 2',
         status: 'running',
@@ -158,7 +158,7 @@ export const problemsDetailData = [
       },
       {
         id: 3,
-        prover_name: 'expander,algo 3',
+        prover_name: 'gamma,algo 3',
         proof_system: 'Expander',
         algorithm: 'algo 3',
         status: 'completed',
@@ -171,7 +171,7 @@ export const problemsDetailData = [
       },
       {
         id: 4,
-        prover_name: 'expander,algo 4',
+        prover_name: 'gamma,algo 4',
         proof_system: 'Expander',
         algorithm: 'algo 4',
         status: 'completed',
@@ -184,7 +184,7 @@ export const problemsDetailData = [
       },
       {
         id: 5,
-        prover_name: 'expander,algo 5',
+        prover_name: 'Alph,algo 5',
         proof_system: 'Expander',
         algorithm: 'algo 5',
         status: 'completed',
@@ -208,7 +208,7 @@ export const problemsDetailData = [
     submissionsTableData: [
       {
         id: 1,
-        prover_name: 'expander,algo 1',
+        prover_name: 'Alph,algo 1',
         proof_system: 'Expander',
         algorithm: 'algo 1',
         status: 'pending',
@@ -221,7 +221,7 @@ export const problemsDetailData = [
       },
       {
         id: 2,
-        prover_name: 'expander,algo 2',
+        prover_name: 'Alph,algo 2',
         proof_system: 'Expander',
         algorithm: 'algo 2',
         status: 'running',
@@ -234,7 +234,7 @@ export const problemsDetailData = [
       },
       {
         id: 3,
-        prover_name: 'expander,algo 3',
+        prover_name: 'beta,algo 3',
         proof_system: 'Expander',
         algorithm: 'algo 3',
         status: 'completed',
@@ -247,7 +247,7 @@ export const problemsDetailData = [
       },
       {
         id: 4,
-        prover_name: 'expander,algo 4',
+        prover_name: 'beta,algo 4',
         proof_system: 'Expander',
         algorithm: 'algo 4',
         status: 'completed',
@@ -260,7 +260,7 @@ export const problemsDetailData = [
       },
       {
         id: 5,
-        prover_name: 'expander,algo 5',
+        prover_name: 'beta,algo 5',
         proof_system: 'Expander',
         algorithm: 'algo 5',
         status: 'completed',
@@ -284,7 +284,7 @@ export const problemsDetailData = [
     submissionsTableData: [
       {
         id: 1,
-        prover_name: 'expander,algo 1',
+        prover_name: 'gamma,algo 1',
         proof_system: 'Expander',
         algorithm: 'algo 1',
         status: 'pending',
@@ -297,7 +297,7 @@ export const problemsDetailData = [
       },
       {
         id: 2,
-        prover_name: 'expander,algo 2',
+        prover_name: 'gamma,algo 2',
         proof_system: 'Expander',
         algorithm: 'algo 2',
         status: 'running',
@@ -310,7 +310,7 @@ export const problemsDetailData = [
       },
       {
         id: 3,
-        prover_name: 'expander,algo 3',
+        prover_name: 'gamma,algo 3',
         proof_system: 'Expander',
         algorithm: 'algo 3',
         status: 'completed',
@@ -323,7 +323,7 @@ export const problemsDetailData = [
       },
       {
         id: 4,
-        prover_name: 'expander,algo 4',
+        prover_name: 'Alph,algo 4',
         proof_system: 'Expander',
         algorithm: 'algo 4',
         status: 'completed',
@@ -336,7 +336,7 @@ export const problemsDetailData = [
       },
       {
         id: 5,
-        prover_name: 'expander,algo 5',
+        prover_name: 'Alph,algo 5',
         proof_system: 'Expander',
         algorithm: 'algo 5',
         status: 'completed',
@@ -360,7 +360,7 @@ export const problemsDetailData = [
     submissionsTableData: [
       {
         id: 1,
-        prover_name: 'expander,algo 1',
+        prover_name: 'Alph,algo 1',
         proof_system: 'Expander',
         algorithm: 'algo 1',
         status: 'pending',
@@ -373,7 +373,7 @@ export const problemsDetailData = [
       },
       {
         id: 2,
-        prover_name: 'expander,algo 2',
+        prover_name: 'beta,algo 2',
         proof_system: 'Expander',
         algorithm: 'algo 2',
         status: 'running',
@@ -386,7 +386,7 @@ export const problemsDetailData = [
       },
       {
         id: 3,
-        prover_name: 'expander,algo 3',
+        prover_name: 'beta,algo 3',
         proof_system: 'Expander',
         algorithm: 'algo 3',
         status: 'completed',
@@ -399,7 +399,7 @@ export const problemsDetailData = [
       },
       {
         id: 4,
-        prover_name: 'expander,algo 4',
+        prover_name: 'beta,algo 4',
         proof_system: 'Expander',
         algorithm: 'algo 4',
         status: 'completed',
@@ -412,7 +412,7 @@ export const problemsDetailData = [
       },
       {
         id: 5,
-        prover_name: 'expander,algo 5',
+        prover_name: 'gamma,algo 5',
         proof_system: 'Expander',
         algorithm: 'algo 5',
         status: 'completed',
