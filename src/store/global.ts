@@ -1,6 +1,7 @@
 import { create } from 'zustand';
-import { immer } from 'zustand/middleware/immer';
 import { devtools } from 'zustand/middleware';
+import { immer } from 'zustand/middleware/immer';
+
 import { type GoogleUserInfoType } from '@/services/user';
 
 export type GlobalState = {
@@ -13,19 +14,7 @@ type GlobalActions = {
   update: (key: keyof GlobalState, value: any) => void;
 };
 
-interface GlobalStore extends GlobalState, GlobalActions {}
-
-// const sessionUserStr = sessionStorage.getItem('user');
-// let sessionUser;
-// if (sessionUserStr) {
-//   try {
-//     sessionUser = JSON.parse(sessionUserStr);
-//   } catch (e) {
-//     sessionUser = undefined;
-//   }
-// } else {
-//   sessionUser = undefined;
-// }
+interface GlobalStore extends GlobalState, GlobalActions { }
 
 export const useGlobalStore = create<GlobalStore>()(
   immer(

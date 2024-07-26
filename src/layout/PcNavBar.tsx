@@ -21,7 +21,6 @@ function PcNavBar() {
           </Link>
         ))}
       </div>
-      {/* <UserAccount /> */}
     </div>
   );
 }

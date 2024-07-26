@@ -9,7 +9,7 @@ import { customThemeVariables } from '@/theme';
 import { hex2rgba } from '@/utils';
 
 interface IProps {
-  handleCreate: () => void;
+  handleCreate?: () => void;
 }
 
 const useStyles = createStyles(({ responsive, isDarkMode }) => {

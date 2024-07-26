@@ -1,19 +1,19 @@
-import { links } from './Header';
+import { useToggle } from 'ahooks';
+import { Drawer, Dropdown } from 'antd';
+import { useRef } from 'react';
+import { useNavigate } from 'react-router';
+
 import MenuIcon from '@/assets/icons/menu.svg?r';
 import MenuCloseIcon from '@/assets/icons/menu-close.svg?r';
-import useStyles from './header.style';
-import { Drawer, Dropdown } from 'antd';
-import { useToggle } from 'ahooks';
-import { useRef } from 'react';
-import { useLogout } from '@/hooks/useLogout';
 import avatar from '@/assets/images/user/avatar.png';
-import { useNavigate } from 'react-router';
 import { useGlobalStore } from '@/store/global';
+
+import { links } from './Header';
+import useStyles from './header.style';
 
 const MenuDropdownRender = () => {
   const { styles } = useStyles();
 
-  const logout = useLogout();
   const navigate = useNavigate();
   const { update } = useGlobalStore();
 
@@ -28,7 +28,6 @@ const MenuDropdownRender = () => {
 
   const handleLogout = () => {
     update('mobileNav', false);
-    logout();
   };
 
   return (
@@ -43,10 +42,6 @@ const MenuDropdownRender = () => {
             {item.title}
           </li>
         ))}
-        <li onClick={handleLogout} className="dropdown-menu-item">
-          <img src={avatar} className="mobile-avatar"></img>
-          <p className="mobile-logout">Log out</p>
-        </li>
       </ul>
     </div>
   );
