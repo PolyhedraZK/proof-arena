@@ -37,9 +37,10 @@ function ProofLayout() {
     //   return navigate('/login', { replace: true });
     // } else {
     //   update('user', { id: userIdCookie });
-      if (localStorage.getItem('token')=== null) {
-        return navigate('/login', { replace: true });
-      }else if(location.pathname === '/'){
+      // if (localStorage.getItem('token')=== null) {
+      //   return navigate('/login', { replace: true });
+      // }else 
+      if(location.pathname === '/'){
         return navigate('/problems', { replace: true })
       }
     // }

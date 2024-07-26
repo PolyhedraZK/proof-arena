@@ -9,7 +9,7 @@ export const useStyles = createStyles(({ css }) => {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
-      marginBottom: 53,
+      marginBottom: 33,
     },
     title: {
       display: 'inline-block',

@@ -53,13 +53,20 @@ const segmentedOptions = [
 const SubmissionsChart = ({ goBack, chartData }: SubmissionsChartType) => {
   const { styles } = useStyles()
   const [segmentedValue, setSegmentedValue] = useState<any>()
+  const findChartName = (value: string) => {
+    return segmentedOptions.find(item => item.value === value)?.label
+  }
+  console.log(chartData?.map(item => item.prover_name))
   const options = {
-    height: '95%',
+    title: {
+      subtext: `${findChartName(segmentedValue)}: ${createUnit(segmentedValue)}`
+    },
+    height: '86%',
     grid: {
-      left: '3%',
-      right: '4%',
-      bottom: '3%',
-      top: '2%',
+      left: '1%',
+      right: '1%',
+      // bottom: '3%',
+      // top: '10%',
       containLabel: true
     },
     xAxis: {
@@ -122,7 +129,7 @@ const SubmissionsChart = ({ goBack, chartData }: SubmissionsChartType) => {
       </ConfigProvider>
 
     </div>
-    <ReactEcharts option={options} />
+    <ReactEcharts style={{height: 470}} option={options} />
   </div>
 };
 

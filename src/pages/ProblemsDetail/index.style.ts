@@ -57,9 +57,10 @@ export const useStyles = createStyles(() => {
       justifyContent: 'space-between',
     },
     headBoxBtom: {
-      borderRadius: '8px',
-      background: 'rgba(43, 51, 45, 0.03)',
-      padding: '12px 24px',
+      // 加有time后用
+      // borderRadius: '8px',
+      // background: 'rgba(43, 51, 45, 0.03)',
+      // padding: '12px 24px',
     },
     headBoxBtomItem: {
       display: 'flex',
@@ -72,6 +73,11 @@ export const useStyles = createStyles(() => {
       display: 'flex',
       alignItems: 'center',
       gap: 8,
+      
+      // 加time后去掉
+      borderRadius: '8px',
+      background: 'rgba(43, 51, 45, 0.03)',
+      padding: '12px 24px',
     },
     tabsLabel: {
       // color: 'rgba(43, 51, 45, 0.60)',
