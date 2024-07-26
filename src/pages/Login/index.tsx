@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router';
 
 // import GoogleIcon from '@/assets/icons/google.svg';
 import LoginLogo from '@/assets/images/login/login-logo.svg';
-import WhiteLoginLogo from '@/assets/images/login/white-login-logo.png';
+import WhiteLoginLogo from '@/assets/images/login/white-login-logo.svg';
 // import BaseButton from '@/components/base/BaseButton';
 import { get, post } from '@/services/Request';
 // import { useGlobalStore } from '@/store/global';
