@@ -11,7 +11,7 @@ export interface IProblems {
   user_name: string;
   user_avatar: string;
   create_time: string;
-  detail_link: string
+  detail_link: string;
 }
 
 export interface IProblemsDetail extends IProblems {

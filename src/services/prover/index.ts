@@ -45,7 +45,6 @@ export function getProvers(params: IGetProverListParams) {
   return get<IGetProverListResponse>('/prover/list', params);
 }
 
-
 /**
  * 查询prover的详细信息 - 基本信息
  * @param id  prover的id

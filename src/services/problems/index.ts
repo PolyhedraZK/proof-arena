@@ -1,5 +1,5 @@
-import { get } from "../Request";
-import { IGetProblemsListResponse } from "./types";
+import { get } from '../Request';
+import { IGetProblemsListResponse } from './types';
 
 //查询problemsList
 export function getProblemsList(params: any) {

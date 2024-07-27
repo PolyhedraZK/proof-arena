@@ -37,12 +37,12 @@ function ProofLayout() {
     //   return navigate('/login', { replace: true });
     // } else {
     //   update('user', { id: userIdCookie });
-      // if (localStorage.getItem('token')=== null) {
-      //   return navigate('/login', { replace: true });
-      // }else 
-      if(location.pathname === '/'){
-        return navigate('/problems', { replace: true })
-      }
+    // if (localStorage.getItem('token')=== null) {
+    //   return navigate('/login', { replace: true });
+    // }else
+    if (location.pathname === '/') {
+      return navigate('/problems', { replace: true });
+    }
     // }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location]);

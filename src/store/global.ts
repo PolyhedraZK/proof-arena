@@ -14,7 +14,7 @@ type GlobalActions = {
   update: (key: keyof GlobalState, value: any) => void;
 };
 
-interface GlobalStore extends GlobalState, GlobalActions { }
+interface GlobalStore extends GlobalState, GlobalActions {}
 
 export const useGlobalStore = create<GlobalStore>()(
   immer(
