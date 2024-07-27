@@ -1,6 +1,6 @@
 @layer reset, antd;
 
-@import url('reset.css') layer(reset);
+/* @import url('reset.css') layer(reset); */
 
 * {
   box-sizing: border-box;
@@ -38,16 +38,4 @@ body {
   to {
     transform: rotate(360deg);
   }
-}
-
-/** 重写 message 样式**/
-.proof-message-success .anticon {
-  color: #52c41a;
-}
-.proof-message-error .anticon {
-  color: #f53f3f;
-}
-
-.proof-message-warning .anticon {
-  color: #f53f3f;
 }

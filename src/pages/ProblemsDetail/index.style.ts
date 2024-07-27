@@ -73,7 +73,7 @@ export const useStyles = createStyles(() => {
       display: 'flex',
       alignItems: 'center',
       gap: 8,
-      
+
       // 加time后去掉
       borderRadius: '8px',
       background: 'rgba(43, 51, 45, 0.03)',
