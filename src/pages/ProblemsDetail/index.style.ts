@@ -1,6 +1,6 @@
 import { createStyles } from 'antd-style';
 
-export const useStyles = createStyles(() => {
+export const useStyles = createStyles(({ token }) => {
   return {
     title: {
       display: 'inline-block',
@@ -35,6 +35,13 @@ export const useStyles = createStyles(() => {
       marginTop: 24,
       marginBottom: 16,
       display: 'block',
+      color: 'rgba(43, 51, 45, 0.6)',
+      '& a': {
+        color: token.colorPrimary,
+        '&:hover': {
+          color: token.colorPrimary
+        }
+      }
     },
     copyStyle: {
       margin: 0,

@@ -87,9 +87,9 @@ const ProblemsDetail = () => {
     localStorage.removeItem('tabKey');
   };
   const onGoToDetail = () => {
-if (detaileData && detaileData.detail_link) {
-   window.open(detaileData?.detail_link, '_target');
-}
+    if (detaileData && detaileData.detail_link) {
+       window.open(detaileData?.detail_link, '_target');
+    }
   };
   return (
     <div className={styles.ProblemsDetailBox}>
@@ -119,9 +119,8 @@ if (detaileData && detaileData.detail_link) {
           </BaseButton>
         </div>
 
-        <Text className={styles.secondaryText} type="secondary">
-          {detaileData?.desc}
-        </Text>
+        <p className={styles.secondaryText}  dangerouslySetInnerHTML={{__html:detaileData?detaileData.desc:'' }}>
+        </p>
 
         <div className={cx(styles.boxSpace, styles.headBoxBtom)}>
           <div className={styles.headBoxBtomTitle}>

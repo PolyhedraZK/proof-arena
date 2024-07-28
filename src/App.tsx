@@ -6,10 +6,10 @@ import Layout from '@/layout/index';
 // lazy页面
 const ProblemsPage = React.lazy(() => import('./pages/Problems/index'));
 const ProblemsDescription = React.lazy(() => import('./pages/ProblemsDescription/index'));
+const ProblemsDetail = React.lazy(() => import('./pages/ProblemsDetail'));
 // 使用NiceModal注册modal
 import '@/components/modal';
 
-import ProblemsDetail from './pages/ProblemsDetail';
 
 function App() {
   return (
