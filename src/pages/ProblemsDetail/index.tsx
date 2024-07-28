@@ -16,6 +16,12 @@ import SubmissionsChart from './components/SubmissionsChart';
 import SubmissionsTable from './components/SubmissionsTable';
 import { useStyles } from './index.style.ts';
 
+const giscusConfig = {
+  repo:import.meta.env.VITE_BASE_URLVITE_APP_GISCUS_REPO_NAME,
+  repoId:import.meta.env.VITE_APP_GISCUS_REPO_ID,
+  category:import.meta.env.VITE_APP_GISCUS_REPO_NAME,
+  categoryId:import.meta.env.VITE_APP_GISCUS_REPO_NAME,
+};
 const ProblemsDetail = () => {
   const navigate = useNavigate();
   const { detailId } = useParams();
@@ -58,10 +64,7 @@ const ProblemsDetail = () => {
       ),
       children: (
         <Giscus
-          repo="zkbridge-testnet/proof-arena"
-          repoId="R_kgDOMY9PxQ"
-          category="General"
-          categoryId="DIC_kwDOMY9Pxc4ChCf4"
+          {...giscusConfig}
           mapping="url"
           term="Welcome to Proof Arena"
           strict="0"
