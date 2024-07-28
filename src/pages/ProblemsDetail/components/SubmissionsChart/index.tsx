@@ -1,8 +1,9 @@
-import ReactEcharts from 'echarts-for-react';
 import { LeftOutlined } from '@ant-design/icons';
-import { useStyles } from './index.style.ts';
-import { Segmented, ConfigProvider } from 'antd';
+import { ConfigProvider,Segmented } from 'antd';
+import ReactEcharts from 'echarts-for-react';
 import { useEffect, useState } from 'react';
+
+import { useStyles } from './index.style.ts';
 
 type SubmissionsChartType = {
   goBack: (open: boolean) => void;

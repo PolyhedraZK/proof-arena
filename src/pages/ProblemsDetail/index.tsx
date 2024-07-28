@@ -16,20 +16,25 @@ import SubmissionsChart from './components/SubmissionsChart';
 import SubmissionsTable from './components/SubmissionsTable';
 import { useStyles } from './index.style.ts';
 
-const giscusConfig = {
-  repo:import.meta.env.VITE_APP_GISCUS_REPO_NAME,
+type BaseGiscusConfig = {
+  repo: `${string}/${string}`
+  repoId: string;
+  category: string;
+  categoryId: string;
+};
+const giscusConfig: BaseGiscusConfig = {
+  repo:import.meta.env.VITE_APP_GISCUS_REPO_NAME as `${string}/${string}`,
   repoId:import.meta.env.VITE_APP_GISCUS_REPO_ID,
   category:import.meta.env.VITE_APP_GISCUS_CATEGORY,
   categoryId:import.meta.env.VITE_APP_GISCUS_CATEGORY_ID,
 };
-debugger;
 const ProblemsDetail = () => {
   const navigate = useNavigate();
   const { detailId } = useParams();
   const { Paragraph, Text } = Typography;
   const { styles, cx } = useStyles();
   const [checkedUI, setCheckedUI] = useState(true);
-  const [tabKey, setTabKey] = useState(localStorage.getItem('tabKey') || '1');
+  const [tabKey, setTabKey] = useState('1');
   const [iconUrl, setIconUrl] = useState(analysisCharts);
   const [detaileData, setDetaileData] = useState<IProblemsDetail>();
 
@@ -60,7 +65,6 @@ const ProblemsDetail = () => {
       label: (
         <span className={styles.tabsLabel}>
           Discussions
-          {/* <span className={styles.badgeStyle}>{detaileData?.execution_number}</span> */}
         </span>
       ),
       children: (
@@ -148,7 +152,6 @@ if (detaileData && detaileData.detail_link) {
           items={items}
           onChange={key => {
             setTabKey(key);
-            localStorage.setItem('tabKey', key);
           }}
         />
       </div>
