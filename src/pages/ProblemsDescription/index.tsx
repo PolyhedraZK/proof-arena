@@ -17,7 +17,7 @@ const ProblemsDescription = () => {
   console.log(`base_url: ${import.meta.env.VITE_APP_BASE_URL}`);
   console.log(`loading file: docs/${mdFile}`);
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_APP_BASE_URL}/docs/${mdFile}`)
+    fetch(`/docs/${mdFile}`)
       .then((res) => res.text())
       .then((text) => { setContent(text); })
       .catch(error => {
