@@ -53,7 +53,7 @@ export const problemsDetailData = [
     user_avatar: 'https://stake.polyhedra.foundation/logo.png',
     create_time: 'Jul 15, 2024, 16:58:53 (UTC+08:00)',
     detail_link: '',
-    desc: "Your prover program must read bytes from stdin and print bytes to stdout. We will use a special judge program (SPJ) to interact with your prover by providing inputs and checking outputs. The SPJ communicates with the prover through the prover's stdin and stdout. Additionally, the SPJ will invoke your verifier to check your proof.",
+    desc: 'Test vectors https://emn178.github.io/online-tools/keccak_256.html',
     submissionsTableData: [
       {
         id: 1,
@@ -128,9 +128,9 @@ export const problemsDetailData = [
     problem_name: 'SHA256 Hash',
     user_name: 'Polyhedra Network',
     user_avatar: 'https://stake.polyhedra.foundation/logo.png',
-    detail_link: `${import.meta.env.VITE_APP_BASE_URL}/problemsDescription/sha256_hash_details.md`,
+    detail_link: '/problemsDescription/sha256_hash_details.md',
     create_time: 'Jul 15, 2024, 18:58:53 (UTC+08:00)',
-    desc: "Your prover program must read bytes from stdin and print bytes to stdout. We will use a special judge program (SPJ) to interact with your prover by providing inputs and checking outputs. The SPJ communicates with the prover through the prover's stdin and stdout. Additionally, the SPJ will invoke your verifier to check your proof.",
+    desc: 'Test vectors https://emn178.github.io/online-tools/sha256.html',
     submissionsTableData: [
       {
         id: 1,
@@ -207,7 +207,7 @@ export const problemsDetailData = [
     user_avatar: 'https://stake.polyhedra.foundation/logo.png',
     create_time: 'Jul 15, 2024, 18:59:53 (UTC+08:00)',
     detail_link: '',
-    desc: "Your prover program must read bytes from stdin and print bytes to stdout. We will use a special judge program (SPJ) to interact with your prover by providing inputs and checking outputs. The SPJ communicates with the prover through the prover's stdin and stdout. Additionally, the SPJ will invoke your verifier to check your proof.",
+    desc: 'Test vectors https://emn178.github.io/online-tools/ecdsa_verify.html',
     submissionsTableData: [
       {
         id: 1,
@@ -284,7 +284,7 @@ export const problemsDetailData = [
     user_avatar: 'https://stake.polyhedra.foundation/logo.png',
     create_time: 'Jul 15, 2024, 18:59:53 (UTC+08:00)',
     detail_link: '',
-    desc: "Your prover program must read bytes from stdin and print bytes to stdout. We will use a special judge program (SPJ) to interact with your prover by providing inputs and checking outputs. The SPJ communicates with the prover through the prover's stdin and stdout. Additionally, the SPJ will invoke your verifier to check your proof.",
+    desc: '--',
     submissionsTableData: [
       {
         id: 1,
@@ -361,7 +361,7 @@ export const problemsDetailData = [
     detail_link: '',
     user_avatar: 'https://stake.polyhedra.foundation/logo.png',
     create_time: 'Jul 15, 2024, 18:59:53 (UTC+08:00)',
-    desc: "Your prover program must read bytes from stdin and print bytes to stdout. We will use a special judge program (SPJ) to interact with your prover by providing inputs and checking outputs. The SPJ communicates with the prover through the prover's stdin and stdout. Additionally, the SPJ will invoke your verifier to check your proof.",
+    desc: '--',
     submissionsTableData: [
       {
         id: 1,

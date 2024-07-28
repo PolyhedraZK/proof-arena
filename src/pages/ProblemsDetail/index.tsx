@@ -78,6 +78,11 @@ const ProblemsDetail = () => {
     navigate('/problems');
     localStorage.removeItem('tabKey');
   };
+  const onGoToDetail = () => {
+if (detaileData && detaileData.detail_link) {
+   window.open(detaileData?.detail_link, '_target');
+}
+  };
   return (
     <div className={styles.ProblemsDetailBox}>
       <div className={styles.problemsDetailHeadBox}>
@@ -99,7 +104,7 @@ const ProblemsDetail = () => {
             </Text>
           </div>
           <BaseButton
-            onClick={() => window.open(detaileData?.detail_link, '_target')}
+            onClick={onGoToDetail}
             className={styles.baseBtnLink}
           >
             Details Link
