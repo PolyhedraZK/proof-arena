@@ -53,7 +53,7 @@ export const problemsDetailData = [
     user_avatar: 'https://stake.polyhedra.foundation/logo.png',
     create_time: 'Jul 15, 2024, 16:58:53 (UTC+08:00)',
     detail_link: '',
-    desc: 'Test vectors https://emn178.github.io/online-tools/keccak_256.html',
+    desc: 'Test vectors <a href="https://emn178.github.io/online-tools/keccak_256.html">https://emn178.github.io/online-tools/keccak_256.html</a>',
     submissionsTableData: [
       {
         id: 1,
@@ -130,7 +130,7 @@ export const problemsDetailData = [
     user_avatar: 'https://stake.polyhedra.foundation/logo.png',
     detail_link: '/problemsDescription/sha256_hash_details.md',
     create_time: 'Jul 15, 2024, 18:58:53 (UTC+08:00)',
-    desc: 'Test vectors https://emn178.github.io/online-tools/sha256.html',
+    desc: 'Test vectors <a href="https://emn178.github.io/online-tools/sha256.html">https://emn178.github.io/online-tools/sha256.html</a>',
     submissionsTableData: [
       {
         id: 1,
@@ -207,7 +207,7 @@ export const problemsDetailData = [
     user_avatar: 'https://stake.polyhedra.foundation/logo.png',
     create_time: 'Jul 15, 2024, 18:59:53 (UTC+08:00)',
     detail_link: '',
-    desc: 'Test vectors https://emn178.github.io/online-tools/ecdsa_verify.html',
+    desc: 'Test vectors <a href="https://emn178.github.io/online-tools/ecdsa_verify.html">https://emn178.github.io/online-tools/ecdsa_verify.html</a>',
     submissionsTableData: [
       {
         id: 1,
