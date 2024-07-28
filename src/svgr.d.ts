@@ -12,6 +12,9 @@ interface IResponse<T = any> {
 }
 
 interface ImportMetaEnv {
-  readonly VITE_GOOGLE_OAUTH_CLIENT_ID: string;
+  readonly VITE_APP_GISCUS_REPO_NAME: string;
+  readonly VITE_APP_GSICUS_REPO_ID: string;
+  readonly VITE_APP_GSICUS_CATEGORY: string;
+  readonly VITE_APP_GSICUS_CATEGORY_ID: string;
   readonly VITE_BASE_URL: string;
 }
