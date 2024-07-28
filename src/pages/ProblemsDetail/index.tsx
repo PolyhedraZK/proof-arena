@@ -17,11 +17,12 @@ import SubmissionsTable from './components/SubmissionsTable';
 import { useStyles } from './index.style.ts';
 
 const giscusConfig = {
-  repo:import.meta.env.VITE_BASE_URLVITE_APP_GISCUS_REPO_NAME,
+  repo:import.meta.env.VITE_APP_GISCUS_REPO_NAME,
   repoId:import.meta.env.VITE_APP_GISCUS_REPO_ID,
-  category:import.meta.env.VITE_APP_GISCUS_REPO_NAME,
-  categoryId:import.meta.env.VITE_APP_GISCUS_REPO_NAME,
+  category:import.meta.env.VITE_APP_GISCUS_CATEGORY,
+  categoryId:import.meta.env.VITE_APP_GISCUS_CATEGORY_ID,
 };
+debugger;
 const ProblemsDetail = () => {
   const navigate = useNavigate();
   const { detailId } = useParams();
