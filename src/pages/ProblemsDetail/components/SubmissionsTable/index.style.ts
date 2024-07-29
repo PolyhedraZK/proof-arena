@@ -12,7 +12,6 @@ export const useStyles = createStyles(({ css }) => ({
     color: 'rgba(43, 51, 45, .5)',
     fontSize: 14,
     fontWeight: 400,
-    // transform: 'translateY(50%)',
   },
   tableBox: {
     borderBottom: 'none',
@@ -27,5 +26,5 @@ export const useStyles = createStyles(({ css }) => ({
     }
   }
   `),
-  paginationStyle: { textAlign: 'center', marginTop: 16 },
+  paginationStyle: { marginTop: 16,justifyContent: 'center' },
 }));

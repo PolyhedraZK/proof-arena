@@ -2,9 +2,6 @@ import { useEffect, useState } from 'react';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
-// static load
-// import { markdown } from '../../../docs/sha256_hash_details.md'
-
 const ProblemsDescription = ({ mdFile }: { mdFile: string }) => {
   const [content, setContent] = useState('');
   useEffect(() => {
