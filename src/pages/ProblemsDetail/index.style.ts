@@ -2,7 +2,7 @@ import { createStyles } from 'antd-style';
 
 export const useStyles = createStyles(({ token }) => {
   return {
-    problemsDescriptionBox:{
+    problemsDescriptionBox: {
       height: 700,
       overflow: 'hidden',
       overflowY: 'auto',
@@ -10,9 +10,9 @@ export const useStyles = createStyles(({ token }) => {
     customTitleBox: {
       padding: '16px 0px',
       borderBottom: `1px solid ${token.colorBorderSecondary}`,
-      marginBottom: 24
+      marginBottom: 24,
     },
-    customTitleBottom:{marginBottom: 0},
+    customTitleBottom: { marginBottom: 0 },
     title: {
       display: 'inline-block',
       margin: '0px 12px 0px 8px',

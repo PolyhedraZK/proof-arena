@@ -7,21 +7,19 @@ import { useNavigate, useParams } from 'react-router';
 import analysisCharts from '@/assets/icons/analysis-charts.svg';
 import analysisChartsAction from '@/assets/icons/analysis-charts-action.svg';
 import CopySvg from '@/assets/icons/copy.svg';
+import user_avatar from '@/assets/user_avatar.svg';
 import BaseButton from '@/components/base/BaseButton.tsx';
+import CustomTitle from '@/components/base/CustomTitle.tsx';
 import { problemsDetailData } from '@/consts/ProblemsData.ts';
 import { IProblemsDetail } from '@/services/problems/types.ts';
 
+import ProblemsDescription from '../ProblemsDescription/index.tsx';
 import SubmissionsChart from './components/SubmissionsChart';
 import SubmissionsTable from './components/SubmissionsTable';
 import { useStyles } from './index.style.ts';
-import ProblemsDescription from '../ProblemsDescription/index.tsx';
-
-import user_avatar from '@/assets/user_avatar.svg'
-import CustomTitle from '@/components/base/CustomTitle.tsx';
-
 
 type BaseGiscusConfig = {
-  repo: `${string}/${string}`
+  repo: `${string}/${string}`;
   repoId: string;
   category: string;
   categoryId: string;
@@ -39,7 +37,7 @@ const ProblemsDetail = () => {
   const { styles, cx } = useStyles();
   const [checkedUI, setCheckedUI] = useState(true);
   const [iconUrl, setIconUrl] = useState(true);
-  const [detaileData, setDetaileData] = useState<IProblemsDetail>();
+  const [detaileData, setDetaileData] = useState<IProblemsDetail | undefined>();
 
   useEffect(() => {
     setDetaileData(
@@ -79,31 +77,54 @@ const ProblemsDetail = () => {
           </div>
         </div>
       </div>
-      {detaileData?.description && <div className={styles.problemsDetailMainBox}>
-        <div className={cx(styles.customTitleBox, styles.customTitleBottom)}>
-          <CustomTitle title={'Details'} />
+      {detaileData?.description && (
+        <div className={styles.problemsDetailMainBox}>
+          <div className={cx(styles.customTitleBox, styles.customTitleBottom)}>
+            <CustomTitle title={'Details'} />
+          </div>
+          <div className={styles.problemsDescriptionBox}>
+            <ProblemsDescription mdFile={detaileData?.description || ''} />
+          </div>
         </div>
-        <div className={styles.problemsDescriptionBox}>
-          <ProblemsDescription mdFile={detaileData?.description || ''} />
-        </div>
-      </div>}
+      )}
       <div className={styles.problemsDetailMainBox}>
         <div className={styles.customTitleBox}>
-          <CustomTitle title={'Submissions'} suffix={<BaseButton
-            className={styles.baseBtn}
-            onClick={() => setCheckedUI(!checkedUI)}
-            onMouseOver={() => setIconUrl(true)}
-            onMouseOut={() => setIconUrl(false)}
-            style={{ display: 'flex' }}
-          >
-            {checkedUI ? <img src={iconUrl ? analysisChartsAction : analysisCharts} style={{ width: 20, height: 20 }} /> : <UnorderedListOutlined style={{ color: iconUrl ? '#2B332D' : '#999', fontSize: 20 }} />}
-            {checkedUI ? 'Analysis Charts' : 'List View'}
-          </BaseButton>} />
+          <CustomTitle
+            title={'Submissions'}
+            suffix={
+              <BaseButton
+                className={styles.baseBtn}
+                onClick={() => setCheckedUI(!checkedUI)}
+                onMouseOver={() => setIconUrl(true)}
+                onMouseOut={() => setIconUrl(false)}
+                style={{ display: 'flex' }}
+              >
+                {checkedUI ? (
+                  <img
+                    src={iconUrl ? analysisChartsAction : analysisCharts}
+                    style={{ width: 20, height: 20 }}
+                  />
+                ) : (
+                  <UnorderedListOutlined
+                    style={{
+                      color: iconUrl ? '#2B332D' : '#999',
+                      fontSize: 20,
+                    }}
+                  />
+                )}
+                {checkedUI ? 'Analysis Charts' : 'List View'}
+              </BaseButton>
+            }
+          />
         </div>
 
         {checkedUI ? (
           <SubmissionsTable dataSource={detaileData?.submissionsTableData} />
-        ) : (<SubmissionsChart chartData={detaileData?.submissionsTableData || []} />)}
+        ) : (
+          <SubmissionsChart
+            chartData={detaileData?.submissionsTableData || []}
+          />
+        )}
       </div>
       <div className={styles.problemsDetailMainBox}>
         <div className={styles.customTitleBox}>
@@ -121,7 +142,6 @@ const ProblemsDetail = () => {
           loading="lazy"
         />
       </div>
-
     </div>
   );
 };

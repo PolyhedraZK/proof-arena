@@ -1,5 +1,5 @@
 import { Avatar, Typography } from 'antd';
-import user_avatar from '@/assets/user_avatar.svg'
+import user_avatar from '@/assets/user_avatar.svg';
 import CopySvg from '@/assets/icons/copy.svg';
 import { IProblems } from '@/services/problems/types.ts';
 

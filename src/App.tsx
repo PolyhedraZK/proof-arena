@@ -9,7 +9,6 @@ const ProblemsDetail = React.lazy(() => import('./pages/ProblemsDetail'));
 // 使用NiceModal注册modal
 import '@/components/modal';
 
-
 function App() {
   return (
     <BrowserRouter>

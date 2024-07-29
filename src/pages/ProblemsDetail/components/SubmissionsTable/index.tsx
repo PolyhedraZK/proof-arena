@@ -102,16 +102,16 @@ const SubmissionsTable = ({
         }}
       >
         <div className={styles.tableBox}>
-        <Table
-          size="middle"
-          rowKey={record => record.id}
-          pagination={false}
-          className={styles.tableStyle}
-          bordered={false}
-          scroll={{ x: 'calc(100% + 50%)' }}
-          columns={columns}
-          dataSource={dataSource || []}
-        />
+          <Table
+            size="middle"
+            rowKey={record => record.id}
+            pagination={false}
+            className={styles.tableStyle}
+            bordered={false}
+            scroll={{ x: 'calc(100% + 50%)' }}
+            columns={columns}
+            dataSource={dataSource || []}
+          />
         </div>
         <Pagination
           className={styles.paginationStyle}
