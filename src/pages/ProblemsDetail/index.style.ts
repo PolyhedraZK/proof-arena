@@ -2,6 +2,17 @@ import { createStyles } from 'antd-style';
 
 export const useStyles = createStyles(({ token }) => {
   return {
+    problemsDescriptionBox:{
+      height: 700,
+      overflow: 'hidden',
+      overflowY: 'auto',
+    },
+    customTitleBox: {
+      padding: '16px 0px',
+      borderBottom: `1px solid ${token.colorBorderSecondary}`,
+      marginBottom: 24
+    },
+    customTitleBottom:{marginBottom: 0},
     title: {
       display: 'inline-block',
       margin: '0px 12px 0px 8px',
@@ -14,10 +25,12 @@ export const useStyles = createStyles(({ token }) => {
     },
     problemsDetailHeadBox: {
       background: 'white',
-      padding: 24,
+      padding: '24px 16px',
       border: '1px solid rgba(43, 51, 45, 0.05)',
       backdropFilter: 'blur(25px)',
       borderRadius: 16,
+      display: 'flex',
+      justifyContent: 'space-between',
     },
     problemsDetailMainBox: {
       background: 'white',
@@ -26,22 +39,6 @@ export const useStyles = createStyles(({ token }) => {
       backdropFilter: 'blur(25px)',
       borderRadius: 16,
       marginTop: 24,
-    },
-    secondaryText: {
-      linheight: '160%',
-      fontSize: 16,
-      fontWeight: 400,
-      fontFamily: 'Poppins',
-      marginTop: 24,
-      marginBottom: 16,
-      display: 'block',
-      color: 'rgba(43, 51, 45, 0.6)',
-      '& a': {
-        color: token.colorPrimary,
-        '&:hover': {
-          color: token.colorPrimary
-        }
-      }
     },
     copyStyle: {
       margin: 0,
@@ -83,8 +80,8 @@ export const useStyles = createStyles(({ token }) => {
 
       // 加time后去掉
       borderRadius: '8px',
-      background: 'rgba(43, 51, 45, 0.03)',
-      padding: '12px 24px',
+      // background: 'rgba(43, 51, 45, 0.03)',
+      // padding: '12px 24px',
     },
     tabsLabel: {
       // color: 'rgba(43, 51, 45, 0.60)',

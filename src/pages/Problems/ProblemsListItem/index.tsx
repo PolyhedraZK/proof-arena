@@ -1,5 +1,5 @@
 import { Avatar, Typography } from 'antd';
-
+import user_avatar from '@/assets/user_avatar.svg'
 import CopySvg from '@/assets/icons/copy.svg';
 import { IProblems } from '@/services/problems/types.ts';
 
@@ -8,7 +8,6 @@ import { useStyles } from './index.style.ts';
 const ProblemsListItem = ({ info }: { info: IProblems }) => {
   const { Paragraph, Text } = Typography;
   const { styles } = useStyles();
-
   return (
     <div className={styles.problemsDetailHeadBox}>
       <div className={styles.boxSpace}>
@@ -29,7 +28,8 @@ const ProblemsListItem = ({ info }: { info: IProblems }) => {
           </Text>
         </div>
         <div className={styles.headBoxBtomTitle}>
-          <Avatar size={24} icon={<img src={info.user_avatar} />} />
+        {/* info.user_avatar */}
+          <Avatar size={24} icon={<img src={user_avatar} />} />
           <span>{info.user_name}</span>
         </div>
       </div>

@@ -1,6 +1,5 @@
 import { Table, ConfigProvider, Pagination } from 'antd';
 import { useStyles } from './index.style.ts';
-// import { CheckCircleOutlined, LoadingOutlined } from '@ant-design/icons'
 import { IProblemsDetail } from '@/services/problems/types.ts';
 const SubmissionsTable = ({
   dataSource,
@@ -11,26 +10,6 @@ const SubmissionsTable = ({
   const createTableHead = (title: string) => (
     <div className={styles.titleSpanStyle}>{title}</div>
   );
-  // const createStatus = (status: string) => {
-  //   const statusItem = {
-  //     pending: {
-  //       icon: <LoadingOutlined style={{ color: '#F09C1D' }} />,
-  //       name: 'Pending'
-  //     },
-  //     running: {
-  //       icon: <LoadingOutlined style={{ color: '#34A853' }} />,
-  //       name: 'Running'
-  //     },
-  //     completed: {
-  //       icon: <CheckCircleOutlined style={{ color: '#34A853' }} />,
-  //       name: 'Completed'
-  //     }
-  //   }
-  //   return <span>
-  //     {statusItem[status].icon}&nbsp;&nbsp;
-  //     <span>{statusItem[status].name}</span>
-  //   </span>
-  // }
   const columns = [
     {
       title: createTableHead('Task ID'),
@@ -52,12 +31,6 @@ const SubmissionsTable = ({
       dataIndex: 'algorithm',
       key: 'algorithm',
     },
-    // {
-    //   title: createTableHead('Status'),
-    //   dataIndex: 'status',
-    //   key: 'status',
-    //   render: (status: string) => (createStatus(status))
-    // },
     {
       title: createTableHead('Setup time（seconds）'),
       width: 190,
@@ -112,7 +85,7 @@ const SubmissionsTable = ({
   ];
 
   return (
-    <div className={styles.submissionsTableBox}>
+    <>
       <ConfigProvider
         theme={{
           components: {
@@ -128,6 +101,7 @@ const SubmissionsTable = ({
           },
         }}
       >
+        <div className={styles.tableBox}>
         <Table
           size="middle"
           rowKey={record => record.id}
@@ -138,13 +112,14 @@ const SubmissionsTable = ({
           columns={columns}
           dataSource={dataSource || []}
         />
+        </div>
         <Pagination
           className={styles.paginationStyle}
           defaultCurrent={1}
           total={3}
         />
       </ConfigProvider>
-    </div>
+    </>
   );
 };
 

@@ -61,4 +61,21 @@ export default defineConfig({
       },
     },
   },
+  server: {
+    host: '0.0.0.0',
+    port: 8080,
+    proxy: {
+      '/api/v1': {
+        // target: 'https://proof-dev-api.proof.cloud/',
+        target: 'https://proof-stage-api.proof.cloud/',
+        changeOrigin: true,
+        cookiePathRewrite: {
+          '*': '/',
+        },
+      },
+    },
+    watch: {
+      usePolling: true,
+    },
+  },
 });

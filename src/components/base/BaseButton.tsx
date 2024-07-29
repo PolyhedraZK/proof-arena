@@ -1,11 +1,9 @@
 import { Button, type ButtonProps, ConfigProvider } from 'antd';
 import { createStyles } from 'antd-style';
-import React, { memo } from 'react';
+import { memo } from 'react';
 
 import { customThemeVariables } from '@/theme';
 import { hex2rgba } from '@/utils';
-
-interface IProps extends ButtonProps {}
 
 const useStyles = createStyles(({ token, css, prefixCls, isDarkMode }) => {
   const colors = isDarkMode
@@ -28,7 +26,7 @@ const useStyles = createStyles(({ token, css, prefixCls, isDarkMode }) => {
   };
 });
 
-const BaseButton = memo(({ children, className, ...rest }: IProps) => {
+const BaseButton = memo(({ children, className, ...rest }: ButtonProps) => {
   const { styles, cx } = useStyles();
   return (
     <Button {...rest} className={cx(styles.baseBtn, className)}>
