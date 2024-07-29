@@ -22,7 +22,6 @@ function App() {
               path="problemsDetail/:detailId"
               element={<ProblemsDetail />}
             />
-            <Route path="problemsDescription/:mdFile" element={<ProblemsDescription />} />
           </Route>
         </Routes>
       </React.Suspense>

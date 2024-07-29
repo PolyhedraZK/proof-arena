@@ -16,5 +16,6 @@ export interface IProblems {
 
 export interface IProblemsDetail extends IProblems {
   submissionsTableData: any[];
+  description: string;
   desc: string;
 }

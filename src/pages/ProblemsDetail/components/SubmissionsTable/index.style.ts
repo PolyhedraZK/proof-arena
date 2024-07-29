@@ -12,12 +12,12 @@ export const useStyles = createStyles(({ css }) => ({
     color: 'rgba(43, 51, 45, .5)',
     fontSize: 14,
     fontWeight: 400,
-    transform: 'translateY(50%)',
+    // transform: 'translateY(50%)',
   },
-  submissionsTableBox: {
-    border: '1px solid rgba(43, 51, 45, 0.05)',
+  tableBox: {
     borderBottom: 'none',
     borderRadius: 16,
+    border: '1px solid rgba(43, 51, 45, 0.05)',
     overflow: 'hidden',
   },
   tableStyle: css(`
@@ -27,5 +27,5 @@ export const useStyles = createStyles(({ css }) => ({
     }
   }
   `),
-  paginationStyle: { textAlign: 'center', marginTop: 24 },
+  paginationStyle: { textAlign: 'center', marginTop: 16 },
 }));

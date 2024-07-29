@@ -1,12 +1,10 @@
-import { LeftOutlined } from '@ant-design/icons';
-import { ConfigProvider,Segmented } from 'antd';
+import { ConfigProvider, Segmented } from 'antd';
 import ReactEcharts from 'echarts-for-react';
 import { useEffect, useState } from 'react';
 
 import { useStyles } from './index.style.ts';
 
 type SubmissionsChartType = {
-  goBack: (open: boolean) => void;
   chartData: any[];
 };
 
@@ -51,13 +49,12 @@ const segmentedOptions = [
     value: 'proof_size',
   },
 ];
-const SubmissionsChart = ({ goBack, chartData }: SubmissionsChartType) => {
+const SubmissionsChart = ({ chartData }: SubmissionsChartType) => {
   const { styles } = useStyles();
   const [segmentedValue, setSegmentedValue] = useState<any>();
   const findChartName = (value: string) => {
     return segmentedOptions.find(item => item.value === value)?.label;
   };
-  console.log(chartData?.map(item => item.prover_name));
   const options = {
     title: {
       subtext: `${findChartName(segmentedValue)}: ${createUnit(
@@ -68,8 +65,6 @@ const SubmissionsChart = ({ goBack, chartData }: SubmissionsChartType) => {
     grid: {
       left: '1%',
       right: '1%',
-      // bottom: '3%',
-      // top: '10%',
       containLabel: true,
     },
     xAxis: {
@@ -95,7 +90,6 @@ const SubmissionsChart = ({ goBack, chartData }: SubmissionsChartType) => {
           label: {
             show: true,
             position: 'top',
-            // formatter: (params) => `${params.value}${createUnit(segmentedValue)}`
           },
         },
       },
@@ -107,10 +101,7 @@ const SubmissionsChart = ({ goBack, chartData }: SubmissionsChartType) => {
   return (
     <div className={styles.submissionsChartBox}>
       <div className={styles.boxSpace}>
-        <div>
-          <LeftOutlined onClick={() => goBack(true)} />
-          <span className={styles.title}>Metric analysis charts</span>
-        </div>
+        <span className={styles.title}>Metric analysis charts</span>
         <ConfigProvider
           theme={{
             components: {

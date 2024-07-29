@@ -1,7 +1,6 @@
-import { LeftOutlined } from '@ant-design/icons';
+import { LeftOutlined, UnorderedListOutlined } from '@ant-design/icons';
 import Giscus from '@giscus/react';
-import type { TabsProps } from 'antd';
-import { Avatar, Tabs, Typography } from 'antd';
+import { Avatar, Typography } from 'antd';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 
@@ -15,6 +14,11 @@ import { IProblemsDetail } from '@/services/problems/types.ts';
 import SubmissionsChart from './components/SubmissionsChart';
 import SubmissionsTable from './components/SubmissionsTable';
 import { useStyles } from './index.style.ts';
+import ProblemsDescription from '../ProblemsDescription/index.tsx';
+
+import user_avatar from '@/assets/user_avatar.svg'
+import CustomTitle from '@/components/base/CustomTitle.tsx';
+
 
 type BaseGiscusConfig = {
   repo: `${string}/${string}`
@@ -23,10 +27,10 @@ type BaseGiscusConfig = {
   categoryId: string;
 };
 const giscusConfig: BaseGiscusConfig = {
-  repo:import.meta.env.VITE_APP_GISCUS_REPO_NAME as `${string}/${string}`,
-  repoId:import.meta.env.VITE_APP_GISCUS_REPO_ID,
-  category:import.meta.env.VITE_APP_GISCUS_CATEGORY,
-  categoryId:import.meta.env.VITE_APP_GISCUS_CATEGORY_ID,
+  repo: import.meta.env.VITE_APP_GISCUS_REPO_NAME as `${string}/${string}`,
+  repoId: import.meta.env.VITE_APP_GISCUS_REPO_ID,
+  category: import.meta.env.VITE_APP_GISCUS_CATEGORY,
+  categoryId: import.meta.env.VITE_APP_GISCUS_CATEGORY_ID,
 };
 const ProblemsDetail = () => {
   const navigate = useNavigate();
@@ -34,8 +38,7 @@ const ProblemsDetail = () => {
   const { Paragraph, Text } = Typography;
   const { styles, cx } = useStyles();
   const [checkedUI, setCheckedUI] = useState(true);
-  const [tabKey, setTabKey] = useState('1');
-  const [iconUrl, setIconUrl] = useState(analysisCharts);
+  const [iconUrl, setIconUrl] = useState(true);
   const [detaileData, setDetaileData] = useState<IProblemsDetail>();
 
   useEffect(() => {
@@ -44,52 +47,9 @@ const ProblemsDetail = () => {
     );
   }, [detailId]);
 
-  const items: TabsProps['items'] = [
-    {
-      key: '1',
-      label: <span className={styles.tabsLabel}>Solutions</span>,
-      children: checkedUI ? (
-        <SubmissionsTable dataSource={detaileData?.submissionsTableData} />
-      ) : (
-        <div>
-          <SubmissionsChart
-            chartData={detaileData?.submissionsTableData || []}
-            goBack={setCheckedUI}
-          />
-        </div>
-      ),
-    },
-    {
-      // disabled: true,
-      key: '2',
-      label: (
-        <span className={styles.tabsLabel}>
-          Discussions
-        </span>
-      ),
-      children: (
-        <Giscus
-          {...giscusConfig}
-          mapping="url"
-          term="Welcome to Proof Arena"
-          strict="0"
-          reactionsEnabled="1"
-          emitMetadata="1"
-          inputPosition="top"
-          lang="en"
-          loading="lazy"
-        />
-      ),
-    },
-  ];
   const onGoBack = () => {
     navigate('/problems');
     localStorage.removeItem('tabKey');
-  };
-  const onGoToDetail = () => {
-    if (detaileData && detaileData.detail_link) {
-       window.open(detaileData?.detail_link, '_target');
-    }
   };
   return (
     <div className={styles.ProblemsDetailBox}>
@@ -111,49 +71,57 @@ const ProblemsDetail = () => {
               </Paragraph>
             </Text>
           </div>
-          <BaseButton
-            onClick={onGoToDetail}
-            className={styles.baseBtnLink}
-          >
-            Details Link
-          </BaseButton>
         </div>
-
-        <p className={styles.secondaryText}  dangerouslySetInnerHTML={{__html:detaileData?detaileData.desc:'' }}>
-        </p>
-
         <div className={cx(styles.boxSpace, styles.headBoxBtom)}>
           <div className={styles.headBoxBtomTitle}>
-            <Avatar size={24} icon={<img src={detaileData?.user_avatar} />} />
+            <Avatar size={24} icon={<img src={user_avatar} />} />
             <span>{detaileData?.user_name}</span>
           </div>
         </div>
       </div>
+      {detaileData?.description && <div className={styles.problemsDetailMainBox}>
+        <div className={cx(styles.customTitleBox, styles.customTitleBottom)}>
+          <CustomTitle title={'Details'} />
+        </div>
+        <div className={styles.problemsDescriptionBox}>
+          <ProblemsDescription mdFile={detaileData?.description || ''} />
+        </div>
+      </div>}
       <div className={styles.problemsDetailMainBox}>
-        <Tabs
-          tabBarExtraContent={
-            checkedUI &&
-            tabKey === '1' && (
-              <BaseButton
-                className={styles.baseBtn}
-                onClick={() => setCheckedUI(false)}
-                onMouseOver={() => setIconUrl(analysisChartsAction)}
-                onMouseOut={() => setIconUrl(analysisCharts)}
-                style={{ display: 'flex' }}
-              >
-                {/* analysisCharts  */}
-                <img src={iconUrl} style={{ width: 20, height: 20 }} />
-                Analysis Charts
-              </BaseButton>
-            )
-          }
-          activeKey={tabKey}
-          items={items}
-          onChange={key => {
-            setTabKey(key);
-          }}
+        <div className={styles.customTitleBox}>
+          <CustomTitle title={'Submissions'} suffix={<BaseButton
+            className={styles.baseBtn}
+            onClick={() => setCheckedUI(!checkedUI)}
+            onMouseOver={() => setIconUrl(true)}
+            onMouseOut={() => setIconUrl(false)}
+            style={{ display: 'flex' }}
+          >
+            {checkedUI ? <img src={iconUrl ? analysisChartsAction : analysisCharts} style={{ width: 20, height: 20 }} /> : <UnorderedListOutlined style={{ color: iconUrl ? '#2B332D' : '#999', fontSize: 20 }} />}
+            {checkedUI ? 'Analysis Charts' : 'List View'}
+          </BaseButton>} />
+        </div>
+
+        {checkedUI ? (
+          <SubmissionsTable dataSource={detaileData?.submissionsTableData} />
+        ) : (<SubmissionsChart chartData={detaileData?.submissionsTableData || []} />)}
+      </div>
+      <div className={styles.problemsDetailMainBox}>
+        <div className={styles.customTitleBox}>
+          <CustomTitle title={'Discussions'} />
+        </div>
+        <Giscus
+          {...giscusConfig}
+          mapping="url"
+          term="Welcome to Proof Arena"
+          strict="0"
+          reactionsEnabled="1"
+          emitMetadata="1"
+          inputPosition="top"
+          lang="en"
+          loading="lazy"
         />
       </div>
+
     </div>
   );
 };
