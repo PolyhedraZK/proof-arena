@@ -26,5 +26,5 @@ export const useStyles = createStyles(({ css }) => ({
     }
   }
   `),
-  paginationStyle: { marginTop: 16,justifyContent: 'center' },
+  paginationStyle: { marginTop: 16, textAlign: 'center' },
 }));
