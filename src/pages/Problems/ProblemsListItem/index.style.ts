@@ -11,8 +11,6 @@ export const useStyles = createStyles(() => {
     problemsDetailHeadBox: {
       width: '100%',
       background: 'white',
-      //UI 调整，后续会改回
-      // padding: '24px 20px 16px',
       padding: 24,
       border: '1px solid rgba(43, 51, 45, 0.05)',
       backdropFilter: 'blur(25px)',

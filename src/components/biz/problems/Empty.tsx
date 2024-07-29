@@ -3,7 +3,7 @@ import { Flex } from 'antd';
 import { createStyles, useResponsive } from 'antd-style';
 import React, { memo } from 'react';
 
-import EmptySvg from '@/assets/images/provers/empty-list-white.svg?r';
+import EmptySvg from '@/assets/images/problems/empty-list-white.svg?r';
 import PrimaryButton from '@/components/base/PrimaryButton';
 import { customThemeVariables } from '@/theme';
 import { hex2rgba } from '@/utils';

@@ -28,7 +28,6 @@ const ProblemsListItem = ({ info }: { info: IProblems }) => {
           </Text>
         </div>
         <div className={styles.headBoxBtomTitle}>
-        {/* info.user_avatar */}
           <Avatar size={24} icon={<img src={user_avatar} />} />
           <span>{info.user_name}</span>
         </div>

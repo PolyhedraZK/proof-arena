@@ -1,5 +1,5 @@
 import { theme } from 'antd';
-import React, { memo } from 'react';
+import { memo } from 'react';
 
 import SpinSvg from '@/assets/spin.svg?r';
 
