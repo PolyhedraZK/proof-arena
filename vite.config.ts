@@ -4,7 +4,7 @@ import dayjs from 'dayjs';
 import rollupNodePolyFill from 'rollup-plugin-polyfill-node';
 import { defineConfig } from 'vite';
 import { Mode, plugin as mdPlugin } from 'vite-plugin-markdown';
-import { viteStaticCopy } from 'vite-plugin-static-copy'
+import { viteStaticCopy } from 'vite-plugin-static-copy';
 import svgr from 'vite-plugin-svgr';
 const alias = {
   '@': '/src',
@@ -18,9 +18,9 @@ export default defineConfig({
       targets: [
         {
           src: 'docs/*',
-          dest: 'docs'
-        }
-      ]
+          dest: 'docs',
+        },
+      ],
     }),
     mdPlugin({ mode: [Mode.HTML, Mode.MARKDOWN, Mode.TOC, Mode.REACT] }),
     react(),

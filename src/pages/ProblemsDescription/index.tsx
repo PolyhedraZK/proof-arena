@@ -6,16 +6,16 @@ const ProblemsDescription = ({ mdFile }: { mdFile: string }) => {
   const [content, setContent] = useState('');
   useEffect(() => {
     fetch(`/docs/${mdFile}`)
-      .then((res) => res.text())
-      .then((text) => { setContent(text); })
+      .then(res => res.text())
+      .then(text => {
+        setContent(text);
+      })
       .catch(error => {
         console.log(error);
       });
   }, [mdFile]);
 
-  return (<Markdown
-    remarkPlugins={[remarkGfm]}
-  >{content}</Markdown>);
+  return <Markdown remarkPlugins={[remarkGfm]}>{content}</Markdown>;
 };
 
 export default ProblemsDescription;
