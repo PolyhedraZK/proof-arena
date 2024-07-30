@@ -41,7 +41,7 @@ export const problemsListData = {
 
 export const problemsDetailData = [
   {
-    ... problemsListData.data[0],
+    ...problemsListData.data[0],
     description: '',
     submissionsTableData: [
       {
@@ -131,7 +131,7 @@ export const problemsDetailData = [
     ],
   },
   {
-    ... problemsListData.data[1],
+    ...problemsListData.data[1],
     description: 'sha256_hash_details.md',
     submissionsTableData: [
       {
@@ -221,7 +221,7 @@ export const problemsDetailData = [
     ],
   },
   {
-    ... problemsListData.data[2],
+    ...problemsListData.data[2],
     description: '',
     submissionsTableData: [
       {
@@ -311,7 +311,7 @@ export const problemsDetailData = [
     ],
   },
   {
-    ... problemsListData.data[3],
+    ...problemsListData.data[3],
     description: '',
     submissionsTableData: [
       {
@@ -401,7 +401,7 @@ export const problemsDetailData = [
     ],
   },
   {
-    ... problemsListData.data[4],
+    ...problemsListData.data[4],
     description: '',
     submissionsTableData: [
       {

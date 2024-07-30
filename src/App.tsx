@@ -3,6 +3,9 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 import Layout from '@/layout/index';
 
+import { data } from '../benchmark/sha256_data.md';
+
+console.log(data);
 // lazy页面
 const ProblemsPage = React.lazy(() => import('./pages/Problems/index'));
 const ProblemsDetail = React.lazy(() => import('./pages/ProblemsDetail'));

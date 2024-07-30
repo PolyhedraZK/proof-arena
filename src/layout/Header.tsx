@@ -12,7 +12,6 @@ const Header = memo(() => {
   const { styles } = useStyles();
   const { themeMode } = useThemeMode();
 
-
   return (
     <div className={styles.headerWrapper}>
       <Link className={styles.navLogo} to="/problems">

@@ -1,5 +1,5 @@
 {
-  "name": "proof-cloud-main",
+  "name": "proof-arena-main",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -57,6 +57,7 @@
     "rollup-plugin-polyfill-node": "^0.13.0",
     "typescript": "^5.2.2",
     "vite": "^5.2.0",
+    "vite-plugin-inspect": "^0.8.5",
     "vite-plugin-markdown": "^2.2.0",
     "vite-plugin-static-copy": "^1.0.6",
     "vite-plugin-svgr": "^4.2.0"

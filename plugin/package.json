@@ -1,0 +1,24 @@
+{
+  "name": "plugin",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@types/mdast": "^4.0.0",
+    "devlop": "^1.0.0",
+    "markdown-table": "^3.0.0",
+    "mdast-util-from-markdown": "^2.0.0",
+    "mdast-util-gfm-table": "^2.0.0",
+    "mdast-util-to-markdown": "^2.0.0",
+    "micromark-extension-gfm-table": "^2.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}

@@ -3,33 +3,41 @@ import react from '@vitejs/plugin-react';
 import dayjs from 'dayjs';
 import rollupNodePolyFill from 'rollup-plugin-polyfill-node';
 import { defineConfig } from 'vite';
-import { Mode, plugin as mdPlugin } from 'vite-plugin-markdown';
+import Inspect from 'vite-plugin-inspect';
+// import { Mode, plugin as mdPlugin } from 'vite-plugin-markdown';
 import { viteStaticCopy } from 'vite-plugin-static-copy';
 import svgr from 'vite-plugin-svgr';
+
+import { md2dataPlugin } from './plugin/myMdPlugin';
 const alias = {
   '@': '/src',
 };
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  assetsInclude: ['docs/*.md'],
+  // assetsInclude: ['docs/*.md'],
   plugins: [
+    Inspect(),
     viteStaticCopy({
       targets: [
         {
           src: 'docs/*',
           dest: 'docs',
         },
+        {
+          src: 'benchmark/*',
+          dest: 'benchmark',
+        },
       ],
     }),
-    mdPlugin({ mode: [Mode.HTML, Mode.MARKDOWN, Mode.TOC, Mode.REACT] }),
+    md2dataPlugin(),
+    // mdPlugin({ mode: [Mode.HTML, Mode.MARKDOWN, Mode.TOC, Mode.REACT] }),
     react(),
     replace({
       __buildVersion: JSON.stringify(dayjs().toISOString()),
     }),
     svgr({
       include: '**/*.svg?r',
-      // svgr options: https://react-svgr.com/docs/options/
       svgrOptions: {
         plugins: ['@svgr/plugin-svgo', '@svgr/plugin-jsx'],
         svgoConfig: {
