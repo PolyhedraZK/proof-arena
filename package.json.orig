@@ -1,5 +1,9 @@
 {
+<<<<<<< HEAD
+  "name": "proof-arena-main",
+=======
   "name": "proof-arena",
+>>>>>>> feat/enable-markdown
   "private": true,
   "version": "0.0.0",
   "type": "module",
