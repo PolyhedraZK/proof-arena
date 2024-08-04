@@ -8,7 +8,7 @@ import Inspect from 'vite-plugin-inspect';
 import { viteStaticCopy } from 'vite-plugin-static-copy';
 import svgr from 'vite-plugin-svgr';
 
-import { md2dataPlugin } from './plugin/myMdPlugin';
+import { md2dataPlugin } from './plugin/src/myMdPlugin';
 const alias = {
   '@': '/src',
 };

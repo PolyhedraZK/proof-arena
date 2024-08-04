@@ -20,7 +20,7 @@
     "strict": true,
     "noImplicitAny": false
   },
-  "include": ["**/*.ts", "**/*.tsx"],
+  "include": ["**/*.ts", "**/*.tsx", "plugin/tsconfig.json"],
   "exclude": ["node_modules/*", "dist/*"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

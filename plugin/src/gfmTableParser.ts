@@ -1,8 +1,5 @@
-/**
- * @typedef {import('mdast').Table} Table
- * @typedef {import('mdast').TableContent} TableContent
- * @typedef {import('mdast').Root} Root
- */
+import fs from 'node:fs';
+import path from 'node:path';
 
 import type { Root, Table, Text } from 'mdast';
 import { fromMarkdown } from 'mdast-util-from-markdown';
@@ -77,4 +74,19 @@ export function transfromMarkdown(tableFileDocument: string) {
   });
   // console.log(JSON.stringify(result));
   return result;
+}
+
+type ProblemData = {
+  metadata: any;
+  details: string;
+};
+
+export async function parseProblem(dirPath: string): Promise<ProblemData> {
+  const filePath = path.join(dirPath, 'problem.md');
+  const problemFile = fs.statSync(filePath);
+  if (problemFile.isFile()) {
+    const mdContent = fs.readFileSync(filePath, 'utf-8');
+  } else {
+    return { metadata: undefined, details: 'undefined' };
+  }
 }

@@ -76,6 +76,9 @@ importers:
       tinycolor2:
         specifier: ^1.6.0
         version: 1.6.0
+      yaml:
+        specifier: ^2.5.0
+        version: 2.5.0
     devDependencies:
       '@rollup/plugin-replace':
         specifier: ^5.0.4
@@ -4642,6 +4645,14 @@ packages:
     engines: { node: '>= 14' }
     hasBin: true
 
+  yaml@2.5.0:
+    resolution:
+      {
+        integrity: sha512-2wWLbGbYDiSqqIKoPjar3MPgB94ErzCtrNE1FdqGuaO0pi2JGjmE8aW8TDZwzU7vuxcGRdL/4gPQwQ7hD5AMSw==,
+      }
+    engines: { node: '>= 14' }
+    hasBin: true
+
   yocto-queue@0.1.0:
     resolution:
       {
@@ -7715,6 +7726,8 @@ snapshots:
   yaml@1.10.2: {}
 
   yaml@2.4.5: {}
+
+  yaml@2.5.0: {}
 
   yocto-queue@0.1.0: {}
 

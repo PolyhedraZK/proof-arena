@@ -1,7 +1,7 @@
 {
   "name": "plugin",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "myMdPlugin.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -12,7 +12,8 @@
     "mdast-util-from-markdown": "^2.0.0",
     "mdast-util-gfm-table": "^2.0.0",
     "mdast-util-to-markdown": "^2.0.0",
-    "micromark-extension-gfm-table": "^2.0.0"
+    "micromark-extension-gfm-table": "^2.0.0",
+    "yaml": "^2.5.0"
   },
   "devDependencies": {
     "@types/node": "^20.0.0"
