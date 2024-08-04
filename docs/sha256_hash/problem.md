@@ -37,22 +37,22 @@ This process ensures that the prover correctly processes the input data and prov
 
 ## Sample Interaction (denoted as hex, separated by 8 bytes)
 
-1. **SPJ starts your prover program.**
+1. **SPJ reads your serialized circuit from your provided `circuit` file.**
 
-2. **Prover sends `N` to SPJ's stdout:**
-
-   ```
-   0400000000000000
-   ```
-   (little endian hex of number 4)
-
-3. **SPJ reads your serialized circuit from your provided `circuit` file.**
-
-4. **SPJ sends to prover's stdin:**
+2. **SPJ sends to prover's stdin:**
 
    ```
    SERIALIZED_CIRCUIT_BYTES
    ```
+
+3. **SPJ starts your prover program.**
+
+4. **Prover sends `N` to SPJ's stdout:**
+
+   ```
+   0400000000000000
+   ```
+   (little endian hex of number 4) 
 
 
 5. **Prover sends to SPJ's stdout:**

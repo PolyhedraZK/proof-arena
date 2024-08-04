@@ -1,8 +1,8 @@
 # SPJ Output Data Format
 
-This document specifies the output data format for SPJ (Special Judge) on Proof Arena. The output is submitted to <root_project>/spj_output/ by SCJ, which runs on a Google Cloud Machine with 90 vCPUs and 360GB RAM. These data will be collected and displayed in the submission section for corresponding problems. Each submission file is named following this convention: <problem_id>-<prover_name>.json. Please ensure the file name is unique.
+This document specifies the output data format for SPJ (Special Judge) on Proof Arena. The output is submitted to <root_project>/spj_output/ by SPJ, which runs on a Google Cloud Machine with 90 vCPUs and 360GB RAM. These data will be collected and displayed in the submission section for corresponding problems. Each submission file is named following this convention: <problem_id>-<prover_name>.json. Please ensure the file name is unique.
 
-## SPC Output JSON Schema
+## SPJ Output JSON Schema
 
 
 ```

@@ -1,0 +1,25 @@
+#include <cstdio>
+#include <chrono>
+#include <iostream>
+using namespace std;
+int main() {
+    ios::sync_with_stdio(false);
+    auto time_start = std::chrono::high_resolution_clock::now();
+    // read bytes from stdin
+    long long len;
+    char *buffer;
+    scanf("%lld", &len);
+    buffer = new char[len];
+    fread(buffer, 1024, len / 1024, stdin);
+    
+    // hash the bytes
+    long long hash = 0;
+    for (long long i = 0; i < len; i++) {
+        hash = (hash * 31 + buffer[i]) % 1000000007;
+    }
+    printf("%ld\n", hash);
+    auto time_end = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(time_end - time_start);
+    printf("%lld\n", duration.count());
+    return 0;
+}
