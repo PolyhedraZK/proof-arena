@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"flag"
+	"fmt"
 	"os"
 
 	"go.uber.org/zap"
@@ -34,7 +35,8 @@ func main() {
 
 	RunBenchmark(prover, circuitBytes, proofStats, config.requirements, logger)
 
-	if err := writeProofStats(config.proofStatsPath, proofStats); err != nil {
+	pathStr := fmt.Sprintf("%d-%s.json", proofStats.ProblemID, proofStats.ProverName)
+	if err := writeProofStats(pathStr, proofStats); err != nil {
 		logger.Fatal("Failed to write proof stats", zap.Error(err))
 	}
 
@@ -42,11 +44,10 @@ func main() {
 }
 
 type Config struct {
-	proverPath     string
-	verifierPath   string
-	circuitFile    string
-	proofStatsPath string
-	requirements   ProblemRequirement
+	proverPath   string
+	verifierPath string
+	circuitFile  string
+	requirements ProblemRequirement
 }
 
 func parseFlags() Config {
@@ -55,7 +56,6 @@ func parseFlags() Config {
 	flag.StringVar(&config.proverPath, "prover", "", "Path to the prover executable")
 	flag.StringVar(&config.verifierPath, "verifier", "", "Path to the verifier executable")
 	flag.StringVar(&config.circuitFile, "circuit", "", "Path to the circuit file")
-	flag.StringVar(&config.proofStatsPath, "stats", "", "Path to write proof stats")
 
 	timeLimit := flag.Int("time", 0, "Time limit in seconds")
 	memoryLimit := flag.Int("memory", 0, "Memory limit in MB")
