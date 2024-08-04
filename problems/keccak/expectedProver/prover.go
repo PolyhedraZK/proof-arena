@@ -270,6 +270,10 @@ func main() {
 	case "compile":
 		err = compile()
 	case "prove":
+		// send the prover name, algorithm name, and proof system name
+		ipc.Write_string(ProverToSPJPipe, "GNARK KECCAK-256")
+		ipc.Write_string(ProverToSPJPipe, "Groth16")
+		ipc.Write_string(ProverToSPJPipe, "GNARK")
 		err = prove(spjToProverPipe, ProverToSPJPipe)
 	case "verify":
 		err = verify(spjToProverPipe, ProverToSPJPipe)

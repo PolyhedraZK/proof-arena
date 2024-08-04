@@ -47,7 +47,6 @@ func Read_uint64(r io.Reader) uint64 {
 
 func Read_byte_array(r io.Reader) []byte {
 	length := Read_uint64(r)
-	fmt.Fprintln(os.Stderr, "Length of byte array", length)
 	b := make([]byte, length)
 	err := Read_exact(r, b)
 	if err != nil {
@@ -58,7 +57,6 @@ func Read_byte_array(r io.Reader) []byte {
 
 func Write_string(w io.Writer, s string) error {
 	b := []byte(s)
-	fmt.Fprintln(os.Stderr, "writing string", s, len(b), len(s))
 	return Write_byte_array(w, b)
 }
 

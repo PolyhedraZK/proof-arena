@@ -25,7 +25,6 @@ type ProofStats struct {
 }
 
 type Timer struct {
-	ProofStats *ProofStats
-	Start      time.Time
-	Round      int
+	ProofStats  *ProofStats
+	CheckPoints map[string]time.Time
 }

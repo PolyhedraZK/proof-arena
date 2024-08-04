@@ -3,13 +3,12 @@ package main
 import (
 	"fmt"
 	"io"
-	"log"
 	"os"
 	"os/exec"
 	"strings"
 
 	ipc "github.com/PolyhedraZK/proof-arena/problems/IPCUtils"
-	seccomp "github.com/seccomp/libseccomp-golang"
+	"go.uber.org/zap"
 )
 
 type Prover struct {
@@ -22,44 +21,7 @@ type Prover struct {
 	VerifierStderr   io.ReadCloser
 }
 
-func setSeccompFilter() error {
-	// Initialize a new seccomp filter with default action to deny all syscalls
-	filter, err := seccomp.NewFilter(seccomp.ActErrno.SetReturnCode(int16(1)))
-	if err != nil {
-		log.Fatalf("Error creating seccomp filter: %v", err)
-	}
-
-	// List of syscalls necessary for basic I/O and process execution
-	allowSyscalls := []string{
-		"read", "write", "close", "execve", "fork", "vfork",
-		"exit", "exit_group", "rt_sigreturn", "sigaltstack",
-		"brk", "arch_prctl", "mmap", "mprotect", "munmap",
-		"fstat", "lseek", "futex", "sched_yield", "clone",
-		"wait4", "getpid", "gettid", "set_tid_address",
-		"fadvise64", "clock_gettime", "uname", "pipe", "pipe2", "dup", "dup2", "dup3",
-	}
-
-	for _, syscallName := range allowSyscalls {
-		syscallID, err := seccomp.GetSyscallFromName(syscallName)
-		if err != nil {
-			log.Fatalf("Error getting syscall ID for %s: %v", syscallName, err)
-		}
-		err = filter.AddRule(syscallID, seccomp.ActAllow)
-		if err != nil {
-			log.Fatalf("Error adding rule for syscall %s: %v", syscallName, err)
-		}
-	}
-
-	// Load the filter into the kernel
-	err = filter.Load()
-	if err != nil {
-		log.Fatalf("Error loading seccomp filter: %v", err)
-	}
-	return nil
-}
-
-func NewProver(proverPath, verifierPath string, proofStats *ProofStats) (*Prover, error) {
-
+func NewProver(proverPath, verifierPath string, proofStats *ProofStats, logger *zap.Logger) (*Prover, error) {
 	proverSplit := strings.Split(proverPath, " ")
 	proverPath = proverSplit[0]
 	proverArgs := proverSplit[1:]
@@ -73,121 +35,124 @@ func NewProver(proverPath, verifierPath string, proofStats *ProofStats) (*Prover
 
 	proverStdin, err := proverCmd.StdinPipe()
 	if err != nil {
+		logger.Error("Failed to get prover stdin", zap.Error(err))
 		return nil, fmt.Errorf("failed to get prover stdin: %v", err)
 	}
 	proverStdout, err := proverCmd.StdoutPipe()
 	if err != nil {
+		logger.Error("Failed to get prover stdout", zap.Error(err))
 		return nil, fmt.Errorf("failed to get prover stdout: %v", err)
 	}
 	proverStderr, err := proverCmd.StderrPipe()
 	if err != nil {
+		logger.Error("Failed to get prover stderr", zap.Error(err))
 		return nil, fmt.Errorf("failed to get prover stderr: %v", err)
 	}
 
-	// pipe proveStderr to os.Stderr
 	go io.Copy(os.Stderr, proverStderr)
 
 	verifierStdin, err := verifierCmd.StdinPipe()
 	if err != nil {
+		logger.Error("Failed to get verifier stdin", zap.Error(err))
 		return nil, fmt.Errorf("failed to get verifier stdin: %v", err)
 	}
 	verifierStdout, err := verifierCmd.StdoutPipe()
 	if err != nil {
+		logger.Error("Failed to get verifier stdout", zap.Error(err))
 		return nil, fmt.Errorf("failed to get verifier stdout: %v", err)
 	}
 	verifierStderr, err := verifierCmd.StderrPipe()
 	if err != nil {
+		logger.Error("Failed to get verifier stderr", zap.Error(err))
 		return nil, fmt.Errorf("failed to get verifier stderr: %v", err)
 	}
 
-	// pipe verifierStderr to os.Stderr
 	go io.Copy(os.Stderr, verifierStderr)
-	go io.Copy(os.Stderr, proverStderr)
 	go io.Copy(os.Stdout, proverStdout)
 	go io.Copy(os.Stdout, verifierStdout)
 
 	if err := proverCmd.Start(); err != nil {
+		logger.Error("Failed to start prover", zap.Error(err))
 		return nil, fmt.Errorf("failed to start prover: %v", err)
 	}
 
 	if err := verifierCmd.Start(); err != nil {
+		logger.Error("Failed to start verifier", zap.Error(err))
 		return nil, fmt.Errorf("failed to start verifier: %v", err)
 	}
 
-	spjToProverPipeName := "/tmp/problem1_spjToProver" + generateRandomString(10)
-	proverToSpjPipeName := "/tmp/problem1_proverToSpj" + generateRandomString(10)
+	spjToProverPipeName := "/tmp/problem1_spjToProver_" + generateRandomString(10)
+	proverToSpjPipeName := "/tmp/problem1_proverToSpj_" + generateRandomString(10)
+	spjToVerifierPipeName := "/tmp/problem1_spjToVerifier_" + generateRandomString(10)
+	verifierToSpjPipeName := "/tmp/problem1_verifierToSpj_" + generateRandomString(10)
+	perm := os.FileMode(0666)
 
-	spjToVerifierPipeName := "/tmp/problem1_spjToVerifier" + generateRandomString(10)
-	verifierToSpjPipeName := "/tmp/problem1_verifierToSpj" + generateRandomString(10)
-	perm := os.FileMode(0666) // rw-rw-rw-
+	var spjToProverPipe, proverToSpjPipe, spjToVerifierPipe, verifierToSpjPipe os.File
 
-	// Create the pipes
-	spjToProverPipe, err := ipc.CreatePipe(spjToProverPipeName, perm)
-	if err != nil {
-		proofStats.ErrorMsg = fmt.Sprintf("failed to create pipe: %v", err)
+	pipes := []struct {
+		name string
+		pipe *os.File
+	}{
+		{spjToProverPipeName, &spjToProverPipe},
+		{proverToSpjPipeName, &proverToSpjPipe},
+		{spjToVerifierPipeName, &spjToVerifierPipe},
+		{verifierToSpjPipeName, &verifierToSpjPipe},
+	}
+
+	for _, p := range pipes {
+		pipe, err := ipc.CreatePipe(p.name, perm)
+		if err != nil {
+			logger.Error("Failed to create pipe", zap.String("name", p.name), zap.Error(err))
+			proofStats.ErrorMsg = fmt.Sprintf("failed to create pipe %s: %v", p.name, err)
+			proofStats.Successful = false
+			return nil, err
+		}
+		*p.pipe = *pipe
+	}
+
+	if err := sendPipeNames(proverStdin, spjToProverPipeName, proverToSpjPipeName); err != nil {
+		logger.Error("Failed to send pipe names to prover", zap.Error(err))
+		proofStats.ErrorMsg = fmt.Sprintf("failed to send pipe names to prover: %v", err)
 		proofStats.Successful = false
 		return nil, err
 	}
 
-	proverToSpjPipe, err := ipc.CreatePipe(proverToSpjPipeName, perm)
-	if err != nil {
-		proofStats.ErrorMsg = fmt.Sprintf("failed to create pipe: %v", err)
+	if err := sendPipeNames(verifierStdin, spjToVerifierPipeName, verifierToSpjPipeName); err != nil {
+		logger.Error("Failed to send pipe names to verifier", zap.Error(err))
+		proofStats.ErrorMsg = fmt.Sprintf("failed to send pipe names to verifier: %v", err)
 		proofStats.Successful = false
 		return nil, err
 	}
 
-	spjToVerifierPipe, err := ipc.CreatePipe(spjToVerifierPipeName, perm)
-	if err != nil {
-		proofStats.ErrorMsg = fmt.Sprintf("failed to create pipe: %v", err)
-		proofStats.Successful = false
-		return nil, err
-	}
+	// Get Prover Name, Algorithm Name, Proof System Name
+	proverName := ipc.Read_string(&proverToSpjPipe)
+	algorithmName := ipc.Read_string(&proverToSpjPipe)
+	proofSystemName := ipc.Read_string(&proverToSpjPipe)
 
-	verifierToSpjPipe, err := ipc.CreatePipe(verifierToSpjPipeName, perm)
-	if err != nil {
-		proofStats.ErrorMsg = fmt.Sprintf("failed to create pipe: %v", err)
-		proofStats.Successful = false
-		return nil, err
-	}
+	logger.Info("Prover Name", zap.String("name", proverName))
+	logger.Info("Algorithm Name", zap.String("name", algorithmName))
+	logger.Info("Proof System Name", zap.String("name", proofSystemName))
 
-	// send pipe name to prover
-	err = ipc.Write_string(proverStdin, spjToProverPipeName)
-	if err != nil {
-		proofStats.ErrorMsg = fmt.Sprintf("failed to send pipe name to prover: %v", err)
-		proofStats.Successful = false
-		return nil, err
-	}
-
-	err = ipc.Write_string(proverStdin, proverToSpjPipeName)
-	if err != nil {
-		proofStats.ErrorMsg = fmt.Sprintf("failed to send pipe name to prover: %v", err)
-		proofStats.Successful = false
-		return nil, err
-	}
-
-	err = ipc.Write_string(verifierStdin, spjToVerifierPipeName)
-	if err != nil {
-		proofStats.ErrorMsg = fmt.Sprintf("failed to send pipe name to verifier: %v", err)
-		proofStats.Successful = false
-		return nil, err
-	}
-
-	err = ipc.Write_string(verifierStdin, verifierToSpjPipeName)
-	if err != nil {
-		proofStats.ErrorMsg = fmt.Sprintf("failed to send pipe name to verifier: %v", err)
-		proofStats.Successful = false
-		return nil, err
-	}
+	proofStats.ProverName = proverName
+	proofStats.Algorithm = algorithmName
+	proofStats.ProofSystem = proofSystemName
 
 	return &Prover{
 		Cmd:              proverCmd,
-		ToProverPipe:     spjToProverPipe,
-		FromProverPipe:   proverToSpjPipe,
+		ToProverPipe:     &spjToProverPipe,
+		FromProverPipe:   &proverToSpjPipe,
 		ProverStderr:     proverStderr,
-		ToVerifierPipe:   spjToVerifierPipe,
-		FromVerifierPipe: verifierToSpjPipe,
+		ToVerifierPipe:   &spjToVerifierPipe,
+		FromVerifierPipe: &verifierToSpjPipe,
 		VerifierStderr:   verifierStderr,
 	}, nil
+}
+
+func sendPipeNames(stdin io.WriteCloser, pipeName1, pipeName2 string) error {
+	if err := ipc.Write_string(stdin, pipeName1); err != nil {
+		return err
+	}
+	return ipc.Write_string(stdin, pipeName2)
 }
 
 func (p *Prover) Cleanup() {

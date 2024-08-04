@@ -3,8 +3,10 @@ package main
 import (
 	"bytes"
 	"crypto/rand"
+	"fmt"
 	"time"
 
+	"go.uber.org/zap"
 	"golang.org/x/crypto/sha3"
 )
 
@@ -35,29 +37,27 @@ func checkOutput(N uint64, input, output []byte) bool {
 }
 
 func NewTimer(proofStats *ProofStats) *Timer {
+	checkPoints := make(map[string]time.Time)
+	checkPoints["start"] = time.Now()
 	return &Timer{
-		ProofStats: proofStats,
-		Start:      time.Now(),
-		Round:      0,
+		ProofStats:  proofStats,
+		CheckPoints: checkPoints,
 	}
 }
 
-func (t *Timer) Reset() {
-	t.Start = time.Now()
+func (t *Timer) CheckPoint(name string) {
+	t.CheckPoints[name] = time.Now()
 }
 
-func (t *Timer) RecordTime() {
-	elapsed := time.Since(t.Start).Seconds()
-	switch t.Round {
-	case 0:
-		t.ProofStats.SetupTime = elapsed
-	case 1:
-		t.ProofStats.WitnessGenerationTime = elapsed
-	case 2:
-		t.ProofStats.ProofGenerationTime = elapsed
-	case 3:
-		t.ProofStats.VerifyTime = elapsed
-	}
-	t.Round++
-	t.Start = time.Now()
+func (t *Timer) GetDuration(startCheckpoint string, endCheckpoint string) float64 {
+	start := t.CheckPoints[startCheckpoint]
+	end := t.CheckPoints[endCheckpoint]
+	return end.Sub(start).Seconds()
+}
+
+func HandleError(logger *zap.Logger, proofStats *ProofStats, err error, message string, done chan<- bool) {
+	logger.Error(message, zap.Error(err))
+	proofStats.ErrorMsg = fmt.Sprintf("%s: %v", message, err)
+	proofStats.Successful = false
+	done <- true
 }

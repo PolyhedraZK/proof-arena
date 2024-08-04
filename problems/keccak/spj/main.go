@@ -3,60 +3,82 @@ package main
 import (
 	"encoding/json"
 	"flag"
-	"fmt"
 	"os"
+
+	"go.uber.org/zap"
 )
 
 func main() {
-	// Parse command-line flags
-	proverPath := flag.String("prover", "", "Path to the prover executable")
-	verifierPath := flag.String("verifier", "", "Path to the verifier executable")
-	circuitFile := flag.String("circuit", "", "Path to the circuit file")
-	proofStatsPath := flag.String("stats", "", "Path to write proof stats")
+	logger, err := zap.NewProduction()
+	if err != nil {
+		panic("Failed to initialize logger: " + err.Error())
+	}
+	defer logger.Sync()
+
+	config := parseFlags()
+
+	circuitBytes, err := os.ReadFile(config.circuitFile)
+	if err != nil {
+		logger.Fatal("Failed to read circuit file", zap.Error(err))
+	}
+
+	proofStats := &ProofStats{ProblemID: 1}
+
+	prover, err := NewProver(config.proverPath, config.verifierPath, proofStats, logger)
+	if err != nil {
+		logger.Fatal("Failed to start prover", zap.Error(err))
+	}
+	defer prover.Cleanup()
+
+	logger.Info("Prover initialized")
+
+	RunBenchmark(prover, circuitBytes, proofStats, config.requirements, logger)
+
+	if err := writeProofStats(config.proofStatsPath, proofStats); err != nil {
+		logger.Fatal("Failed to write proof stats", zap.Error(err))
+	}
+
+	logger.Info("Benchmark completed successfully")
+}
+
+type Config struct {
+	proverPath     string
+	verifierPath   string
+	circuitFile    string
+	proofStatsPath string
+	requirements   ProblemRequirement
+}
+
+func parseFlags() Config {
+	config := Config{}
+
+	flag.StringVar(&config.proverPath, "prover", "", "Path to the prover executable")
+	flag.StringVar(&config.verifierPath, "verifier", "", "Path to the verifier executable")
+	flag.StringVar(&config.circuitFile, "circuit", "", "Path to the circuit file")
+	flag.StringVar(&config.proofStatsPath, "stats", "", "Path to write proof stats")
+
 	timeLimit := flag.Int("time", 0, "Time limit in seconds")
 	memoryLimit := flag.Int("memory", 0, "Memory limit in MB")
 	cpuLimit := flag.Int("cpu", 0, "CPU limit")
 	instanceUpperLimit := flag.Uint64("largestN", 0, "Instance upper limit in bytes")
+
 	flag.Parse()
 
-	requirements := ProblemRequirement{
+	config.requirements = ProblemRequirement{
 		TimeLimit:          *timeLimit,
 		MemoryLimit:        *memoryLimit,
 		CPULimit:           *cpuLimit,
 		InstanceUpperLimit: *instanceUpperLimit,
 	}
 
-	// Read the circuit
-	circuitBytes, err := os.ReadFile(*circuitFile)
+	return config
+}
+
+func writeProofStats(path string, stats *ProofStats) error {
+	jsonBytes, err := json.Marshal(stats)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Failed to read circuit file: %v\n", err)
-		os.Exit(1)
+		return err
 	}
 
-	// Initialize proof stats
-	proofStats := &ProofStats{ProblemID: 1}
-
-	// Start the prover and verifier
-	prover, err := NewProver(*proverPath, *verifierPath, proofStats)
-	fmt.Println("Prover", prover)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Failed to start prover: %v\n", err)
-		os.Exit(1)
-	}
-	defer prover.Cleanup()
-
-	// Run the benchmark
-	RunBenchmark(prover, circuitBytes, proofStats, requirements)
-
-	// Serialize and write the proof stats
-	jsonBytes, err := json.Marshal(proofStats)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Failed to serialize proof stats: %v\n", err)
-		os.Exit(1)
-	}
-
-	if err := os.WriteFile(*proofStatsPath, jsonBytes, 0644); err != nil {
-		fmt.Fprintf(os.Stderr, "Failed to write proof stats: %v\n", err)
-		os.Exit(1)
-	}
+	return os.WriteFile(path, jsonBytes, 0644)
 }
