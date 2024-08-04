@@ -31,3 +31,9 @@ spj
 system_benchmarks
 !system_benchmarks/
 go.sum
+*.r1cs
+*.bin
+circuit
+expectedProver
+!expectedProver/
+stat.json

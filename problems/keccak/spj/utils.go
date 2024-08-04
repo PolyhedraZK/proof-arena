@@ -8,7 +8,7 @@ import (
 	"golang.org/x/crypto/sha3"
 )
 
-func makeInput(N int64) []byte {
+func makeInput(N uint64) []byte {
 	input := make([]byte, N*64)
 	rand.Read(input)
 	return input
@@ -25,8 +25,8 @@ func checkHash(input, hash []byte) bool {
 	return bytes.Equal(hash, expectedHash)
 }
 
-func checkOutput(N int64, input, output []byte) bool {
-	for i := int64(0); i < N; i++ {
+func checkOutput(N uint64, input, output []byte) bool {
+	for i := uint64(0); i < N; i++ {
 		if !checkHash(input[i*64:(i+1)*64], output[i*32:(i+1)*32]) {
 			return false
 		}

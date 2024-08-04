@@ -1,0 +1,37 @@
+#include <iostream>
+#include <fstream>
+#include <chrono>
+#include <vector>
+#include <cstring>
+
+int main(int argc, char* argv[]) {
+    if (argc != 2) {
+        std::cerr << "Usage: " << argv[0] << " <pipe_name>" << std::endl;
+        return 1;
+    }
+
+    std::ifstream pipe(argv[1]);
+    if (!pipe) {
+        std::cerr << "Failed to open pipe" << std::endl;
+        return 1;
+    }
+
+    long long N;
+    pipe >> N;
+
+    std::vector<char> buffer(N);
+    auto start = std::chrono::high_resolution_clock::now();
+    pipe.read(buffer.data(), N);
+    auto end = std::chrono::high_resolution_clock::now();
+
+    unsigned long long hash = 0;
+    for (char c : buffer) {
+        hash = (hash * 31 + c) % 1000000007;
+    }
+
+    std::cout << hash << std::endl;
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+    std::cout << duration.count() << std::endl;
+
+    return 0;
+}

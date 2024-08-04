@@ -16,7 +16,7 @@ func main() {
 	timeLimit := flag.Int("time", 0, "Time limit in seconds")
 	memoryLimit := flag.Int("memory", 0, "Memory limit in MB")
 	cpuLimit := flag.Int("cpu", 0, "CPU limit")
-	instanceUpperLimit := flag.Int("largestN", 0, "Instance upper limit in bytes")
+	instanceUpperLimit := flag.Uint64("largestN", 0, "Instance upper limit in bytes")
 	flag.Parse()
 
 	requirements := ProblemRequirement{
@@ -37,7 +37,8 @@ func main() {
 	proofStats := &ProofStats{ProblemID: 1}
 
 	// Start the prover and verifier
-	prover, err := NewProver(*proverPath, *verifierPath)
+	prover, err := NewProver(*proverPath, *verifierPath, proofStats)
+	fmt.Println("Prover", prover)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Failed to start prover: %v\n", err)
 		os.Exit(1)

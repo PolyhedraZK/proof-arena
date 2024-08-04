@@ -3,10 +3,10 @@ package main
 import "time"
 
 type ProblemRequirement struct {
-	TimeLimit          int `json:"time_limit"`
-	MemoryLimit        int `json:"memory_limit"`
-	CPULimit           int `json:"cpu_limit"`
-	InstanceUpperLimit int `json:"instance_upper_limit"`
+	TimeLimit          int    `json:"time_limit"`
+	MemoryLimit        int    `json:"memory_limit"`
+	CPULimit           int    `json:"cpu_limit"`
+	InstanceUpperLimit uint64 `json:"instance_upper_limit"`
 }
 
 type ProofStats struct {
