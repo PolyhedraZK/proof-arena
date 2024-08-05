@@ -21,10 +21,11 @@ export function readDirectories(dirPath: string): string[] {
   });
 }
 
-export function writeFile(filePath: string, data: string) {
-  const dir = path.dirname(filePath);
+export function writeFile(dirPath: string, fileName: string, data: string) {
+  const dir = path.dirname(dirPath);
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir, { recursive: true });
   }
+  const filePath = path.join(dirPath, fileName);
   fs.writeFileSync(filePath, data);
 }

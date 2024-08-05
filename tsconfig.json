@@ -20,7 +20,12 @@
     "strict": true,
     "noImplicitAny": false
   },
-  "include": ["**/*.ts", "**/*.tsx", "plugin/tsconfig.json"],
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    "plugin/tsconfig.json",
+    "plugin/rollup.config.mjs"
+  ],
   "exclude": ["node_modules/*", "dist/*"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

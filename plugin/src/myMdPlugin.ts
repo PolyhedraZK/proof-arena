@@ -6,9 +6,10 @@ import { Plugin, ResolvedConfig, TransformResult } from 'vite';
 import { parseProblem } from './problemParser';
 import { readDirectories, writeFile } from './util';
 
-export const md2dataPlugin = (): Plugin => {
+export default function md2dataPlugin(): Plugin {
   const source_map = {};
   let config: ResolvedConfig;
+  const problemData = [];
   return {
     name: 'vite-plugin-md2data',
     // enforce: 'pre',
@@ -23,7 +24,6 @@ export const md2dataPlugin = (): Plugin => {
       // 读取文件
       const { root, publicDir, build } = config;
       const docsPath = path.resolve(root, 'docs');
-      const problemData = [];
       const files = await readDirectories(docsPath);
       for (const file of files) {
         const problemInfo = await parseProblem(docsPath, file);
@@ -33,11 +33,12 @@ export const md2dataPlugin = (): Plugin => {
           details: problemInfo.details,
         });
       }
-      debugger;
-      await writeFile(
-        path.join(root, build.outDir, 'problemData.json'),
-        `${JSON.stringify(problemData)} \n`
-      );
+    },
+    async writeBundle() {
+      const { root, build } = config;
+      const destDir = path.join(root, build.outDir);
+      console.log(`destFile = ${destDir}`);
+      await writeFile(destDir, 'problemData.json', JSON.stringify(problemData));
     },
   };
-};
+}
