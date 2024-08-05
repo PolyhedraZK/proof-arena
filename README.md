@@ -1,62 +1,37 @@
-# proof cloud main 页面
+# How to Contribute to Proof Arena
 
-## 代码结构以及目录定义
+This article outlines how to submit a new problem or contribute your solutions for existing ones.
 
-```json
-.
-├── README.md
-├── index.html
-├── public
-│   └── vite.svg
-├── src
-│   ├── App.tsx // 页面主入口，其他子页面引入pages
-│   ├── assets // 存静态资源（图片、字体），按类型存放，图片按模块建子文件夹
-│   ├── components
-│   │		├── base // 存基础组件
-│   │		├── icons // 存一些自定义的icon组件
-│		│		└── biz/(*business) // 业务UI组件按模块建子文件夹
-│   ├── layout // layout里面用到的组件，比如Nav建议也放这个目录下
-|   |   ├── index.tsx // 页面布局，主要定义头、尾结构，main通过children传递。
-│   ├── global.css // 全局样式
-│   ├── main.tsx // 全局主入口
-│   ├── pages // 存放页面, 一个路由对应一个页面
-│   ├── types // 存@types定义
-│   ├── utils // 存工具类
-│   └── vite-env.d.ts
-├── tsconfig.json
-├── tsconfig.node.json
-├── package.json
-└── vite.config.ts
+## Submitting a New Problem
+
+Problems are documented in Markdown format within the /docs directory. Each problem is organized into separate folders, following this structure:
+
+```
+/docs
+└── <problem_name>
+    ├── problem.md         # Problem description in Markdown with front matter properties
+    └── submissions.json   # Auto-generated JSON file containing submission results,
+                           # used for rendering metrics tables and plots
 ```
 
+To add a problem, create a new directory under /docs and write the problem description in <problem_folder>/problem.md using the following format:
 
+```
+---
+problem_id: <unique_problem_id>  # Ensure this ID is unique
+title: <problem_title>
+description: <optional_short_description>  # Used on the listing page
+draft: false  # Set to true if you don't want your problem to be listed
+enable_comments: false  # Set to true if you want to disable comments
+proposer: Polyhedra Network  # Contributor's name
+proposer_icon: assets/avatars/xxx.png  # Optional: 24x24 icon for the proposer, use PNG/SVG format, put it into <root_project>/public/assets/avatars folder
+---
 
-## Button复用
+## Problem Description
 
-### Default样式
+<content goes here>
+```
 
-![image-20240425下午15247225](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2024/04-25/image-20240425%E4%B8%8B%E5%8D%8815247225.png)
+## Contributing Solutions to Existing Problems
 
-
-
-### Primary样式
-
-`<Button type="primary">` // 暂不支持
-
-`<GradientButton>` 用这个
-
-![image-20240425下午15346262](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2024/04-25/image-20240425%E4%B8%8B%E5%8D%8815346262.png)
-
-### Ghost样式
-
-`<Button ghost>`
-
-![image-20240425下午15409740](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2024/04-25/image-20240425%E4%B8%8B%E5%8D%8815409740.png)
-
-
-
-### Link Button样式
-
-`<Button type="link">` hover不带颜色
-
-![image-20240425下午15504886](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2024/04-25/image-20240425%E4%B8%8B%E5%8D%8815504886.png)
+TDB
