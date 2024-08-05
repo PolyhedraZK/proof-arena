@@ -45,14 +45,16 @@ func Read_uint64(r io.Reader) uint64 {
 	return binary.LittleEndian.Uint64(b)
 }
 
-func Read_byte_array(r io.Reader) []byte {
+func Read_byte_array(r io.Reader) ([]byte, error) {
 	length := Read_uint64(r)
+	// try allocating a huge amount of memory
+	// 128GB limit
+	if length > 1<<37 {
+		return nil, fmt.Errorf("byte array too large")
+	}
 	b := make([]byte, length)
 	err := Read_exact(r, b)
-	if err != nil {
-		panic(err)
-	}
-	return b
+	return b, err
 }
 
 func Write_string(w io.Writer, s string) error {
@@ -60,9 +62,9 @@ func Write_string(w io.Writer, s string) error {
 	return Write_byte_array(w, b)
 }
 
-func Read_string(r io.Reader) string {
-	b := Read_byte_array(r)
-	return string(b)
+func Read_string(r io.Reader) (string, error) {
+	b, err := Read_byte_array(r)
+	return string(b), err
 }
 
 func CreatePipe(pipePath string, perm os.FileMode) (*os.File, error) {

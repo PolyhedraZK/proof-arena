@@ -70,7 +70,7 @@ func NewProver(proverPath, verifierPath string, proofStats *ProofStats, logger *
 	go io.Copy(os.Stderr, verifierStderr)
 	go io.Copy(os.Stdout, proverStdout)
 	go io.Copy(os.Stdout, verifierStdout)
-
+	fmt.Println("Starting prover and verifier")
 	if err := proverCmd.Start(); err != nil {
 		logger.Error("Failed to start prover", zap.Error(err))
 		return nil, fmt.Errorf("failed to start prover: %v", err)
@@ -109,7 +109,7 @@ func NewProver(proverPath, verifierPath string, proofStats *ProofStats, logger *
 		}
 		*p.pipe = *pipe
 	}
-
+	fmt.Println("Pipes created")
 	if err := sendPipeNames(proverStdin, spjToProverPipeName, proverToSpjPipeName); err != nil {
 		logger.Error("Failed to send pipe names to prover", zap.Error(err))
 		proofStats.ErrorMsg = fmt.Sprintf("failed to send pipe names to prover: %v", err)
@@ -123,11 +123,30 @@ func NewProver(proverPath, verifierPath string, proofStats *ProofStats, logger *
 		proofStats.Successful = false
 		return nil, err
 	}
-
+	fmt.Println("Pipe names sent")
 	// Get Prover Name, Algorithm Name, Proof System Name
-	proverName := ipc.Read_string(&proverToSpjPipe)
-	algorithmName := ipc.Read_string(&proverToSpjPipe)
-	proofSystemName := ipc.Read_string(&proverToSpjPipe)
+	proverName, err := ipc.Read_string(&proverToSpjPipe)
+	if err != nil {
+		proofStats.ErrorMsg = fmt.Sprintf("failed to read prover name: %v", err)
+		proofStats.Successful = false
+		logger.Error("Failed to read prover name", zap.Error(err))
+		return nil, err
+	}
+	algorithmName, err := ipc.Read_string(&proverToSpjPipe)
+	if err != nil {
+		proofStats.ErrorMsg = fmt.Sprintf("failed to read algorithm name: %v", err)
+		proofStats.Successful = false
+		logger.Error("Failed to read algorithm name", zap.Error(err))
+		return nil, err
+	}
+	proofSystemName, err := ipc.Read_string(&proverToSpjPipe)
+	if err != nil {
+		proofStats.ErrorMsg = fmt.Sprintf("failed to read proof system name: %v", err)
+		proofStats.Successful = false
+		logger.Error("Failed to read proof system name", zap.Error(err))
+		return nil, err
+	}
+	fmt.Println("Prover Name", proverName)
 
 	logger.Info("Prover Name", zap.String("name", proverName))
 	logger.Info("Algorithm Name", zap.String("name", algorithmName))

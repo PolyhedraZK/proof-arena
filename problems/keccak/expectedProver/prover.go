@@ -126,12 +126,24 @@ func writeCircuitToFile(filename string, r1cs constraint.ConstraintSystem, pk gr
 }
 
 func prove(inputPipe *os.File, outputPipe *os.File) error {
-	combinedBytes := ipc.Read_byte_array(inputPipe)
+	combinedBytes, err := ipc.Read_byte_array(inputPipe)
+	if err != nil {
+		return err
+	}
 	// split the bytes into r1cs, pk, and vk
 	byteReader := bytes.NewReader(combinedBytes)
-	r1csBytes := ipc.Read_byte_array(byteReader)
-	pkBytes := ipc.Read_byte_array(byteReader)
-	vkBytes := ipc.Read_byte_array(byteReader)
+	r1csBytes, err := ipc.Read_byte_array(byteReader)
+	if err != nil {
+		return err
+	}
+	pkBytes, err := ipc.Read_byte_array(byteReader)
+	if err != nil {
+		return err
+	}
+	vkBytes, err := ipc.Read_byte_array(byteReader)
+	if err != nil {
+		return err
+	}
 
 	cs := groth16.NewCS(ecc.BN254)
 	pk := groth16.NewProvingKey(ecc.BN254)
@@ -149,8 +161,10 @@ func prove(inputPipe *os.File, outputPipe *os.File) error {
 	ipc.Write_uint64(outputPipe, uint64(N))
 	ipc.Write_string(outputPipe, "setup finished")
 
-	in := ipc.Read_byte_array(inputPipe)
-
+	in, err := ipc.Read_byte_array(inputPipe)
+	if err != nil {
+		return err
+	}
 	expectedBytes := calculateExpectedOutput(in)
 	ipc.Write_byte_array(outputPipe, expectedBytes)
 
@@ -212,9 +226,18 @@ func sendProofData(proof groth16.Proof, vk groth16.VerifyingKey, witness witness
 }
 
 func verify(inputPipe *os.File, outputPipe *os.File) error {
-	proofBytes := ipc.Read_byte_array(inputPipe)
-	vkBytes := ipc.Read_byte_array(inputPipe)
-	publicWitnessBytes := ipc.Read_byte_array(inputPipe)
+	proofBytes, err := ipc.Read_byte_array(inputPipe)
+	if err != nil {
+		return err
+	}
+	vkBytes, err := ipc.Read_byte_array(inputPipe)
+	if err != nil {
+		return err
+	}
+	publicWitnessBytes, err := ipc.Read_byte_array(inputPipe)
+	if err != nil {
+		return err
+	}
 
 	vk := groth16.NewVerifyingKey(ecc.BN254)
 	proof := groth16.NewProof(ecc.BN254)
@@ -251,7 +274,10 @@ func main() {
 
 	// open a named pipe to avoid blocking on stdin
 	// read pipe name from stdin
-	spjToProverPipeName := ipc.Read_string(os.Stdin)
+	spjToProverPipeName, err := ipc.Read_string(os.Stdin)
+	if err != nil {
+		return
+	}
 	spjToProverPipe, err := os.OpenFile(spjToProverPipeName, os.O_RDONLY, os.ModeNamedPipe)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
@@ -259,7 +285,10 @@ func main() {
 	}
 	defer spjToProverPipe.Close()
 
-	ProverToSPJPipeName := ipc.Read_string(os.Stdin)
+	ProverToSPJPipeName, err := ipc.Read_string(os.Stdin)
+	if err != nil {
+		return
+	}
 	ProverToSPJPipe, err := os.OpenFile(ProverToSPJPipeName, os.O_WRONLY, os.ModeNamedPipe)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
@@ -276,8 +305,16 @@ func main() {
 		ipc.Write_string(ProverToSPJPipe, "Groth16")
 		ipc.Write_string(ProverToSPJPipe, "GNARK")
 		err = prove(spjToProverPipe, ProverToSPJPipe)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+			os.Exit(1)
+		}
 	case "verify":
 		err = verify(spjToProverPipe, ProverToSPJPipe)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+			os.Exit(1)
+		}
 	default:
 		err = fmt.Errorf("invalid mode: %s", *mode)
 	}

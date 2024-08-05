@@ -24,7 +24,7 @@ func main() {
 	}
 
 	proofStats := &ProofStats{ProblemID: 1}
-
+	fmt.Println("proofStats.ProblemID", proofStats.ProblemID)
 	prover, err := NewProver(config.proverPath, config.verifierPath, proofStats, logger)
 	if err != nil {
 		logger.Fatal("Failed to start prover", zap.Error(err))

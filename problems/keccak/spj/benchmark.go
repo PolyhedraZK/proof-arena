@@ -43,9 +43,9 @@ func InteractiveBenchmark(prover *Prover, circuitBytes []byte, timer *Timer, req
 		return
 	}
 
-	setupBytes := ipc.Read_byte_array(prover.FromProverPipe)
-	if string(setupBytes) != "setup finished" {
-		HandleError(logger, timer.ProofStats, fmt.Errorf("unexpected setup response from prover: %s", string(setupBytes)), "Unexpected setup response", done)
+	setupBytes, err := ipc.Read_byte_array(prover.FromProverPipe)
+	if err != nil || string(setupBytes) != "setup finished" {
+		HandleError(logger, timer.ProofStats, fmt.Errorf("unexpected setup response from prover: %s", err.Error()), "Unexpected setup response", done)
 		return
 	}
 	timer.CheckPoint("setup")
@@ -58,27 +58,39 @@ func InteractiveBenchmark(prover *Prover, circuitBytes []byte, timer *Timer, req
 		return
 	}
 
-	proverBytes := ipc.Read_byte_array(prover.FromProverPipe)
+	proverBytes, err := ipc.Read_byte_array(prover.FromProverPipe)
 	logger.Info("Got output", zap.Int("size", len(proverBytes)))
 
-	if !checkOutput(N, inputBytes, proverBytes) {
-		HandleError(logger, timer.ProofStats, fmt.Errorf("incorrect output"), "Incorrect output", done)
+	if err != nil || !checkOutput(N, inputBytes, proverBytes) {
+		HandleError(logger, timer.ProofStats, fmt.Errorf("incorrect output, error: %s", err.Error()), "Incorrect output", done)
 		return
 	}
 
-	witnessGeneratedBytes := ipc.Read_byte_array(prover.FromProverPipe)
+	witnessGeneratedBytes, err := ipc.Read_byte_array(prover.FromProverPipe)
 	witnessGenerated := string(witnessGeneratedBytes)
 	if witnessGenerated != "witness generated" {
-		HandleError(logger, timer.ProofStats, fmt.Errorf("unexpected response from prover: %s", witnessGenerated), "Unexpected response", done)
+		HandleError(logger, timer.ProofStats, fmt.Errorf("unexpected response from prover: %s", err.Error()), "Unexpected response", done)
 		return
 	}
 	timer.CheckPoint("witness")
 
 	logger.Info("Witness generated")
 
-	proofBytes := ipc.Read_byte_array(prover.FromProverPipe)
-	vkBytes := ipc.Read_byte_array(prover.FromProverPipe)
-	witnessBytes := ipc.Read_byte_array(prover.FromProverPipe)
+	proofBytes, err := ipc.Read_byte_array(prover.FromProverPipe)
+	if err != nil {
+		HandleError(logger, timer.ProofStats, err, "Failed to read proof", done)
+		return
+	}
+	vkBytes, err := ipc.Read_byte_array(prover.FromProverPipe)
+	if err != nil {
+		HandleError(logger, timer.ProofStats, err, "Failed to read vk", done)
+		return
+	}
+	witnessBytes, err := ipc.Read_byte_array(prover.FromProverPipe)
+	if err != nil {
+		HandleError(logger, timer.ProofStats, err, "Failed to read witness", done)
+		return
+	}
 
 	logger.Info("Got proof", zap.Int("size", len(proofBytes)))
 	timer.CheckPoint("proof")
@@ -99,14 +111,13 @@ func InteractiveBenchmark(prover *Prover, circuitBytes []byte, timer *Timer, req
 	}
 
 	logger.Info("Sent proof to verifier")
-	resultBytes := ipc.Read_byte_array(prover.FromVerifierPipe)
+	resultBytes, err := ipc.Read_byte_array(prover.FromVerifierPipe)
 
-	logger.Info("Got result", zap.Uint8("result", resultBytes[0]))
-
-	if resultBytes[0] == 0 {
-		HandleError(logger, timer.ProofStats, fmt.Errorf("proof verification failed"), "Proof verification failed", done)
+	if err != nil || resultBytes[0] == 0 {
+		HandleError(logger, timer.ProofStats, fmt.Errorf("proof verification failed, error message: %s", err.Error()), "Proof verification failed", done)
 		return
 	}
+	logger.Info("Got result", zap.Uint8("result", resultBytes[0]))
 
 	timer.CheckPoint("verification")
 	timer.ProofStats.Successful = true
