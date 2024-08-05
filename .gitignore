@@ -37,3 +37,5 @@ circuit
 expectedProver
 !expectedProver/
 stat.json
+maliciousProver
+!maliciousProver/
