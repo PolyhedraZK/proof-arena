@@ -28,9 +28,9 @@ export default function md2dataPlugin(): Plugin {
       for (const file of files) {
         const problemInfo = await parseProblem(docsPath, file);
         problemData.push({
-          name: file,
-          metadata: problemInfo.metadata,
+          ...problemInfo.metadata,
           details: problemInfo.details,
+          submission_data_path: `/docs/${file}/submissions.json`,
         });
       }
     },

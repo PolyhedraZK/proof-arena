@@ -24,7 +24,7 @@ description: <optional_short_description>  # Used on the listing page
 draft: false  # Set to true if you don't want your problem to be listed
 enable_comments: false  # Set to true if you want to disable comments
 proposer: Polyhedra Network  # Contributor's name
-proposer_icon: assets/icons/xxx.png  # Optional: 24x24 icon for the proposer, use PNG/SVG format
+proposer_icon: assets/avatars/xxx.png  # Optional: 24x24 icon for the proposer, use PNG/SVG format, put it into <root_project>/public/assets/avatars folder
 ---
 
 ## Problem Description

@@ -5,7 +5,7 @@ description: Poseidon2 Hash M31
 draft: false
 enable_comments: true
 proposer: Polyhedra Network
-proposer_icon: assets/icons/xxx.png (24x24)
+proposer_icon: assets/avatars/user_p.svg
 ---
 
 ## Problem Description

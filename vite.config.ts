@@ -24,10 +24,6 @@ export default defineConfig({
           src: 'docs/*',
           dest: 'docs',
         },
-        {
-          src: 'benchmark/*',
-          dest: 'benchmark',
-        },
       ],
     }),
     md2dataPlugin(),
