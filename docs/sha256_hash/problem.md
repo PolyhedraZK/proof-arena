@@ -5,7 +5,7 @@ description: SHA256 hash
 draft: false
 enable_comments: true
 proposer: Polyhedra Network
-proposer_icon: assets/avatars/user_p.svg
+proposer_icon: /assets/avatars/user_p.svg
 ---
 
 ## Problem Description

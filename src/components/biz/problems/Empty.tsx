@@ -1,10 +1,8 @@
-import Icon, { PlusOutlined } from '@ant-design/icons';
 import { Flex } from 'antd';
 import { createStyles, useResponsive } from 'antd-style';
-import React, { memo } from 'react';
+import { memo } from 'react';
 
 import EmptySvg from '@/assets/images/problems/empty-list-white.svg?r';
-import PrimaryButton from '@/components/base/PrimaryButton';
 import { customThemeVariables } from '@/theme';
 import { hex2rgba } from '@/utils';
 
@@ -59,13 +57,6 @@ const Empty = memo(({ handleCreate }: IProps) => {
       <p className="second-tit">
         Create your first Problems to start using our Proof Cloud.
       </p>
-      <PrimaryButton
-        className={styles.createBtn}
-        icon={<PlusOutlined />}
-        onClick={handleCreate}
-      >
-        Create
-      </PrimaryButton>
     </Flex>
   );
 });

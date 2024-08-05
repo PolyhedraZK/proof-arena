@@ -10,8 +10,10 @@ import CopySvg from '@/assets/icons/copy.svg';
 import user_avatar from '@/assets/user_avatar.svg';
 import BaseButton from '@/components/base/BaseButton.tsx';
 import CustomTitle from '@/components/base/CustomTitle.tsx';
-import { problemsDetailData } from '@/consts/ProblemsData.ts';
-import { IProblemsDetail } from '@/services/problems/types.ts';
+import {
+  IProblemsDetail,
+  IPSubmissionsTableItem,
+} from '@/services/problems/types.ts';
 
 import ProblemsDescription from '../ProblemsDescription/index.tsx';
 import SubmissionsChart from './components/SubmissionsChart';
@@ -37,13 +39,34 @@ const ProblemsDetail = () => {
   const { styles, cx } = useStyles();
   const [checkedUI, setCheckedUI] = useState(true);
   const [iconUrl, setIconUrl] = useState(true);
-  const [detaileData, setDetaileData] = useState<IProblemsDetail | undefined>();
+  const [detaileData, setDetaileData] = useState<IProblemsDetail>();
+  const [dataSource, setDataSource] = useState<IPSubmissionsTableItem[]>();
+  useEffect(() => {
+    fetch('/problemData.json')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(data =>
+        setDetaileData(data.find(item => item.problem_id === Number(detailId)))
+      )
+      .catch(error => console.error('Fetch error:', error));
+  }, [detailId]);
 
   useEffect(() => {
-    setDetaileData(
-      problemsDetailData.find(item => item.id === Number(detailId))
-    );
-  }, [detailId]);
+    detaileData?.submission_data_path &&
+      fetch(detaileData?.submission_data_path)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then(res => setDataSource(res.data))
+        .catch(error => console.error('Fetch error:', error));
+  }, [detaileData]);
 
   const onGoBack = () => {
     navigate('/problems');
@@ -55,7 +78,7 @@ const ProblemsDetail = () => {
         <div className={styles.boxSpace}>
           <div className={styles.boxSpace}>
             <LeftOutlined onClick={onGoBack} />
-            <span className={styles.title}>{detaileData?.problem_name}</span>
+            <span className={styles.title}>{detaileData?.title}</span>
             <Text>
               <Text type="secondary">ID: </Text>
               <Paragraph
@@ -65,15 +88,18 @@ const ProblemsDetail = () => {
                   tooltips: false,
                 }}
               >
-                {detaileData?.id}
+                {detaileData?.problem_id}
               </Paragraph>
             </Text>
           </div>
         </div>
         <div className={cx(styles.boxSpace, styles.headBoxBtom)}>
           <div className={styles.headBoxBtomTitle}>
-            <Avatar size={24} icon={<img src={user_avatar} />} />
-            <span>{detaileData?.user_name}</span>
+            <Avatar
+              size={24}
+              icon={<img src={detaileData?.proposer_icon || user_avatar} />}
+            />
+            <span>{detaileData?.proposer}</span>
           </div>
         </div>
       </div>
@@ -83,7 +109,7 @@ const ProblemsDetail = () => {
             <CustomTitle title={'Details'} />
           </div>
           <div className={styles.problemsDescriptionBox}>
-            <ProblemsDescription mdFile={detaileData?.description || ''} />
+            <ProblemsDescription mdFile={detaileData?.details || ''} />
           </div>
         </div>
       )}
@@ -119,28 +145,28 @@ const ProblemsDetail = () => {
         </div>
 
         {checkedUI ? (
-          <SubmissionsTable dataSource={detaileData?.submissionsTableData} />
+          <SubmissionsTable dataSource={dataSource} />
         ) : (
-          <SubmissionsChart
-            chartData={detaileData?.submissionsTableData || []}
-          />
+          <SubmissionsChart chartData={dataSource || []} />
         )}
       </div>
       <div className={styles.problemsDetailMainBox}>
         <div className={styles.customTitleBox}>
           <CustomTitle title={'Discussions'} />
         </div>
-        <Giscus
-          {...giscusConfig}
-          mapping="url"
-          term="Welcome to Proof Arena"
-          strict="0"
-          reactionsEnabled="1"
-          emitMetadata="1"
-          inputPosition="top"
-          lang="en"
-          loading="lazy"
-        />
+        {detaileData?.enable_comments && (
+          <Giscus
+            {...giscusConfig}
+            mapping="url"
+            term="Welcome to Proof Arena"
+            strict="0"
+            reactionsEnabled="1"
+            emitMetadata="1"
+            inputPosition="top"
+            lang="en"
+            loading="lazy"
+          />
+        )}
       </div>
     </div>
   );

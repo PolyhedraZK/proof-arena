@@ -12,7 +12,7 @@ const ProblemsListItem = ({ info }: { info: IProblems }) => {
     <div className={styles.problemsDetailHeadBox}>
       <div className={styles.boxSpace}>
         <div className={styles.boxSpace}>
-          <span className={styles.title}>{info.problem_name || '--'}</span>
+          <span className={styles.title}>{info.title || '--'}</span>
           &emsp;
           <Text>
             <span className={styles.secondary}>ID: </span>
@@ -23,13 +23,16 @@ const ProblemsListItem = ({ info }: { info: IProblems }) => {
                 tooltips: false,
               }}
             >
-              {info.id}
+              {info.problem_id}
             </Paragraph>
           </Text>
         </div>
         <div className={styles.headBoxBtomTitle}>
-          <Avatar size={24} icon={<img src={user_avatar} />} />
-          <span>{info.user_name}</span>
+          <Avatar
+            size={24}
+            icon={<img src={info?.proposer_icon || user_avatar} />}
+          />
+          <span>{info.proposer}</span>
         </div>
       </div>
     </div>

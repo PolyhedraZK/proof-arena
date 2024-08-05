@@ -1,20 +1,23 @@
 import { Table, ConfigProvider, Pagination } from 'antd';
 import { useStyles } from './index.style.ts';
-import { IProblemsDetail } from '@/services/problems/types.ts';
+import { IPSubmissionsTableItem } from '@/services/problems/types.ts';
+import { useState } from 'react';
 const SubmissionsTable = ({
   dataSource,
 }: {
-  dataSource: IProblemsDetail['submissionsTableData'] | undefined;
+  dataSource: IPSubmissionsTableItem[] | undefined;
 }) => {
+  const pageSize = 10;
   const { styles } = useStyles();
+  const [page, setPage] = useState(1);
   const createTableHead = (title: string) => (
     <div className={styles.titleSpanStyle}>{title}</div>
   );
   const columns = [
     {
       title: createTableHead('Task ID'),
-      dataIndex: 'id',
-      key: 'id',
+      dataIndex: 'submission_id',
+      key: 'submission_id',
     },
     {
       title: createTableHead('Prover Name'),
@@ -104,20 +107,30 @@ const SubmissionsTable = ({
         <div className={styles.tableBox}>
           <Table
             size="middle"
-            rowKey={record => record.id}
+            rowKey={record => record.submission_id}
             pagination={false}
             className={styles.tableStyle}
             bordered={false}
             scroll={{ x: 'calc(100% + 50%)' }}
             columns={columns}
-            dataSource={dataSource || []}
+            dataSource={
+              dataSource?.slice(page * pageSize - pageSize, page * pageSize) ||
+              []
+            }
           />
         </div>
-        <Pagination
-          className={styles.paginationStyle}
-          defaultCurrent={1}
-          total={3}
-        />
+        {dataSource?.length && (
+          <Pagination
+            onChange={(page: number) => {
+              setPage(page);
+            }}
+            showSizeChanger={false}
+            className={styles.paginationStyle}
+            defaultCurrent={1}
+            pageSize={pageSize}
+            total={dataSource?.length}
+          />
+        )}
       </ConfigProvider>
     </>
   );
