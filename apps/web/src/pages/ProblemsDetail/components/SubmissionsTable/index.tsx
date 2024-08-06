@@ -16,8 +16,8 @@ const SubmissionsTable = ({
   const columns = [
     {
       title: createTableHead('Task ID'),
-      dataIndex: 'submission_id',
-      key: 'submission_id',
+      dataIndex: 'id',
+      render: (_: any,__: any,index: number) => (index + 1),
     },
     {
       title: createTableHead('Prover Name'),
@@ -107,8 +107,8 @@ const SubmissionsTable = ({
         <div className={styles.tableBox}>
           <Table
             size="middle"
-            rowKey={record => record.submission_id}
             pagination={false}
+            rowKey={'id'}
             className={styles.tableStyle}
             bordered={false}
             scroll={{ x: 'calc(100% + 50%)' }}

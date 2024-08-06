@@ -1,12 +1,13 @@
 @layer reset, antd;
 
-@import url('reset.css') layer(reset);
+/* @import url('reset.css') layer(reset); */
 
 * {
   box-sizing: border-box;
 }
 body {
   font-family: 'Poppins', sans-serif !important;
+  margin: 0px;
 }
 .main-container {
   width: 1200px;
