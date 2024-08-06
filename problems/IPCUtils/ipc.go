@@ -36,24 +36,27 @@ func Write_uint64(w io.Writer, x uint64) error {
 	return err
 }
 
-func Read_uint64(r io.Reader) uint64 {
+func Read_uint64(r io.Reader) (uint64, error) {
 	b := make([]byte, 8)
 	err := Read_exact(r, b)
 	if err != nil {
-		panic(err)
+		return 0, err
 	}
-	return binary.LittleEndian.Uint64(b)
+	return binary.LittleEndian.Uint64(b), nil
 }
 
 func Read_byte_array(r io.Reader) ([]byte, error) {
-	length := Read_uint64(r)
+	length, err := Read_uint64(r)
+	if err != nil {
+		return nil, err
+	}
 	// try allocating a huge amount of memory
 	// 128GB limit
 	if length > 1<<37 {
 		return nil, fmt.Errorf("byte array too large")
 	}
 	b := make([]byte, length)
-	err := Read_exact(r, b)
+	err = Read_exact(r, b)
 	return b, err
 }
 
