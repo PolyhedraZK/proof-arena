@@ -9,7 +9,7 @@ Bringing fair and reproducible benchmarks for Zero-Knowledge Proofs (ZK).
 5. **Comprehensiveness:** Benchmarking all aspects of a proving system.
 6. **Modernization:** Regularly updating our hardware. Hardware companies are welcome to submit new hardware requests; we are open to installing your chip for benchmarking.
 
-Clearing the fog of war on ZK.
+<p style="font-size: 180px;">Clearing the fog of war on ZK.</p>
 
 ## How to Make a New Submission
 We are currently developing an automatic submission system. Until it is available, please follow [these instructions](https://github.com/PolyhedraZK/proof-arena/blob/main/docs/how_to_contribute.md).
@@ -25,12 +25,12 @@ We are currently developing an automatic submission system. Until it is availabl
 
 ## Current Proof Systems
 
-| Number | Proof system name | Proposer | Integration status |
+| Number | Proof system name | Inventor | Integration status |
 |--------|-----------|------------------|--------------------|
 |1| Expander |Polyhedra Network| In Progress |
-|3| Gnark | | |
-|4| Plonky3 | | |
-|5| Stwo | | |
-|6| Risc0 | | |
-|7| SP1 | | |
-|8| Boojum (Replica of Plonky2) | | |
+|3| Gnark | Consensys | |
+|4| Plonky3 | Polygon | |
+|5| Stwo | Starkware | |
+|6| Risc0 | Risc0 | |
+|7| SP1 | Succinct | |
+|8| Boojum (Replica of Plonky2) | zkSync | |
