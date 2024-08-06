@@ -35,4 +35,3 @@ proposer_icon: assets/avatars/xxx.png  # Optional: 24x24 icon for the proposer, 
 
 ## Contributing Solutions to Existing Problems
 
-TDB

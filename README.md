@@ -13,3 +13,24 @@ Clearing the fog of war on ZK.
 
 ## How to Make a New Submission
 We are currently developing an automatic submission system. Until it is available, please follow [these instructions](https://github.com/PolyhedraZK/proof-arena/blob/main/docs/how_to_contribute.md).
+
+# List of contributions
+
+## Tasks
+| Number | Task Name | Short Description| Proposer | Status | Link |
+|--------|-----------|------------------|----------|--------|------|
+|1| Keccak256 Hash | Test vectors https://emn178.github.io/online-tools/keccak_256.html | Polyhedra Network | Draft||
+
+
+
+## Current Proof Systems
+
+| Number | Proof system name | Proposer | Integration status |
+|--------|-----------|------------------|--------------------|
+|1| Expander |Polyhedra Network| In Progress |
+|3| Gnark | | |
+|4| Plonky3 | | |
+|5| Stwo | | |
+|6| Risc0 | | |
+|7| SP1 | | |
+|8| Boojum (Replica of Plonky2) | | |
