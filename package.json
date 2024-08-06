@@ -3,6 +3,7 @@
   "private": true,
   "scripts": {
     "build": "turbo build",
+    "build:testing": "turbo build:testing",
     "dev": "turbo dev",
     "lint": "turbo lint",
     "prettier": "prettier --log-level warn --write '**/*.{ts,tsx,js,jsx}'",
