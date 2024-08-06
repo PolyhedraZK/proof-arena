@@ -41,6 +41,7 @@ function ProversPage() {
             vertical
             style={{
               height: 'calc(100vh - 300px)',
+              minHeight: 400,
               overflow: 'hidden',
               overflowY: 'auto',
             }}

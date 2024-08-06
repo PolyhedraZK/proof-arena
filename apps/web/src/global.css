@@ -1,6 +1,6 @@
 @layer reset, antd;
 
-/* @import url('reset.css') layer(reset); */
+@import url('reset.css') layer(reset);
 
 * {
   box-sizing: border-box;

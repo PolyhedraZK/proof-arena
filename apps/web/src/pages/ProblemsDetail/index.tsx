@@ -19,6 +19,7 @@ import ProblemsDescription from '../ProblemsDescription/index.tsx';
 import SubmissionsChart from './components/SubmissionsChart';
 import SubmissionsTable from './components/SubmissionsTable';
 import { useStyles } from './index.style.ts';
+import isImageByLoading from '@/utils/checkImg.ts';
 
 type BaseGiscusConfig = {
   repo: `${string}/${string}`;
@@ -41,6 +42,8 @@ const ProblemsDetail = () => {
   const [iconUrl, setIconUrl] = useState(true);
   const [detaileData, setDetaileData] = useState<IProblemsDetail>();
   const [dataSource, setDataSource] = useState<IPSubmissionsTableItem[]>();
+  const [avatar, setAvatar] = useState<string>('');
+
   useEffect(() => {
     fetch('/problemData.json')
       .then(response => {
@@ -56,6 +59,10 @@ const ProblemsDetail = () => {
   }, [detailId]);
 
   useEffect(() => {
+    isImageByLoading(detaileData?.proposer_icon).then(imgUrl =>
+      setAvatar(imgUrl),
+    );
+
     detaileData?.submission_data_path &&
       fetch(detaileData?.submission_data_path)
         .then(response => {
@@ -95,10 +102,7 @@ const ProblemsDetail = () => {
         </div>
         <div className={cx(styles.boxSpace, styles.headBoxBtom)}>
           <div className={styles.headBoxBtomTitle}>
-            <Avatar
-              size={24}
-              icon={<img src={detaileData?.proposer_icon || user_avatar} />}
-            />
+            <Avatar size={24} icon={<img src={avatar} />} />
             <span>{detaileData?.proposer}</span>
           </div>
         </div>

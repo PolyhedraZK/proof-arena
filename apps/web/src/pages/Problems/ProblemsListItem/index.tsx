@@ -1,13 +1,18 @@
 import { Avatar, Typography } from 'antd';
-import user_avatar from '@/assets/user_avatar.svg';
 import CopySvg from '@/assets/icons/copy.svg';
 import { IProblems } from '@/services/problems/types.ts';
 
 import { useStyles } from './index.style.ts';
+import isImageByLoading from '@/utils/checkImg.ts';
+import { useEffect, useState } from 'react';
 
 const ProblemsListItem = ({ info }: { info: IProblems }) => {
-  const { Paragraph, Text } = Typography;
   const { styles } = useStyles();
+  const { Paragraph, Text } = Typography;
+  const [avatar, setAvatar] = useState<string>('');
+  useEffect(() => {
+    isImageByLoading(info?.proposer_icon).then(imgUrl => setAvatar(imgUrl));
+  }, [info]);
   return (
     <div className={styles.problemsDetailHeadBox}>
       <div className={styles.boxSpace}>
@@ -28,10 +33,7 @@ const ProblemsListItem = ({ info }: { info: IProblems }) => {
           </Text>
         </div>
         <div className={styles.headBoxBtomTitle}>
-          <Avatar
-            size={24}
-            icon={<img src={info?.proposer_icon || user_avatar} />}
-          />
+          <Avatar size={24} icon={<img src={avatar} />} />
           <span>{info.proposer}</span>
         </div>
       </div>
