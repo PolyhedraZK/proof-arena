@@ -3,7 +3,12 @@ import resolve from '@rollup/plugin-node-resolve';
 import ts from '@rollup/plugin-typescript';
 import { defineConfig } from 'vite';
 
-const externals = [].concat(/^node:/);
+import pkg from './package.json';
+
+const externals = Object.keys(pkg.dependencies)
+  .map(n => new RegExp(`^${n}/?`))
+  .concat(/^node:/);
+
 console.log(`externals = ${externals}`);
 
 // https://vitejs.dev/config/

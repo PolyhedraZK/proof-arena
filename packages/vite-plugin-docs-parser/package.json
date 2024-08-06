@@ -17,11 +17,11 @@
   },
   "scripts": {
     "build": "vite build",
-    "build2": " rollup -c rollup.config.mjs",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "type": "tsc --project . --paths null --emitDeclarationOnly --declaration"
+    "build:testing": "vite build",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
+    "fs-extra": "^11.1.0",
     "markdown-table": "^3.0.0",
     "mdast-util-from-markdown": "^2.0.0",
     "mdast-util-gfm-table": "^2.0.0",
@@ -33,9 +33,9 @@
     "@rollup/plugin-commonjs": "^26.0.1",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-typescript": "^11.1.6",
+    "@types/fs-extra": "^11.0.4",
     "@types/mdast": "^4.0.0",
     "@types/node": "^20.0.0",
-    "rollup": "^4.20.0",
     "vite": "^5.2.0"
   },
   "keywords": [],
