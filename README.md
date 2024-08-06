@@ -1,37 +1,15 @@
-# How to Contribute to Proof Arena
+# Proof Arena
+Bringing fair and reproduciable benchmarks for ZK.
 
-This article outlines how to submit a new problem or contribute your solutions for existing ones.
+# Goal
+1. Fairness: the most important feature we are providing, benchmarking everything on the same and standard environment.
+2. Reproducibility: everyone can reproduce results prenested on the arena using the standard environment.
+3. Accessiblity: data are presented in a nice way.
+4. Expandibility: we track most recent advancement in the area.
+5. Comprehensive: we benchmark all aspects of a proving system.
+6. Modernization: we keep updating our hardware. Feel free to submit new hardware requests if you are a hardware company, we are open to install your chip to benchmark.
 
-## Submitting a New Problem
+Clearing the fog of war on zk.
 
-Problems are documented in Markdown format within the /docs directory. Each problem is organized into separate folders, following this structure:
-
-```
-/docs
-└── <problem_name>
-    ├── problem.md         # Problem description in Markdown with front matter properties
-    └── submissions.json   # Auto-generated JSON file containing submission results,
-                           # used for rendering metrics tables and plots
-```
-
-To add a problem, create a new directory under /docs and write the problem description in <problem_folder>/problem.md using the following format:
-
-```
----
-problem_id: <unique_problem_id>  # Ensure this ID is unique
-title: <problem_title>
-description: <optional_short_description>  # Used on the listing page
-draft: false  # Set to true if you don't want your problem to be listed
-enable_comments: false  # Set to true if you want to disable comments
-proposer: Polyhedra Network  # Contributor's name
-proposer_icon: assets/avatars/xxx.png  # Optional: 24x24 icon for the proposer, use PNG/SVG format, put it into <root_project>/public/assets/avatars folder
----
-
-## Problem Description
-
-<content goes here>
-```
-
-## Contributing Solutions to Existing Problems
-
-TDB
+# How to make new submission
+Currently we are still working on an automatic submission system. Before the system is out, please follow [the instruction](https://github.com/PolyhedraZK/proof-arena/blob/main/docs/how_to_contribute.md).
