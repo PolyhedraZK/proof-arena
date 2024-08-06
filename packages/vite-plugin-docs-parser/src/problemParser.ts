@@ -13,8 +13,6 @@ export async function parseProblem(dirPath: string, fileName: string): Promise<P
   const problemFile = fs.statSync(filePath);
   if (problemFile.isFile()) {
     const mdContent = fs.readFileSync(filePath, 'utf-8');
-    // const rootTree = fromMarkdown(mdContent, {
-    // });
     const matterResolved = parseMatter(mdContent);
     console.log('matterResolved = ', matterResolved);
     return {

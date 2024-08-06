@@ -17,20 +17,24 @@ export const buildPlugin = (): Plugin => {
     },
     async buildEnd() {
       const { root } = config;
-      const docsPath = join(root, '../../', 'docs');
+      const problemsPath = join(root, '../../', 'problems');
       const spjDataPath = join(root, '../../', 'spj_output');
-      console.log(`docsPath = ${docsPath}, spjDataPath=${spjDataPath}`);
+      console.log(`problemsPath = ${problemsPath}, spjDataPath=${spjDataPath}`);
       submissionMap = await summarySpjData(spjDataPath);
-      const problemDirs = await readDirectories(docsPath);
+      const problemDirs = await readDirectories(problemsPath);
       for (const problemDirName of problemDirs) {
-        const problemInfo = await parseProblem(docsPath, problemDirName);
-        const id = problemInfo.metadata.problem_id;
-        problemData.push({
-          ...problemInfo.metadata,
-          details: problemInfo.details,
-          // submission_data: submissionMap.get(id),
-          submission_data_path: `/data/${id}/submissions.json`,
-        });
+        try {
+          const problemInfo = await parseProblem(problemsPath, problemDirName);
+          const id = problemInfo.metadata.problem_id;
+          problemData.push({
+            ...problemInfo.metadata,
+            details: problemInfo.details,
+            // submission_data: submissionMap.get(id),
+            submission_data_path: `/data/${id}/submissions.json`,
+          });
+        } catch (e) {
+          console.warn(e);
+        }
       }
     },
     async writeBundle() {

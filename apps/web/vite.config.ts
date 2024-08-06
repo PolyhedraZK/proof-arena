@@ -5,7 +5,7 @@ import dayjs from 'dayjs';
 import rollupNodePolyFill from 'rollup-plugin-polyfill-node';
 import { defineConfig } from 'vite';
 import Inspect from 'vite-plugin-inspect';
-import { viteStaticCopy } from 'vite-plugin-static-copy';
+// import { viteStaticCopy } from 'vite-plugin-static-copy';
 import svgr from 'vite-plugin-svgr';
 const alias = {
   '@': '/src',
@@ -13,22 +13,32 @@ const alias = {
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  // assetsInclude: ['docs/*.md'],
   plugins: [
     Inspect(),
-    viteStaticCopy({
-      targets: [
-        {
-          src: '../../problems/*',
-          dest: 'docs',
-        },
-        {
-          src: '../../docs/*',
-          dest: 'docs'
-        }
-      ],
+    // todo 代码可以删了，不再需要copy这些了
+    // viteStaticCopy({
+    //   targets: [
+    //     {
+    //       src: '../../problems/*',
+    //       dest: 'docs',
+    //     },
+    //     {
+    //       src: '../../docs/*',
+    //       dest: 'docs',
+    //     },
+    //   ],
+    // }),
+    // todo 暂时没实现参数配置
+    docsParser({
+      problems: {
+        src: '../../problems/**',
+        exclude: 'IPCUtils/**',
+      },
+      spj: {
+        src: '../../spj_output/**',
+        exclude: undefined,
+      },
     }),
-    docsParser(),
     react(),
     replace({
       __buildVersion: JSON.stringify(dayjs().toISOString()),
