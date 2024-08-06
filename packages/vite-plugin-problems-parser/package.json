@@ -1,5 +1,5 @@
 {
-  "name": "@proofarena/vite-plugin-docs-parser",
+  "name": "@proofarena/vite-plugin-problems-parser",
   "version": "1.0.0",
   "type": "module",
   "files": [
@@ -21,6 +21,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
+    "@rollup/pluginutils": "^5.1.0",
     "fs-extra": "^11.1.0",
     "markdown-table": "^3.0.0",
     "mdast-util-from-markdown": "^2.0.0",

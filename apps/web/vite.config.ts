@@ -1,4 +1,4 @@
-import docsParser from '@proofarena/vite-plugin-docs-parser';
+import problemsParser from '@proofarena/vite-plugin-problems-parser';
 import replace from '@rollup/plugin-replace';
 import react from '@vitejs/plugin-react';
 import dayjs from 'dayjs';
@@ -28,14 +28,14 @@ export default defineConfig({
     //     },
     //   ],
     // }),
-    // todo 暂时没实现参数配置
-    docsParser({
+    // todo 里面暂时没实现参数配置
+    problemsParser({
       problems: {
-        src: '../../problems/**',
+        src: '../../problems',
         exclude: 'IPCUtils/**',
       },
       spj: {
-        src: '../../spj_output/**',
+        src: '../../spj_output',
         exclude: undefined,
       },
     }),

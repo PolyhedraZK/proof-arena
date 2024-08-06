@@ -2,10 +2,11 @@ import { join } from 'node:path';
 
 import type { Plugin, ResolvedConfig } from 'vite';
 
+import { ViteProblemParseOptions } from './options';
 import { parseProblem } from './problemParser';
 import { summarySpjData } from './summarySpjData';
 import { readDirectories, writeFile } from './util';
-export const buildPlugin = (): Plugin => {
+export const buildPlugin = (options: ViteProblemParseOptions): Plugin => {
   let config: ResolvedConfig;
   const problemData: Array<any> = [];
   let submissionMap: Map<string, Array<any>> = new Map();
@@ -17,8 +18,8 @@ export const buildPlugin = (): Plugin => {
     },
     async buildEnd() {
       const { root } = config;
-      const problemsPath = join(root, '../../', 'problems');
-      const spjDataPath = join(root, '../../', 'spj_output');
+      const problemsPath = join(root, options.problems.src);
+      const spjDataPath = join(root, options.spj.src);
       console.log(`problemsPath = ${problemsPath}, spjDataPath=${spjDataPath}`);
       submissionMap = await summarySpjData(spjDataPath);
       const problemDirs = await readDirectories(problemsPath);
