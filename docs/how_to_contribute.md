@@ -4,6 +4,7 @@ This article outlines how to submit a new problem or contribute your solutions f
 
 ## Submitting a New Problem
 
+
 Problems are documented in Markdown format within the /docs directory. Each problem is organized into separate folders, following this structure:
 
 ```
