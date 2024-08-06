@@ -22,20 +22,4 @@ pre-commit
 *.njsproj
 *.sln
 *.sw?
-
-# Artificat files
-stdio_benchmark
-!stdio_benchmark/
-spj
-!spj/
-system_benchmarks
-!system_benchmarks/
-go.sum
-*.r1cs
-*.bin
-circuit
-expectedProver
-!expectedProver/
-stat.json
-maliciousProver
-!maliciousProver/
+/.turbo
