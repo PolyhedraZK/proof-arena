@@ -3,11 +3,13 @@ import { join } from 'node:path';
 import type { Plugin, ResolvedConfig } from 'vite';
 
 import { parseProblem } from './problemParser';
+import { summarySpjData } from './summarySpjData';
 import { readDirectories } from './util';
 
 export const servePlugin = (): Plugin => {
   let config: ResolvedConfig;
-  const jsonData: Array<any> = [];
+  const problemData: Array<any> = [];
+  let submissionMap: Map<string, Array<any>> = new Map();
   return {
     name: 'vite-plugin-docs-parser:serve',
     apply: 'serve',
@@ -15,27 +17,45 @@ export const servePlugin = (): Plugin => {
       config = _config;
     },
     async buildStart() {
-      // 读取文件
       const { root } = config;
       const docsPath = join(root, '../../', 'docs');
-      console.log(`docsPath = ${docsPath}`);
-      const files = await readDirectories(docsPath);
-      for (const file of files) {
-        const problemInfo = await parseProblem(docsPath, file);
-        jsonData.push({
+      const spjDataPath = join(root, '../../', 'spj_output');
+      console.log(`docsPath = ${docsPath}, spjDataPath=${spjDataPath}`);
+      submissionMap = await summarySpjData(spjDataPath);
+      const problemDirs = await readDirectories(docsPath);
+      for (const problemDirName of problemDirs) {
+        const problemInfo = await parseProblem(docsPath, problemDirName);
+        const id = problemInfo.metadata.problem_id;
+        problemData.push({
           ...problemInfo.metadata,
           details: problemInfo.details,
-          submission_data_path: `/docs/${file}/submissions.json`,
+          // submission_data: submissionMap.get(id),
+          submission_data_path: `/data/${id}/submissions.json`,
         });
       }
     },
-    configureServer({ httpServer, middlewares, ws }) {
+    configureServer({ middlewares }) {
+      const regex = /^\/data\/(\d+)\/submissions\.json$/;
       middlewares.use((req, res, next) => {
         if (req.url === '/problemData.json') {
           res.setHeader('Content-Type', 'application/json');
-          res.end(JSON.stringify(jsonData));
+          res.end(JSON.stringify(problemData));
         } else {
-          next(); // 继续处理其他请求
+          const match = regex.exec(req.url || '');
+          if (match) {
+            const id = match[1];
+            const submission = submissionMap.get(id);
+            if (submission) {
+              res.setHeader('Content-Type', 'application/json');
+              res.end(JSON.stringify(submission));
+            } else {
+              res.statusCode = 404;
+              res.end('Submission not found');
+            }
+          } else {
+            // 继续处理其他请求
+            next();
+          }
         }
       });
     },

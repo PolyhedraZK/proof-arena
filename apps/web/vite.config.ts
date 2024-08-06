@@ -5,7 +5,6 @@ import dayjs from 'dayjs';
 import rollupNodePolyFill from 'rollup-plugin-polyfill-node';
 import { defineConfig } from 'vite';
 import Inspect from 'vite-plugin-inspect';
-// import { Mode, plugin as mdPlugin } from 'vite-plugin-markdown';
 import { viteStaticCopy } from 'vite-plugin-static-copy';
 import svgr from 'vite-plugin-svgr';
 const alias = {

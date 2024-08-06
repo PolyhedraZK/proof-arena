@@ -14,12 +14,12 @@ import {
   IProblemsDetail,
   IPSubmissionsTableItem,
 } from '@/services/problems/types.ts';
+import isImageByLoading from '@/utils/checkImg.ts';
 
 import ProblemsDescription from '../ProblemsDescription/index.tsx';
 import SubmissionsChart from './components/SubmissionsChart';
 import SubmissionsTable from './components/SubmissionsTable';
 import { useStyles } from './index.style.ts';
-import isImageByLoading from '@/utils/checkImg.ts';
 
 type BaseGiscusConfig = {
   repo: `${string}/${string}`;
@@ -71,7 +71,7 @@ const ProblemsDetail = () => {
           }
           return response.json();
         })
-        .then(res => setDataSource(res.data))
+        .then(res => setDataSource(res))
         .catch(error => console.error('Fetch error:', error));
   }, [detaileData]);
 

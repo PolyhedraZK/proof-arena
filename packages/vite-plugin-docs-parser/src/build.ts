@@ -1,6 +1,5 @@
-import path, { join } from 'node:path';
+import { join } from 'node:path';
 
-import fse from 'fs-extra';
 import type { Plugin, ResolvedConfig } from 'vite';
 
 import { parseProblem } from './problemParser';
@@ -29,8 +28,8 @@ export const buildPlugin = (): Plugin => {
         problemData.push({
           ...problemInfo.metadata,
           details: problemInfo.details,
-          submission_data: submissionMap.get(id),
-          submission_data_path: `/${id}/submissions.json`,
+          // submission_data: submissionMap.get(id),
+          submission_data_path: `/data/${id}/submissions.json`,
         });
       }
     },
@@ -40,7 +39,7 @@ export const buildPlugin = (): Plugin => {
       const destDir = join(root, build.outDir);
       console.log(`destFile = ${destDir}`);
       for (const [key, value] of submissionMap.entries()) {
-        fse.outputFileSync(join(destDir, `${key}`, 'submissions.json'), JSON.stringify(value));
+        await writeFile(join(destDir, `data/${key}`), 'submissions.json', JSON.stringify(value));
       }
       // 输出problemData
       await writeFile(destDir, 'problemData.json', JSON.stringify(problemData));

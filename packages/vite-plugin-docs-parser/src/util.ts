@@ -1,5 +1,7 @@
-import fs from 'node:fs';
+// import fs from 'node:fs';
 import path from 'node:path';
+
+import fs from 'fs-extra';
 
 export function capitalizeToLowerCaseWithUnderscore(str: string): string {
   // return str.charAt(0).toLowerCase() + str.slice(1).replace(/\s/g, '_');
@@ -16,11 +18,23 @@ export function readDirectories(dirPath: string): string[] {
   });
 }
 
-export function writeFile(dirPath: string, fileName: string, data: string) {
-  const dir = path.dirname(dirPath);
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
+export async function writeFile(dirPath: string, fileName: string, data: string) {
+  const exists = await fsExists(dirPath);
+  if (!exists) {
+    await fs.ensureDirSync(dirPath);
   }
   const filePath = path.join(dirPath, fileName);
   fs.writeFileSync(filePath, data);
+}
+
+async function fsExists(p: string): Promise<boolean> {
+  try {
+    await fs.stat(p);
+  } catch (e) {
+    if ((e as { code: string }).code === 'ENOENT') {
+      return false;
+    }
+    throw e;
+  }
+  return true;
 }

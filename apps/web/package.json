@@ -57,7 +57,6 @@
     "typescript": "^5.2.2",
     "vite": "^5.3.5",
     "vite-plugin-inspect": "^0.8.5",
-    "vite-plugin-markdown": "^2.2.0",
     "vite-plugin-static-copy": "^1.0.6",
     "vite-plugin-svgr": "^4.2.0"
   }
