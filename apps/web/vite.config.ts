@@ -20,9 +20,13 @@ export default defineConfig({
     viteStaticCopy({
       targets: [
         {
-          src: '../../docs/*',
+          src: '../../problems/*',
           dest: 'docs',
         },
+        {
+          src: '../../docs/*',
+          dest: 'docs'
+        }
       ],
     }),
     docsParser(),
