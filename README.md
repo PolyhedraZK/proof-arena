@@ -17,20 +17,20 @@ We are currently developing an automatic submission system. Until it is availabl
 # List of contributions
 
 ## Tasks
-| Number | Task Name | Short Description| Proposer | Status | Link |
-|--------|-----------|------------------|----------|--------|------|
-|1| Keccak256 Hash | Test vectors https://emn178.github.io/online-tools/keccak_256.html | Polyhedra Network | Draft||
+| Number | Task Name      | Short Description                                                  | Proposer          | Status | Link |
+| ------ | -------------- | ------------------------------------------------------------------ | ----------------- | ------ | ---- |
+| 1      | Keccak256 Hash | Test vectors https://emn178.github.io/online-tools/keccak_256.html | Polyhedra Network | Draft  |      |
 
 
 
 ## Current Proof Systems
 
-| Number | Proof system name | Inventor | Integration status |
-|--------|-----------|------------------|--------------------|
-|1| Expander |Polyhedra Network| In Progress |
-|3| Gnark | Consensys | |
-|4| Plonky3 | Polygon | |
-|5| Stwo | Starkware | |
-|6| Risc0 | Risc0 | |
-|7| SP1 | Succinct | |
-|8| Boojum (Replica of Plonky2) | zkSync | |
+| Number | Proof system name           | Inventor          | Integration status  |
+| ------ | --------------------------- | ----------------- | ------------------- |
+| 1      | Expander                    | Polyhedra Network | In Progress         |
+| 3      | Gnark                       | Consensys         | Tested on problem 1 |
+| 4      | Plonky3                     | Polygon           |                     |
+| 5      | Stwo                        | Starkware         |                     |
+| 6      | Risc0                       | Risc0             |                     |
+| 7      | SP1                         | Succinct          |                     |
+| 8      | Boojum (Replica of Plonky2) | zkSync            |                     |
