@@ -2,6 +2,7 @@ import { Table, ConfigProvider, Pagination } from 'antd';
 import { useStyles } from './index.style.ts';
 import { IPSubmissionsTableItem } from '@/services/problems/types.ts';
 import { useState } from 'react';
+import BaseEmpty from '@/components/base/BaseEmpty.tsx';
 const SubmissionsTable = ({
   dataSource,
 }: {
@@ -17,7 +18,7 @@ const SubmissionsTable = ({
     {
       title: createTableHead('Task ID'),
       dataIndex: 'id',
-      render: (_: any,__: any,index: number) => (index + 1),
+      render: (_: any, __: any, index: number) => (index + 1),
     },
     {
       title: createTableHead('Prover Name'),
@@ -108,6 +109,7 @@ const SubmissionsTable = ({
           <Table
             size="middle"
             pagination={false}
+            locale={{ emptyText: <BaseEmpty description={'No Submissions'}/> }}
             rowKey={'id'}
             className={styles.tableStyle}
             bordered={false}

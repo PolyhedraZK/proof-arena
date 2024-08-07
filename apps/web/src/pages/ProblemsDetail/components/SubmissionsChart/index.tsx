@@ -3,6 +3,7 @@ import ReactEcharts from 'echarts-for-react';
 import { useEffect, useState } from 'react';
 
 import { useStyles } from './index.style.ts';
+import BaseEmpty from '@/components/base/BaseEmpty.tsx';
 
 type SubmissionsChartType = {
   chartData: any[];
@@ -100,34 +101,36 @@ const SubmissionsChart = ({ chartData }: SubmissionsChartType) => {
   }, [chartData]);
   return (
     <div className={styles.submissionsChartBox}>
-      <div className={styles.boxSpace}>
-        <span className={styles.title}>Metric analysis charts</span>
-        <ConfigProvider
-          theme={{
-            components: {
-              Segmented: {
-                itemColor: 'rgba(43, 51, 45, 0.60)',
-                itemActiveBg: 'rgba(52, 168, 83, 0.10)',
-                itemHoverBg: 'rgba(52, 168, 83, 0.10)',
-                itemSelectedBg: 'rgba(52, 168, 83, 0.10)',
-                itemSelectedColor: '#2B332D',
-                trackBg: '#fff',
-                borderRadius: 100,
+      {chartData?.length ? <>
+        <div className={styles.boxSpace}>
+          <span className={styles.title}>Metric analysis charts</span>
+          <ConfigProvider
+            theme={{
+              components: {
+                Segmented: {
+                  itemColor: 'rgba(43, 51, 45, 0.60)',
+                  itemActiveBg: 'rgba(52, 168, 83, 0.10)',
+                  itemHoverBg: 'rgba(52, 168, 83, 0.10)',
+                  itemSelectedBg: 'rgba(52, 168, 83, 0.10)',
+                  itemSelectedColor: '#2B332D',
+                  trackBg: '#fff',
+                  borderRadius: 100,
+                },
               },
-            },
-          }}
-        >
-          <Segmented<string>
-            className={styles.segmentedStyle}
-            options={segmentedOptions}
-            onChange={value => {
-              setSegmentedValue(value);
             }}
-            value={segmentedValue}
-          />
-        </ConfigProvider>
-      </div>
-      <ReactEcharts style={{ height: 470 }} option={options} />
+          >
+            <Segmented<string>
+              className={styles.segmentedStyle}
+              options={segmentedOptions}
+              onChange={value => {
+                setSegmentedValue(value);
+              }}
+              value={segmentedValue}
+            />
+          </ConfigProvider>
+        </div>
+        <ReactEcharts style={{ height: 470 }} option={options} />
+      </> : <BaseEmpty description={'No Submissions'}/>}
     </div>
   );
 };
