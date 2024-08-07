@@ -28,7 +28,7 @@ function parseJsonFileContent(filePaths: string[]) {
     const parsedJson = JSON.parse(content);
     const jsonArray = fileMap.get(parsedJson['problem_id']) || [];
     jsonArray.push(parsedJson);
-    fileMap.set(parsedJson['problem_id'], jsonArray);
+    fileMap.set(`${parsedJson['problem_id']}`, jsonArray);
   });
   // console.log(`fileMap = ${fileMap}`);
   return fileMap;
