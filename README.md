@@ -18,7 +18,7 @@ Here's a comparison of different benchmarking methods:
 | Method             | Fairness | Accessibility | Expandability | Reproducibility | Modernization | Comprehensiveness |
 | ------------------ | -------- | ------------- | ------------- | --------------- | ------------- | ----------------- |
 | Social Media       | No       | Yes           | No            | No              | No            | No                |
-| GitHub Source Code | Yes      | No            | Yes           | Yes             | No            | Yes               |
+| GitHub Source Code | Yes      | No            | Yes           | Yes, but not easy to reproduce            | No            | Yes               |
 | Pantheon (Celer)   | Yes      | Yes           | No            | No              | No            | Yes               |
 | Proof Arena        | Yes      | Yes           | Yes           | Yes             | Yes           | Yes               |
 
