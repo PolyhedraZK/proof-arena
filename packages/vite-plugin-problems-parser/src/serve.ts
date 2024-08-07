@@ -21,13 +21,19 @@ export const servePlugin = (options: ViteProblemParseOptions): Plugin => {
     async buildStart() {
       const { root } = config;
       const problemsPath = join(root, options.problems.src);
+      const problemsExcludePath = options.problems.exclude
+        ? join(root, options.problems.exclude)
+        : undefined;
       const spjDataPath = join(root, options.spj.src);
+      submissionMap = await summarySpjData(spjDataPath, options.spj);
+
+      const problemDirs = await readDirectories(problemsPath, problemsExcludePath);
       console.log(`problemsPath = ${problemsPath}, spjDataPath=${spjDataPath}`);
-      submissionMap = await summarySpjData(spjDataPath);
-      const problemDirs = await readDirectories(problemsPath);
+      console.log(`problemDirs = ${problemDirs}`);
+
       for (const problemDirName of problemDirs) {
         try {
-          const problemInfo = await parseProblem(problemsPath, problemDirName);
+          const problemInfo = await parseProblem('', problemDirName);
           const id = problemInfo.metadata.problem_id;
           problemData.push({
             ...problemInfo.metadata,
@@ -39,6 +45,7 @@ export const servePlugin = (options: ViteProblemParseOptions): Plugin => {
           console.warn(e);
         }
       }
+      problemData.sort((a, b) => a.problem_id - b.problem_id);
     },
     configureServer({ middlewares }) {
       const regex = /^\/data\/(\d+)\/submissions\.json$/;

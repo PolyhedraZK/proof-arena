@@ -14,7 +14,7 @@ export async function parseProblem(dirPath: string, fileName: string): Promise<P
   if (problemFile.isFile()) {
     const mdContent = fs.readFileSync(filePath, 'utf-8');
     const matterResolved = parseMatter(mdContent);
-    console.log('matterResolved = ', matterResolved);
+    // console.log('matterResolved = ', matterResolved);
     return {
       metadata: matterResolved.data,
       details: matterResolved.content,

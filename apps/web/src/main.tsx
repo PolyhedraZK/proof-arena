@@ -12,7 +12,7 @@ import MyApp from './App.tsx';
 import theme from './theme';
 
 //@ts-ignore
-window.__build_version = __buildVersion;
+window.__build_version = process.env.__buildVersion;
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <ThemeProvider appearance={'light'} theme={theme} prefixCls="proof">

@@ -158,6 +158,9 @@ importers:
       fs-extra:
         specifier: ^11.1.0
         version: 11.2.0
+      glob:
+        specifier: ^11.0.0
+        version: 11.0.0
       markdown-table:
         specifier: ^3.0.0
         version: 3.0.3
@@ -173,6 +176,9 @@ importers:
       micromark-extension-gfm-table:
         specifier: ^2.0.0
         version: 2.1.0
+      picomatch:
+        specifier: ^4.0.2
+        version: 4.0.2
       yaml:
         specifier: ^2.5.0
         version: 2.5.0
@@ -189,6 +195,9 @@ importers:
       '@types/fs-extra':
         specifier: ^11.0.4
         version: 11.0.4
+      '@types/glob':
+        specifier: ^8.1.0
+        version: 8.1.0
       '@types/mdast':
         specifier: ^4.0.0
         version: 4.0.4
@@ -1330,6 +1339,12 @@ packages:
         integrity: sha512-yTbItCNreRooED33qjunPthRcSjERP1r4MqCZc7wv0u2sUkzTFp45tgUfS5+r7FrZPdmCCNflLhVSP/o+SemsQ==,
       }
 
+  '@types/glob@8.1.0':
+    resolution:
+      {
+        integrity: sha512-IO+MJPVhoqz+28h1qLAcBEH2+xHMK6MTyHJc7MTnnYb6wsoLR29POVGJ7LycmVXIqyy/4/2ShP5sUwTXuOwb/w==,
+      }
+
   '@types/hast@3.0.4':
     resolution:
       {
@@ -1346,6 +1361,12 @@ packages:
     resolution:
       {
         integrity: sha512-kGaNbPh1k7AFzgpud/gMdvIm5xuECykRR+JnWKQno9TAXVa6WIVCGTPvYGekIDL4uwCZQSYbUxNBSb1aUo79oA==,
+      }
+
+  '@types/minimatch@5.1.2':
+    resolution:
+      {
+        integrity: sha512-K0VQKziLUWkVKiRVrx4a40iPaxTUefQmjtkQofBkYRcoaaL/8rhwDWww9qWbrgicNOgnpIsMxyNIUM4+n6dUIA==,
       }
 
   '@types/ms@0.7.34':
@@ -2511,6 +2532,14 @@ packages:
       }
     hasBin: true
 
+  glob@11.0.0:
+    resolution:
+      {
+        integrity: sha512-9UiX/Bl6J2yaBbxKoEBRm4Cipxgok8kQYcOPEhScPwebu2I0HoQOuYdIO6S3hLuWoZgpDpwQZMzTFxgpkyT76g==,
+      }
+    engines: { node: 20 || >=22 }
+    hasBin: true
+
   glob@7.2.3:
     resolution:
       {
@@ -2837,6 +2866,13 @@ packages:
         integrity: sha512-OGlZQpz2yfahA/Rd1Y8Cd9SIEsqvXkLVoSw/cgwhnhFMDbsQFeZYoJJ7bIZBS9BcamUW96asq/npPWugM+RQBw==,
       }
 
+  jackspeak@4.0.1:
+    resolution:
+      {
+        integrity: sha512-cub8rahkh0Q/bw1+GxP7aeSe29hHHn2V4m29nnDlvCdlgU+3UGxkZp7Z53jLUdpX3jdTO0nJZUDl3xvbWc2Xog==,
+      }
+    engines: { node: 20 || >=22 }
+
   js-cookie@2.2.1:
     resolution:
       {
@@ -3024,6 +3060,13 @@ packages:
       {
         integrity: sha512-JNAzZcXrCt42VGLuYz0zfAzDfAvJWW6AfYlDBQyDV5DClI2m5sAmK+OIO7s59XfsRsWHp02jAJrRadPRGTt6SQ==,
       }
+
+  lru-cache@11.0.0:
+    resolution:
+      {
+        integrity: sha512-Qv32eSV1RSCfhY3fpPE2GNZ8jgM9X7rdAfemLWqTUxwiyIC4jJ6Sy0fZ8H+oLWevO6i4/bizg7c8d8i6bxrzbA==,
+      }
+    engines: { node: 20 || >=22 }
 
   lru-cache@5.1.1:
     resolution:
@@ -3361,6 +3404,13 @@ packages:
       }
     engines: { node: '>=18' }
 
+  minimatch@10.0.1:
+    resolution:
+      {
+        integrity: sha512-ethXTt3SGGR+95gudmqJ1eNhRO7eGEGIgYA9vnPatK4/etz2MEVDno5GMCibdMTuBMyElzIlgxMna3K94XDIDQ==,
+      }
+    engines: { node: 20 || >=22 }
+
   minimatch@3.1.2:
     resolution:
       {
@@ -3580,6 +3630,13 @@ packages:
       }
     engines: { node: '>=16 || 14 >=14.18' }
 
+  path-scurry@2.0.0:
+    resolution:
+      {
+        integrity: sha512-ypGJsmGtdXUOeM5u93TyeIEfEhM6s+ljAhrk5vAvSx8uyY/02OvrZnA0YNGUrPXfpJMgI1ODd3nwz8Npx4O4cg==,
+      }
+    engines: { node: 20 || >=22 }
+
   path-type@4.0.0:
     resolution:
       {
@@ -3605,6 +3662,13 @@ packages:
         integrity: sha512-JU3teHTNjmE2VCGFzuY8EXzCDVwEqB2a8fsIvwaStHhAWJEeVd1o1QD80CU6+ZdEXXSLbSsuLwJjkCBWqRQUVA==,
       }
     engines: { node: '>=8.6' }
+
+  picomatch@4.0.2:
+    resolution:
+      {
+        integrity: sha512-M7BAV6Rlcy5u+m6oPhAPFgJTzAioX/6B0DxyvDlo9l8+T3nLKbrczg2WLUyzd45L8RqfUMyGPzekbMvX2Ldkwg==,
+      }
+    engines: { node: '>=12' }
 
   pidtree@0.6.0:
     resolution:
@@ -5613,6 +5677,11 @@ snapshots:
       '@types/jsonfile': 6.1.4
       '@types/node': 20.14.14
 
+  '@types/glob@8.1.0':
+    dependencies:
+      '@types/minimatch': 5.1.2
+      '@types/node': 20.14.14
+
   '@types/hast@3.0.4':
     dependencies:
       '@types/unist': 3.0.2
@@ -5624,6 +5693,8 @@ snapshots:
   '@types/mdast@4.0.4':
     dependencies:
       '@types/unist': 3.0.2
+
+  '@types/minimatch@5.1.2': {}
 
   '@types/ms@0.7.34': {}
 
@@ -6399,6 +6470,15 @@ snapshots:
       package-json-from-dist: 1.0.0
       path-scurry: 1.11.1
 
+  glob@11.0.0:
+    dependencies:
+      foreground-child: 3.2.1
+      jackspeak: 4.0.1
+      minimatch: 10.0.1
+      minipass: 7.1.2
+      package-json-from-dist: 1.0.0
+      path-scurry: 2.0.0
+
   glob@7.2.3:
     dependencies:
       fs.realpath: 1.0.0
@@ -6572,6 +6652,12 @@ snapshots:
     optionalDependencies:
       '@pkgjs/parseargs': 0.11.0
 
+  jackspeak@4.0.1:
+    dependencies:
+      '@isaacs/cliui': 8.0.2
+    optionalDependencies:
+      '@pkgjs/parseargs': 0.11.0
+
   js-cookie@2.2.1: {}
 
   js-cookie@3.0.5: {}
@@ -6684,6 +6770,8 @@ snapshots:
       tslib: 2.6.3
 
   lru-cache@10.4.3: {}
+
+  lru-cache@11.0.0: {}
 
   lru-cache@5.1.1:
     dependencies:
@@ -7062,6 +7150,10 @@ snapshots:
 
   mimic-function@5.0.1: {}
 
+  minimatch@10.0.1:
+    dependencies:
+      brace-expansion: 2.0.1
+
   minimatch@3.1.2:
     dependencies:
       brace-expansion: 1.1.11
@@ -7183,6 +7275,11 @@ snapshots:
       lru-cache: 10.4.3
       minipass: 7.1.2
 
+  path-scurry@2.0.0:
+    dependencies:
+      lru-cache: 11.0.0
+      minipass: 7.1.2
+
   path-type@4.0.0: {}
 
   perfect-debounce@1.0.0: {}
@@ -7190,6 +7287,8 @@ snapshots:
   picocolors@1.0.1: {}
 
   picomatch@2.3.1: {}
+
+  picomatch@4.0.2: {}
 
   pidtree@0.6.0: {}
 

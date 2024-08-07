@@ -2,6 +2,9 @@
 import path from 'node:path';
 
 import fs from 'fs-extra';
+import { globSync } from 'glob';
+
+import { ParseOptionItem } from './options';
 
 export function capitalizeToLowerCaseWithUnderscore(str: string): string {
   // return str.charAt(0).toLowerCase() + str.slice(1).replace(/\s/g, '_');
@@ -11,11 +14,18 @@ export function capitalizeToLowerCaseWithUnderscore(str: string): string {
     .replace(/（[^）]*）/g, '');
 }
 
-// 输出指定目录下的文件夹
-export function readDirectories(dirPath: string): string[] {
-  return fs.readdirSync(dirPath).filter(function (file) {
-    return fs.statSync(path.join(dirPath, file)).isDirectory();
+/**
+ * 读取指定目录下的文件夹
+ * @param dirPath
+ * @param exclude
+ * @returns
+ */
+export function readDirectories(dirPath: string, exclude?: string): string[] {
+  const folderNamedModules = globSync(dirPath, {
+    withFileTypes: true,
+    ignore: exclude,
   });
+  return folderNamedModules.filter(item => item.isDirectory()).map(item => item.fullpath());
 }
 
 export async function writeFile(dirPath: string, fileName: string, data: string) {
