@@ -57,15 +57,17 @@ We are currently developing an automatic submission system. Until it is availabl
 
 ## Current Proof Systems
 
-| Number | Proof system name           | Inventor          | Integration status  |
-| ------ | --------------------------- | ----------------- | ------------------- |
-| 1      | Expander                    | Polyhedra Network | In Progress         |
-| 3      | Gnark                       | Consensys         | Tested on problem 1 |
-| 4      | Plonky3                     | Polygon           |                     |
-| 5      | Stwo                        | Starkware         |                     |
-| 6      | Risc0                       | Risc0             |                     |
-| 7      | SP1                         | Succinct          |                     |
-| 8      | Boojum (Replica of Plonky2) | zkSync            |                     |
+| Number | Proof system name           | Inventor          | Integration status  | Track          |
+| ------ | --------------------------- | ----------------- | ------------------- | -------------- |
+| 1      | Expander                    | Polyhedra Network | In Progress         | circuit prover |
+| 3      | Gnark                       | Consensys         | Tested on problem 1 | circuit prover |
+| 4      | Plonky3                     | Polygon           | In Progress         | circuit prover |
+| 5      | Stwo                        | Starkware         | In Progress         | circuit prover |
+| 6      | Risc0                       | Risc0             | Not started         | zkVM           |
+| 7      | SP1                         | Succinct          | Not started         | zkVM           |
+| 8      | Boojum (Replica of Plonky2) | zkSync            | Not started         | circuit prover |
+| 9      | Jolt                        | a16z              | Not started         | zkVM           |
+| 10     | Nexus zkVM                  | Nexus             | Not started         | zkVM           |
 
 
 ### Thanks
