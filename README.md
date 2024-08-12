@@ -52,6 +52,7 @@ We are currently developing an automatic submission system. Until it is availabl
 | Number | Task Name      | Short Description                                                  | Proposer          | Status | Link |
 | ------ | -------------- | ------------------------------------------------------------------ | ----------------- | ------ | ---- |
 | 1      | Keccak256 Hash | Test vectors https://emn178.github.io/online-tools/keccak_256.html | Polyhedra Network | Draft  |   [Link](https://github.com/PolyhedraZK/proof-arena/blob/main/problems/keccak256_hash/problem.md)   |
+| 2      | Poseidon hash (M31) | | Polyhedra Network | Draft | |
 
 
 
