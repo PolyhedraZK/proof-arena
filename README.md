@@ -51,7 +51,7 @@ We are currently developing an automatic submission system. Until it is availabl
 ## Tasks
 | Number | Task Name      | Short Description                                                  | Proposer          | Status | Link |
 | ------ | -------------- | ------------------------------------------------------------------ | ----------------- | ------ | ---- |
-| 1      | Keccak256 Hash | Test vectors https://emn178.github.io/online-tools/keccak_256.html | Polyhedra Network | Draft  |      |
+| 1      | Keccak256 Hash | Test vectors https://emn178.github.io/online-tools/keccak_256.html | Polyhedra Network | Draft  |   [Link](https://github.com/PolyhedraZK/proof-arena/blob/main/problems/keccak256_hash/problem.md)   |
 
 
 
@@ -61,11 +61,11 @@ We are currently developing an automatic submission system. Until it is availabl
 | ------ | --------------------------- | ----------------- | ------------------- |
 | 1      | Expander                    | Polyhedra Network | In Progress         |
 | 3      | Gnark                       | Consensys         | Tested on problem 1 |
-| 4      | Plonky3                     | Polygon           |                     |
-| 5      | Stwo                        | Starkware         |                     |
-| 6      | Risc0                       | Risc0             |                     |
-| 7      | SP1                         | Succinct          |                     |
-| 8      | Boojum (Replica of Plonky2) | zkSync            |                     |
+| 4      | Plonky3                     | Polygon           | In Progress                    |
+| 5      | Stwo                        | Starkware         | In Progress                    |
+| 6      | Risc0                       | Risc0             | Not started                    |
+| 7      | SP1                         | Succinct          | Not started                    |
+| 8      | Boojum (Replica of Plonky2) | zkSync            | Not started                    |
 
 
 ### Thanks
