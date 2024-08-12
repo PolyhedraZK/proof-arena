@@ -1,6 +1,6 @@
 import Logo from '@/assets/logo.svg';
 import WhiteLogo from '@/assets/white-logo.svg';
-import { useThemeMode } from 'antd-style';
+import { useThemeMode, useResponsive } from 'antd-style';
 import useStyles from './index.style';
 import twitter from '@/assets/footerIcons/twitter.svg';
 import medium from '@/assets/footerIcons/medium.svg';
@@ -9,6 +9,7 @@ import { Space } from 'antd';
 
 const Footer = () => {
   const { themeMode } = useThemeMode();
+  const { mobile } = useResponsive();
   const { styles } = useStyles();
   const Icons = [
     {
@@ -34,6 +35,18 @@ const Footer = () => {
       width: 28
     },
   ]
+  const Copyright = () => <div className={styles.copyright}>
+    © 2024 Proof Arena. All rights reserved
+  </div>
+  const IconsDom = () => <Space align='center' size={24}>
+    {Icons?.map(item => <img
+      className={styles.footerIconStyle}
+      style={{ width: item.width }}
+      onClick={() => window.open(item.address)}
+      key={item.name}
+      alt={item.name}
+      src={item.icon} />)}
+  </Space>
   return <footer className={styles.footerBox}>
     <div className={styles.footerContent}>
       <img
@@ -41,18 +54,16 @@ const Footer = () => {
         src={themeMode == 'dark' ? Logo : WhiteLogo}
         alt="logo"
       />
-      <div className={styles.copyright}>
-        © 2024 Proof Arena. All rights reserved
-      </div>
-      <Space align='center' size={24}>
-        {Icons?.map(item => <img
-          className={styles.footerIconStyle}
-          style={{ width: item.width }}
-          onClick={() => window.open(item.address)}
-          key={item.name}
-          alt={item.name}
-          src={item.icon} />)}
-      </Space>
+      {
+        mobile ? <>
+          <IconsDom />
+          <Copyright />
+        </>
+          : <>
+            <Copyright />
+            <IconsDom />
+          </>
+      }
     </div>
   </footer>
 

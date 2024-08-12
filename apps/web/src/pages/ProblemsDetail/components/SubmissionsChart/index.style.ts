@@ -3,7 +3,7 @@ import { createStyles } from 'antd-style';
 export const useStyles = createStyles(({ css, responsive }) => {
   return {
     submissionsChartBox: {
-      marginBottom: 40,
+      marginBottom: 24,
     },
     boxSpace: {
       display: 'flex',

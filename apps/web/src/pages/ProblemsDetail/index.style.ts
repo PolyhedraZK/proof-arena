@@ -70,6 +70,9 @@ export const useStyles = createStyles(({ token, responsive }) => {
       alignItems: 'end',
       paddingBottom: 24,
     },
+    headBoxChange:{
+      position: 'static',
+    },
     problemsDetailHeadBox: {
       display: 'flex',
       justifyContent: 'space-between',

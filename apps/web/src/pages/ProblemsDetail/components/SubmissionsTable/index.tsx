@@ -111,7 +111,7 @@ const SubmissionsTable = ({
             rowKey={'id'}
             className={styles.tableStyle}
             bordered={false}
-            scroll={{ x: 1500 }}
+            scroll={{ x: 1700 }}
             columns={columns}
             dataSource={
               dataSource?.slice(page * pageSize - pageSize, page * pageSize) ||

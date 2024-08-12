@@ -28,6 +28,7 @@ function PcNavBar() {
       styles={{ body: { padding: 0 } }}
       placement={'top'}
       closable={false}
+      height={'100%'}
       onClose={() => setIsOpen(!isOpen)}
       open={isOpen}
     >
@@ -46,7 +47,7 @@ function PcNavBar() {
         }} key={item.title} className={styles.dropdownItem}>
           {item.title}
         </div>))}
-        <GighubButton className={styles.mdGithubBtn} onClick={() => window.open('www.github.com')} />
+        <GighubButton className={styles.mdGithubBtn} onClick={() => window.open('https://github.com/PolyhedraZK/proof-arena')} />
       </div>
     </Drawer>
   </div>
@@ -62,7 +63,7 @@ function PcNavBar() {
           </Link>
         ))}
       </div>
-      <GighubButton className={styles.githubBtn} onClick={() => window.open('www.github.com')} />
+      <GighubButton className={styles.githubBtn} onClick={() => window.open('https://github.com/PolyhedraZK/proof-arena')} />
     </div>;
 }
 

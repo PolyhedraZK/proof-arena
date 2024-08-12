@@ -33,6 +33,7 @@ export default createStyles(({ responsive, isDarkMode }) => {
       flex: 1,
       textAlign: 'center',
       marginLeft: -62,
+      color: 'rgba(0,0,0,.5)',
       [responsive.mobile]: {
         marginLeft: 0,
       },

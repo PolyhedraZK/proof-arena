@@ -78,6 +78,22 @@ const SubmissionsChart = ({ chartData }: SubmissionsChartType) => {
     xAxis: {
       type: 'category',
       data: chartData?.map(item => item.prover_name),
+      axisLabel: {
+        interval: 0,
+        rotate: mobile ? 90 : 0,
+        fontSize: 12,
+        lineHeight: 6,
+        formatter: mobile ? (value: string) => {
+          if (value?.length > 7) {
+            var result: string[] = [];
+            for (var i = 0; i < value.length; i += 7) {
+              result.push(value.substring(i, 7));
+            }
+            return result.join('\n');
+          }
+          return value
+        } : (value: string) => value,
+      },
     },
     yAxis: {
       type: 'value',
@@ -128,7 +144,7 @@ const SubmissionsChart = ({ chartData }: SubmissionsChartType) => {
         >
           {mobile ?
             <div>
-              <FilterIcon style={{marginTop:5}} />
+              <FilterIcon onClick={() => setDrawerOpen(true)} style={{ marginTop: 5 }} />
               <Drawer
                 height={439}
                 style={{ background: 'rgba(0, 0, 0, 0.1)' }}

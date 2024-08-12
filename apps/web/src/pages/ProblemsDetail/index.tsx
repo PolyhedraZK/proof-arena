@@ -1,5 +1,6 @@
 import { UnorderedListOutlined } from '@ant-design/icons';
 import ArrowDonw from '@/assets/icons/arrow-donw.svg?r';
+import ArrowUpper from '@/assets/icons/arrow-upper.svg?r';
 import Giscus from '@giscus/react';
 import { Avatar, Breadcrumb, Typography } from 'antd';
 import { useEffect, useState } from 'react';
@@ -37,14 +38,14 @@ const ProblemsDetail = () => {
   const navigate = useNavigate();
   const { detailId } = useParams();
   const { Paragraph, Text } = Typography;
-  const { styles, cx } = useStyles();
   const [checkedUI, setCheckedUI] = useState(true);
   const [iconUrl, setIconUrl] = useState(true);
   const [detaileData, setDetaileData] = useState<IProblemsDetail>();
   const [dataSource, setDataSource] = useState<IPSubmissionsTableItem[]>();
   const [avatar, setAvatar] = useState<string>('');
   const [more, setMore] = useState(false);
-
+  const { styles, cx } = useStyles();
+  const autoHeightDesMd = detaileData?.details && detaileData?.details?.length > 1000
   useEffect(() => {
     fetch('/problemData.json')
       .then(response => {
@@ -63,7 +64,7 @@ const ProblemsDetail = () => {
     isImageByLoading(detaileData?.proposer_icon).then(imgUrl =>
       setAvatar(imgUrl),
     );
-
+    console.log(detaileData?.description?.length)
     detaileData?.submission_data_path &&
       fetch(detaileData?.submission_data_path)
         .then(response => {
@@ -92,7 +93,7 @@ const ProblemsDetail = () => {
           }
         ]}
       />
-      <div className={cx(styles.headBox, more && styles.heightAuto)}>
+      <div className={cx(styles.headBox, more && styles.heightAuto, !autoHeightDesMd && styles.heightAuto)}>
         <div className={styles.problemsDetailHeadBox}>
           <div className={styles.boxSpace}>
             <div className={styles.boxSpace}>
@@ -121,11 +122,11 @@ const ProblemsDetail = () => {
             </div>
           </div>
         </div>
-        {detaileData?.description && <div className={styles.problemsDescriptionBox}>
+        {detaileData?.details && <div className={styles.problemsDescriptionBox}>
           <ProblemsDescription mdFile={detaileData?.details || ''} />
         </div>}
-        {!more && <div className={styles.headBoxChangeHeight}>
-          <BaseButton className={styles.baseBtnStyle} onClick={() => setMore(!more)}>View more&nbsp;&nbsp;<ArrowDonw /></BaseButton>
+        {autoHeightDesMd && <div className={cx(styles.headBoxChangeHeight, more && styles.headBoxChange)}>
+          <BaseButton className={styles.baseBtnStyle} onClick={() => setMore(!more)}>View more&nbsp;&nbsp; {!more ? <ArrowDonw /> : <ArrowUpper />}</BaseButton>
         </div>}
       </div>
       <div className={styles.problemsDetailMainBox}>

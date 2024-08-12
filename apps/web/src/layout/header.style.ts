@@ -73,6 +73,7 @@ export default createStyles(({ responsive, isDarkMode, prefixCls }) => {
     },
     mdGithubBtn: {
       marginTop: 32,
+      cursor: 'pointer',
     },
     mobileNav: {
       flex: 1,
@@ -100,7 +101,7 @@ export default createStyles(({ responsive, isDarkMode, prefixCls }) => {
     dropdownItem: {
       fontSize: 18,
       fontFamily: 'PingFang SC',
-      padding: '24px 16px',
+      padding: '24px 0px',
       borderBottom: '1px solid #f0f0f0',
       background: '#fff',
     },
