@@ -94,9 +94,7 @@ const SubmissionsTable = ({
         theme={{
           components: {
             Table: {
-              headerBg: '#fff',
-              colorBgContainer:
-                'linear-gradient(0deg, rgba(255, 255, 255, 0.50) 0%, rgba(255, 255, 255, 0.50) 100%), #F8F9FA',
+              headerBg: '#FCFCFD',
               headerSplitColor: 'none',
               cellPaddingBlockMD: 20,
               cellPaddingInlineMD: 12,
@@ -109,11 +107,11 @@ const SubmissionsTable = ({
           <Table
             size="middle"
             pagination={false}
-            locale={{ emptyText: <BaseEmpty description={'No Submissions'}/> }}
+            locale={{ emptyText: <BaseEmpty description={'No Submissions'} /> }}
             rowKey={'id'}
             className={styles.tableStyle}
             bordered={false}
-            scroll={{ x: 'calc(100% + 50%)' }}
+            scroll={{ x: 1500 }}
             columns={columns}
             dataSource={
               dataSource?.slice(page * pageSize - pageSize, page * pageSize) ||

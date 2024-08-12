@@ -1,26 +1,24 @@
-import { Flex, Pagination } from 'antd';
+import { Col, Row } from 'antd';
 import classNames from 'clsx';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 
 import Empty from '@/components/biz/problems/Empty';
-import SubTitle from '@/components/biz/problems/SubTitle';
 import { IProblems } from '@/services/problems/types';
 
 import { useProverStyles } from './index.style';
 import ProblemsListItem from './ProblemsListItem';
+import LoadingCard from './LoadingCard';
 
-const pageSize = 10;
 
 function ProversPage() {
   const { styles } = useProverStyles();
   const navigate = useNavigate();
-  // 横向或者纵向展示
-  const [layoutType, setLayoutType] = useState<'column' | 'row'>('column');
-  const [currentPage, setCurrentPage] = useState(1);
   const [problemsListData, setProblemsListData] = useState<IProblems[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
+    setIsLoading(true)
     fetch('/problemData.json')
       .then(response => {
         if (!response.ok) {
@@ -28,60 +26,43 @@ function ProversPage() {
         }
         return response.json();
       })
-      .then(data => setProblemsListData(data?.filter(item => !item.draft)))
-      .catch(error => console.error('Fetch error:', error));
+      .then(data => {
+        setProblemsListData(data?.filter(item => !item.draft));
+        setIsLoading(false)
+      })
+      .catch(error => {
+        console.error('Fetch error:', error)
+        setIsLoading(false)
+      });
   }, []);
 
   return (
     <div className={classNames('main-container', styles.proversWrapper)}>
       <div className="my-provers">
-        <SubTitle layoutType={layoutType} setLayoutType={setLayoutType} />
         {problemsListData?.length ? (
-          <Flex
-            vertical
-            style={{
-              height: 'calc(100vh - 300px)',
-              minHeight: 400,
-              overflow: 'hidden',
-              overflowY: 'auto',
-            }}
-            gap={12}
-            wrap="nowrap"
-          >
-            {problemsListData
-              ?.slice(pageSize * currentPage - pageSize, currentPage * pageSize)
-              .map(item => {
+          <Row gutter={[16, 16]}>
+            {
+              problemsListData.map(item => {
                 const { problem_id } = item;
                 return (
-                  <div
-                    onClick={() => navigate(`/problemsDetail/${problem_id}`)}
+                  <Col
                     key={problem_id}
+                    xs={{ flex: '100%' }}
+                    sm={{ flex: '100%' }}
+                    md={{ flex: '50%' }}
+                    lg={{ flex: '33.33%' }}
                   >
-                    <ProblemsListItem info={item} />
-                  </div>
-                );
+                    <ProblemsListItem
+                      onClick={() => navigate(`/problemsDetail/${problem_id}`)}
+                      info={item} />
+                  </Col>);
               })}
-          </Flex>
-        ) : (
+          </Row>
+        ) : (isLoading ?
+          <LoadingCard num={8} /> :
           <Empty />
         )}
       </div>
-      {problemsListData &&
-      problemsListData.length &&
-      problemsListData.length > 0 ? (
-        <Pagination
-          style={{ marginTop: 30, marginBottom: 20, textAlign: 'center' }}
-          showSizeChanger={false}
-          onChange={(page: number) => {
-            setCurrentPage(page);
-          }}
-          defaultCurrent={1}
-          pageSize={pageSize}
-          total={problemsListData?.length}
-        />
-      ) : (
-        <></>
-      )}
     </div>
   );
 }

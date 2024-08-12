@@ -2,7 +2,7 @@ import { createStyles } from 'antd-style';
 
 import { customThemeVariables } from '@/theme';
 
-export const useProverStyles = createStyles(({ css, responsive, isDarkMode }) => {
+export const useProverStyles = createStyles(({ responsive, isDarkMode }) => {
   const colors = isDarkMode ? customThemeVariables.dark : customThemeVariables.light;
 
   return {
@@ -14,6 +14,8 @@ export const useProverStyles = createStyles(({ css, responsive, isDarkMode }) =>
         margin: '30px auto 0',
       },
       '.my-provers': {
+        overflow: 'hidden',
+        overflowY: 'auto',
         [responsive.md]: {
           marginBottom: 24,
         },

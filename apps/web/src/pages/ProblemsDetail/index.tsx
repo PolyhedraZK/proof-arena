@@ -1,13 +1,13 @@
-import { LeftOutlined, UnorderedListOutlined } from '@ant-design/icons';
+import { UnorderedListOutlined } from '@ant-design/icons';
+import ArrowDonw from '@/assets/icons/arrow-donw.svg?r';
 import Giscus from '@giscus/react';
-import { Avatar, Typography } from 'antd';
+import { Avatar, Breadcrumb, Typography } from 'antd';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 
 import analysisCharts from '@/assets/icons/analysis-charts.svg';
 import analysisChartsAction from '@/assets/icons/analysis-charts-action.svg';
 import CopySvg from '@/assets/icons/copy.svg';
-import user_avatar from '@/assets/user_avatar.svg';
 import BaseButton from '@/components/base/BaseButton.tsx';
 import CustomTitle from '@/components/base/CustomTitle.tsx';
 import {
@@ -43,6 +43,7 @@ const ProblemsDetail = () => {
   const [detaileData, setDetaileData] = useState<IProblemsDetail>();
   const [dataSource, setDataSource] = useState<IPSubmissionsTableItem[]>();
   const [avatar, setAvatar] = useState<string>('');
+  const [more, setMore] = useState(false);
 
   useEffect(() => {
     fetch('/problemData.json')
@@ -81,42 +82,52 @@ const ProblemsDetail = () => {
   };
   return (
     <div className={styles.ProblemsDetailBox}>
-      <div className={styles.problemsDetailHeadBox}>
-        <div className={styles.boxSpace}>
+      <Breadcrumb
+        items={[
+          {
+            title: <a href='javascript:void(0)' onClick={onGoBack}>Problems</a>,
+          },
+          {
+            title: detaileData?.title,
+          }
+        ]}
+      />
+      <div className={cx(styles.headBox, more && styles.heightAuto)}>
+        <div className={styles.problemsDetailHeadBox}>
           <div className={styles.boxSpace}>
-            <LeftOutlined onClick={onGoBack} />
-            <span className={styles.title}>{detaileData?.title}</span>
-            <Text>
-              <Text type="secondary">ID: </Text>
-              <Paragraph
-                className={styles.copyStyle}
-                copyable={{
-                  icon: <img src={CopySvg} className={styles.icon} />,
-                  tooltips: false,
-                }}
-              >
-                {detaileData?.problem_id}
-              </Paragraph>
-            </Text>
+            <div className={styles.boxSpace}>
+              <span className={styles.title}>
+                <div className={styles.titleBlock} />
+                {detaileData?.title}
+              </span>
+              <Text>
+                <Text type="secondary">ID: </Text>
+                <Paragraph
+                  className={styles.copyStyle}
+                  copyable={{
+                    icon: <img src={CopySvg} className={styles.icon} />,
+                    tooltips: false,
+                  }}
+                >
+                  {detaileData?.problem_id}
+                </Paragraph>
+              </Text>
+            </div>
+          </div>
+          <div className={cx(styles.boxSpace, styles.headBoxBtom)}>
+            <div className={styles.headBoxBtomTitle}>
+              <Avatar size={24} icon={<img src={avatar} />} />
+              <span>{detaileData?.proposer}</span>
+            </div>
           </div>
         </div>
-        <div className={cx(styles.boxSpace, styles.headBoxBtom)}>
-          <div className={styles.headBoxBtomTitle}>
-            <Avatar size={24} icon={<img src={avatar} />} />
-            <span>{detaileData?.proposer}</span>
-          </div>
-        </div>
+        {detaileData?.description && <div className={styles.problemsDescriptionBox}>
+          <ProblemsDescription mdFile={detaileData?.details || ''} />
+        </div>}
+        {!more && <div className={styles.headBoxChangeHeight}>
+          <BaseButton className={styles.baseBtnStyle} onClick={() => setMore(!more)}>View more&nbsp;&nbsp;<ArrowDonw /></BaseButton>
+        </div>}
       </div>
-      {detaileData?.description && (
-        <div className={styles.problemsDetailMainBox}>
-          <div className={cx(styles.customTitleBox, styles.customTitleBottom)}>
-            <CustomTitle title={'Details'} />
-          </div>
-          <div className={styles.problemsDescriptionBox}>
-            <ProblemsDescription mdFile={detaileData?.details || ''} />
-          </div>
-        </div>
-      )}
       <div className={styles.problemsDetailMainBox}>
         <div className={styles.customTitleBox}>
           <CustomTitle
@@ -164,7 +175,7 @@ const ProblemsDetail = () => {
             mapping="url"
             term="Welcome to Proof Arena"
             strict="0"
-            reactionsEnabled="1"
+            reactionsEnabled="0"
             emitMetadata="1"
             inputPosition="top"
             lang="en"

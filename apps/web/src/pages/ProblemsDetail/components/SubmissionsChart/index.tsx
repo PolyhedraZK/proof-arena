@@ -1,6 +1,10 @@
-import { ConfigProvider, Segmented } from 'antd';
+import { ConfigProvider, Drawer, Segmented } from 'antd';
 import ReactEcharts from 'echarts-for-react';
 import { useEffect, useState } from 'react';
+import { useResponsive } from 'antd-style'
+import { CloseOutlined } from '@ant-design/icons';
+import FilterIcon from '@/assets/icons/filterIcon.svg?r';
+import CheckMark from '@/assets/icons/check-mark.svg?r';
 
 import { useStyles } from './index.style.ts';
 import BaseEmpty from '@/components/base/BaseEmpty.tsx';
@@ -52,7 +56,10 @@ const segmentedOptions = [
 ];
 const SubmissionsChart = ({ chartData }: SubmissionsChartType) => {
   const { styles } = useStyles();
+  const { mobile } = useResponsive();
   const [segmentedValue, setSegmentedValue] = useState<any>();
+  const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
+
   const findChartName = (value: string) => {
     return segmentedOptions.find(item => item.value === value)?.label;
   };
@@ -102,34 +109,65 @@ const SubmissionsChart = ({ chartData }: SubmissionsChartType) => {
   return (
     <div className={styles.submissionsChartBox}>
       {chartData?.length ? <>
-        <div className={styles.boxSpace}>
-          <span className={styles.title}>Metric analysis charts</span>
-          <ConfigProvider
-            theme={{
-              components: {
-                Segmented: {
-                  itemColor: 'rgba(43, 51, 45, 0.60)',
-                  itemActiveBg: 'rgba(52, 168, 83, 0.10)',
-                  itemHoverBg: 'rgba(52, 168, 83, 0.10)',
-                  itemSelectedBg: 'rgba(52, 168, 83, 0.10)',
-                  itemSelectedColor: '#2B332D',
-                  trackBg: '#fff',
-                  borderRadius: 100,
-                },
+      <div className={styles.boxSpace}>
+        <span className={styles.title}>Metric analysis charts</span>
+        <ConfigProvider
+          theme={{
+            components: {
+              Segmented: {
+                itemColor: 'rgba(43, 51, 45, 0.60)',
+                itemActiveBg: 'rgba(52, 168, 83, 0.10)',
+                itemHoverBg: 'rgba(52, 168, 83, 0.10)',
+                itemSelectedBg: 'rgba(52, 168, 83, 0.10)',
+                itemSelectedColor: '#2B332D',
+                trackBg: '#fff',
+                borderRadius: 100,
               },
-            }}
-          >
-            <Segmented<string>
+            },
+          }}
+        >
+          {mobile ?
+            <div>
+              <FilterIcon style={{marginTop:5}} />
+              <Drawer
+                height={439}
+                style={{ background: 'rgba(0, 0, 0, 0.1)' }}
+                styles={{
+                  body: {
+                    borderStartStartRadius: 16,
+                    borderStartEndRadius: 16,
+                    background: '#fff',
+                    padding: '20px 16px',
+                  }
+                }}
+                placement={'bottom'}
+                closable={false}
+                onClose={() => setDrawerOpen(false)}
+                open={drawerOpen}
+              >
+                <div className={styles.drawerTitleBox}>
+                  <div className={styles.drawerTitleBox}> <FilterIcon /> &nbsp;Select</div>
+                  <CloseOutlined onClick={() => setDrawerOpen(false)} />
+                </div>
+                <div className={styles.drawerList}>
+                  {segmentedOptions?.map(item => <div onClick={() => setSegmentedValue(item.value)} className={styles.drawerListItem}>
+                    <span>{item.label}</span>
+                    {segmentedValue === item.value && <CheckMark className={styles.checkMarkIcon} />}
+                  </div>)}
+                </div>
+              </Drawer>
+            </div>
+            : <Segmented<string>
               className={styles.segmentedStyle}
               options={segmentedOptions}
               onChange={value => {
                 setSegmentedValue(value);
               }}
               value={segmentedValue}
-            />
-          </ConfigProvider>
-        </div>
-        <ReactEcharts style={{ height: 470 }} option={options} />
+            />}
+        </ConfigProvider>
+      </div>
+      <ReactEcharts style={{ height: mobile ? 430 : 484 }} option={options} />
       </> : <BaseEmpty description={'No Submissions'}/>}
     </div>
   );

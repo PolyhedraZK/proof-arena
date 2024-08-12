@@ -4,6 +4,7 @@ import { Outlet, useLocation, useNavigate } from 'react-router';
 
 import Header from './Header';
 import useStyles from './layout.style';
+import Footer from './Footer';
 
 function ProofLayout() {
   const navigate = useNavigate();
@@ -18,10 +19,14 @@ function ProofLayout() {
   }, [location]);
 
   return (
-    <Layout className={styles.layout}>
-      <Header />
-      <Outlet />
-    </Layout>
+    <div className={styles.layout}>
+      <Layout className={styles.layoutMain}>
+        <Header />
+        <Outlet />
+      </Layout>
+      <Footer />
+    </div>
+
   );
 }
 export default ProofLayout;

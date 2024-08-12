@@ -3,7 +3,7 @@ import { createStyles } from 'antd-style';
 import { customThemeVariables } from '@/theme';
 import { hex2rgba } from '@/utils';
 
-export default createStyles(({ responsive, isDarkMode }) => {
+export default createStyles(({ responsive, isDarkMode, prefixCls }) => {
   const colors = isDarkMode ? customThemeVariables.dark : customThemeVariables.light;
 
   return {
@@ -23,6 +23,7 @@ export default createStyles(({ responsive, isDarkMode }) => {
       backdropFilter: 'blur(25px)',
       [responsive.sm]: {
         height: 72,
+        lineHeight: 1,
         padding: '0 20px',
       },
     },
@@ -32,13 +33,13 @@ export default createStyles(({ responsive, isDarkMode }) => {
       position: 'absolute',
       left: 32,
       '& .logo': {
-        width: 193,
+        width: 203,
         height: 'auto',
       },
       [responsive.sm]: {
         left: 22,
         '& .logo': {
-          width: '178.181px',
+          width: '162px',
           height: 'auto',
         },
       },
@@ -51,7 +52,7 @@ export default createStyles(({ responsive, isDarkMode }) => {
         flex: 1,
         minWidth: '500px',
         display: 'flex',
-        justifyContent: 'center',
+        justifyContent: 'right',
         gap: '48px',
         height: '87px',
         '.link': {
@@ -67,6 +68,12 @@ export default createStyles(({ responsive, isDarkMode }) => {
         },
       },
     },
+    githubBtn: {
+      marginLeft: '80px',
+    },
+    mdGithubBtn: {
+      marginTop: 32,
+    },
     mobileNav: {
       flex: 1,
       display: 'flex',
@@ -79,54 +86,35 @@ export default createStyles(({ responsive, isDarkMode }) => {
       display: 'flex',
       alignItems: 'center',
     },
-
-    // 下拉抽屉
-    drawerWrapper: {
-      position: 'absolute',
-      height: 'calc(100vh - 72px)',
-      width: '100%',
-      zIndex: '1',
-      padding: 0,
-      background: '#000',
-      '& .proof-drawer-body': {
-        padding: 0,
-      },
+    dropdownBox: {
+      position: 'fixed',
+      height: '100vh',
+      top: 0,
+      left: 0,
+      right: 0,
+      zIndex: 999,
+      background: '#fff',
+      overflow: 'hidden',
+      pointerEvents: 'none',
     },
-
-    menuWrapper: {
-      padding: '0 16px',
-      '& .dropdown-menu': {
-        background: '#000',
-        borderRadius: '0',
-        opacity: '1',
-        '& .dropdown-menu-item': {
-          display: 'flex',
-          alignItems: 'center',
-          gap: '25px',
-          padding: '20px 0',
-          fontSize: '18px',
-          background: 'none',
-          fontWeight: '400',
-          '&:last-child': {
-            borderBottom: 'none',
-            padding: '28px 0',
-          },
-          '.mobile-avatar': {
-            width: '44px',
-            height: '44px',
-          },
-          '.mobile-logout': {
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: '109px',
-            height: '44px',
-            border: '1px solid white',
-            color: 'white',
-            borderRadius: '40px',
-          },
-        },
-      },
+    dropdownItem: {
+      fontSize: 18,
+      fontFamily: 'PingFang SC',
+      padding: '24px 16px',
+      borderBottom: '1px solid #f0f0f0',
+      background: '#fff',
     },
+    logo: {
+      width: 162,
+      height: 'auto',
+    },
+    closeHeadBox: {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      padding: 20,
+      borderBottom: '1px solid #f0f0f0',
+    },
+    menuList: { padding: '0px 16px' },
   };
 });

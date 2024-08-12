@@ -1,36 +1,83 @@
 import { createStyles } from 'antd-style';
 
-export const useStyles = createStyles(({ token }) => {
+export const useStyles = createStyles(({ token, responsive }) => {
   return {
-    problemsDescriptionBox: {
-      height: 700,
-      overflow: 'hidden',
-      overflowY: 'auto',
-    },
+    problemsDescriptionBox: {},
     customTitleBox: {
-      padding: '16px 0px',
+      padding: '11px 0px 16px 0px',
       borderBottom: `1px solid ${token.colorBorderSecondary}`,
-      marginBottom: 24,
+      marginBottom: 20,
+      [responsive.mobile]: {
+        padding: '0px 0px 16px 0px',
+      },
     },
-    customTitleBottom: { marginBottom: 0 },
     title: {
       display: 'inline-block',
-      margin: '0px 12px 0px 8px',
+      margin: '0px 12px 0px 0px',
       fontSize: 24,
       fontWeight: 500,
+      position: 'relative',
+    },
+    titleBlock: {
+      width: 3,
+      height: 20,
+      flexShrink: 0,
+      background: '#34A853',
+      position: 'absolute',
+      top: '50%',
+      transform: 'translateY(-50%)',
+      left: -16,
     },
     ProblemsDetailBox: {
-      width: 1200,
-      margin: '40px auto 24px',
+      maxWidth: 1200,
+      width: '100%',
+      margin: '24px auto',
+      [responsive.mobile]: {
+        padding: '24px 16px 16px 16px',
+        margin: '0px auto 24px',
+      },
     },
-    problemsDetailHeadBox: {
+    headBox: {
       background: 'white',
       padding: '24px 16px',
       border: '1px solid rgba(43, 51, 45, 0.05)',
       backdropFilter: 'blur(25px)',
       borderRadius: 16,
+      marginTop: 24,
+      height: 371,
+      overflow: 'hidden',
+      position: 'relative',
+      [responsive.mobile]: {
+        marginTop: 20,
+        height: 576,
+      },
+    },
+    heightAuto: {
+      height: 'auto',
+      [responsive.mobile]: {
+        height: 'auto',
+      },
+    },
+    headBoxChangeHeight: {
+      width: '100%',
+      position: 'absolute',
+      bottom: 0,
+      left: 0,
+      height: 108,
+      background: 'linear-gradient(180deg, rgba(255, 255, 255, 0.00) 0%, #FFF 65.11%, #FFF 100%)',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'end',
+      paddingBottom: 24,
+    },
+    problemsDetailHeadBox: {
       display: 'flex',
       justifyContent: 'space-between',
+      [responsive.mobile]: {
+        flexDirection: 'column',
+        gap: 18,
+        marginBottom: 20,
+      },
     },
     problemsDetailMainBox: {
       background: 'white',
@@ -39,6 +86,9 @@ export const useStyles = createStyles(({ token }) => {
       backdropFilter: 'blur(25px)',
       borderRadius: 16,
       marginTop: 24,
+      [responsive.mobile]: {
+        padding: '16px 16px 16px',
+      },
     },
     copyStyle: {
       margin: 0,
@@ -101,6 +151,9 @@ export const useStyles = createStyles(({ token }) => {
       fontWeight: 400,
       fontSize: 14,
       gap: 4,
+      [responsive.mobile]: {
+        height: 30,
+      },
     },
     baseBtnLink: {
       color: '#2B332D',
@@ -108,5 +161,6 @@ export const useStyles = createStyles(({ token }) => {
       fontWeight: 500,
       height: 44,
     },
+    baseBtnStyle: { width: 143, height: 48, background: '#fff', fontSize: 16 },
   };
 });
