@@ -8,7 +8,7 @@ const SubmissionsTable = ({
 }: {
   dataSource: IPSubmissionsTableItem[] | undefined;
 }) => {
-  const pageSize = 10;
+  const pageSize = 8;
   const { styles } = useStyles();
   const [page, setPage] = useState(1);
   const createTableHead = (title: string) => (
