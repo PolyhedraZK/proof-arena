@@ -54,9 +54,9 @@ const Empty = memo(({ handleCreate }: IProps) => {
     <Flex vertical align="center" gap={22} className={styles.emptyWrapper}>
       <EmptySvg />
       <p className="sub-tit">You don't have any Problems.</p>
-      <p className="second-tit">
+      {/* <p className="second-tit">
         Create your first Problems to start using our Proof Cloud.
-      </p>
+      </p> */}
     </Flex>
   );
 });

@@ -141,44 +141,44 @@ Your prover program must read bytes from stdin and print bytes to stdout. We wil
 	return sendProofData(proof, vk, witness, outputPipe)
     ```
   10. **SPJ starts your verifier by providing the pipe filepath that handles the input output communication.**
-    - Verifier Sample:
-    ```golang
-    // open a named pipe to avoid blocking on stdin
-    spjToVerifierPipeName := ipc.Read_string(os.Stdin)
-	spjToVerifierPipe, err := os.OpenFile(spjToVerifierPipeName, os.O_RDONLY, os.ModeNamedPipe)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-		os.Exit(1)
-	}
+        - Verifier Sample:
+        ```golang
+        // open a named pipe to avoid blocking on stdin
+        spjToVerifierPipeName := ipc.Read_string(os.Stdin)
+        spjToVerifierPipe, err := os.OpenFile(spjToVerifierPipeName, os.O_RDONLY, os.ModeNamedPipe)
+        if err != nil {
+            fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+            os.Exit(1)
+        }
 
-	VerifierToSPJPipeName := ipc.Read_string(os.Stdin)
-	VerifierToSPJPipe, err := os.OpenFile(VerifierToSPJPipeName, os.O_WRONLY, os.ModeNamedPipe)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-		os.Exit(1)
-	}
-    ```
-  11. ** SPJ sends the proof, verification key, and public input to the verifier.**
-    - Verifier Sample:
-    ```golang
-    proofBytes := ipc.Read_byte_array(inputPipe)
-	vkBytes := ipc.Read_byte_array(inputPipe)
-	publicWitnessBytes := ipc.Read_byte_array(inputPipe)
-    ```
+        VerifierToSPJPipeName := ipc.Read_string(os.Stdin)
+        VerifierToSPJPipe, err := os.OpenFile(VerifierToSPJPipeName, os.O_WRONLY, os.ModeNamedPipe)
+        if err != nil {
+            fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+            os.Exit(1)
+        }
+        ```
+  11. **SPJ sends the proof, verification key, and public input to the verifier.**
+        - Verifier Sample:
+            ```golang
+            proofBytes := ipc.Read_byte_array(inputPipe)
+            vkBytes := ipc.Read_byte_array(inputPipe)
+            publicWitnessBytes := ipc.Read_byte_array(inputPipe)
+            ```
   12. **Verify the Proof, and send back result**
-    - Verifier Sample:
-    ```golang
-    err = groth16.Verify(proof, vk, publicWitness)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-		ipc.Write_byte_array(outputPipe, []byte{0}) // 0 means proof is invalid
-	} else {
-		fmt.Fprintf(os.Stderr, "Proof verified\n")
-		ipc.Write_byte_array(outputPipe, []byte{0xff}) // 0xff means proof is valid
-	}
-	fmt.Fprintf(os.Stderr, "Done\n")
-	return nil
-    ```
+        - Verifier Sample:
+        ```golang
+        err = groth16.Verify(proof, vk, publicWitness)
+        if err != nil {
+            fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+            ipc.Write_byte_array(outputPipe, []byte{0}) // 0 means proof is invalid
+        } else {
+            fmt.Fprintf(os.Stderr, "Proof verified\n")
+            ipc.Write_byte_array(outputPipe, []byte{0xff}) // 0xff means proof is valid
+        }
+        fmt.Fprintf(os.Stderr, "Done\n")
+        return nil
+        ```
 
 ## How to submit your solution?
 - You need to submit a binary prover file that matches our requirements.

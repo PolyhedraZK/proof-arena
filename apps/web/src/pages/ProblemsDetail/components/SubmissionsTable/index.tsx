@@ -2,12 +2,13 @@ import { Table, ConfigProvider, Pagination } from 'antd';
 import { useStyles } from './index.style.ts';
 import { IPSubmissionsTableItem } from '@/services/problems/types.ts';
 import { useState } from 'react';
+import BaseEmpty from '@/components/base/BaseEmpty.tsx';
 const SubmissionsTable = ({
   dataSource,
 }: {
   dataSource: IPSubmissionsTableItem[] | undefined;
 }) => {
-  const pageSize = 10;
+  const pageSize = 8;
   const { styles } = useStyles();
   const [page, setPage] = useState(1);
   const createTableHead = (title: string) => (
@@ -17,7 +18,7 @@ const SubmissionsTable = ({
     {
       title: createTableHead('Task ID'),
       dataIndex: 'id',
-      render: (_: any,__: any,index: number) => (index + 1),
+      render: (_: any, __: any, index: number) => index + 1,
     },
     {
       title: createTableHead('Prover Name'),
@@ -74,7 +75,7 @@ const SubmissionsTable = ({
       key: 'verify_time',
     },
     {
-      title: createTableHead('Peak memory（MB）'),
+      title: createTableHead('Peak memory（KB）'),
       width: 180,
       dataIndex: 'peak_memory',
       key: 'peak_memory',
@@ -93,9 +94,7 @@ const SubmissionsTable = ({
         theme={{
           components: {
             Table: {
-              headerBg: '#fff',
-              colorBgContainer:
-                'linear-gradient(0deg, rgba(255, 255, 255, 0.50) 0%, rgba(255, 255, 255, 0.50) 100%), #F8F9FA',
+              headerBg: 'rgba(43, 51, 45, 0.03)',
               headerSplitColor: 'none',
               cellPaddingBlockMD: 20,
               cellPaddingInlineMD: 12,
@@ -108,10 +107,11 @@ const SubmissionsTable = ({
           <Table
             size="middle"
             pagination={false}
+            locale={{ emptyText: <BaseEmpty style={{margin: '76px auto 126px auto'}} description={'No Submissions'} /> }}
             rowKey={'id'}
             className={styles.tableStyle}
             bordered={false}
-            scroll={{ x: 'calc(100% + 50%)' }}
+            scroll={{ x: 1700 }}
             columns={columns}
             dataSource={
               dataSource?.slice(page * pageSize - pageSize, page * pageSize) ||
@@ -119,7 +119,7 @@ const SubmissionsTable = ({
             }
           />
         </div>
-        {dataSource?.length && (
+        {dataSource?.length && dataSource?.length > 8 ? (
           <Pagination
             onChange={(page: number) => {
               setPage(page);
@@ -130,7 +130,7 @@ const SubmissionsTable = ({
             pageSize={pageSize}
             total={dataSource?.length}
           />
-        )}
+        ):null}
       </ConfigProvider>
     </>
   );
