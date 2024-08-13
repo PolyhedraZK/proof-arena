@@ -69,10 +69,17 @@ export default createStyles(({ responsive, isDarkMode, prefixCls }) => {
       },
     },
     githubBtn: {
+      width: 144,
+      height: 44,
       marginLeft: '80px',
+      fontWeight: 500,
+      cursor: 'pointer',
     },
     mdGithubBtn: {
+      width: 140,
+      height: 44,
       marginTop: 32,
+      fontWeight: 500,
       cursor: 'pointer',
     },
     mobileNav: {
