@@ -84,15 +84,15 @@ const SubmissionsChart = ({ chartData }: SubmissionsChartType) => {
         lineHeight: 6,
         formatter: mobile
           ? (value: string) => {
-              if (value?.length > 7) {
-                var result: string[] = [];
-                for (var i = 0; i < value.length; i += 7) {
-                  result.push(value.substring(i, 7));
-                }
-                return result.join('\n');
+            if (value?.length > 7) {
+              var result: string[] = [];
+              for (var i = 0; i < value.length; i += 7) {
+                result.push(value.substring(i, 7));
               }
-              return value;
+              return result.join('\n');
             }
+            return value;
+          }
           : (value: string) => value,
       },
     },
@@ -130,23 +130,24 @@ const SubmissionsChart = ({ chartData }: SubmissionsChartType) => {
   return (
     <div className={styles.submissionsChartBox}>
       {chartData?.length ? <>
-        <div className={styles.boxSpace}>
-          <span className={styles.title}>Metric analysis charts</span>
-          <ConfigProvider
-            theme={{
-              components: {
-                Segmented: {
-                  itemColor: 'rgba(43, 51, 45, 0.60)',
-                  itemActiveBg: 'rgba(52, 168, 83, 0.10)',
-                  itemHoverBg: 'rgba(52, 168, 83, 0.10)',
-                  itemSelectedBg: 'rgba(52, 168, 83, 0.10)',
-                  itemSelectedColor: '#2B332D',
-                  trackBg: '#fff',
-                  borderRadius: 100,
-                },
+        <ConfigProvider
+          theme={{
+            components: {
+              Segmented: {
+                itemColor: 'rgba(43, 51, 45, 0.60)',
+                itemActiveBg: 'rgba(52, 168, 83, 0.10)',
+                itemHoverBg: 'rgba(52, 168, 83, 0.10)',
+                itemSelectedBg: 'rgba(52, 168, 83, 0.10)',
+                itemSelectedColor: '#2B332D',
+                trackBg: '#fff',
+                borderRadius: 100,
               },
-            }}
-          >
+            },
+          }}
+        >
+          <div className={styles.boxSpace}>
+            <span className={styles.title}>Metric analysis charts</span>
+
             {mobile ?
               <div>
                 <FilterIcon onClick={() => setDrawerOpen(true)} style={{ marginTop: 5 }} />
@@ -178,17 +179,20 @@ const SubmissionsChart = ({ chartData }: SubmissionsChartType) => {
                   </div>
                 </Drawer>
               </div>
-              : <Segmented<string>
-                className={styles.segmentedStyle}
-                options={segmentedOptions}
-                onChange={value => {
-                  setSegmentedValue(value);
-                }}
-                value={segmentedValue}
-              />}
-          </ConfigProvider>
-        </div>
-        <ReactEcharts style={{ height: mobile ? 430 : 484 }} option={options} />
+              : null}
+          </div>
+          {!mobile && <Segmented<string>
+            block
+            className={styles.segmentedStyle}
+            options={segmentedOptions}
+            onChange={value => {
+              setSegmentedValue(value);
+            }}
+            value={segmentedValue}
+          />}
+          <ReactEcharts style={{ height: mobile ? 430 : 484 }} option={options} />
+        </ConfigProvider>
+
       </> : <BaseEmpty description={'No Submissions'} />}
     </div>
   );

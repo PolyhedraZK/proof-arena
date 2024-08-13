@@ -12,7 +12,7 @@ import analysisChartsAction from '@/assets/icons/analysis-charts-action.svg';
 import CopySvg from '@/assets/icons/copy.svg';
 import BaseButton from '@/components/base/BaseButton.tsx';
 import CustomTitle from '@/components/base/CustomTitle.tsx';
-import { IProblemsDetail } from '@/services/problems/types.ts';
+import { IPSubmissionsTableItem, IProblemsDetail } from '@/services/problems/types.ts';
 import isImageByLoading from '@/utils/checkImg.ts';
 
 import ProblemsDescription from '../ProblemsDescription/index.tsx';
@@ -42,6 +42,7 @@ const ProblemsDetail = () => {
   const [avatar, setAvatar] = useState<string>('');
   const [more, setMore] = useState(false);
   const { styles, cx } = useStyles();
+  const [dataSource, setDataSource] = useState<IPSubmissionsTableItem[]>([]);
 
   const { data, loading } = useRequest(() => fetch('/problemData.json')
     .then(response => {
@@ -50,24 +51,23 @@ const ProblemsDetail = () => {
       }
       return response.json();
     }))
-
-  const { data: dataSource } = useRequest(() => fetch(detaileData?.submission_data_path)
-    .then(response => {
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      return response.json();
-    }))
-
   const detaileData: IProblemsDetail = data?.find(item => item.problem_id === Number(detailId))
-
-  const autoHeightDesMd =
-    detaileData?.details && detaileData?.details?.length > 1000;
+  const autoHeightDesMd = detaileData?.details && detaileData?.details?.length > 1000;
   useEffect(() => {
     isImageByLoading(detaileData?.proposer_icon).then(imgUrl =>
       setAvatar(imgUrl),
     );
-  }, []);
+    fetch(detaileData?.submission_data_path)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(data => {
+        setDataSource(data);
+      });
+  }, [detaileData]);
 
 
   const onGoBack = () => {
@@ -80,7 +80,7 @@ const ProblemsDetail = () => {
         items={[
           {
             title: (
-              <a href="javascript:void(0)" onClick={onGoBack}>
+              <a onClick={onGoBack}>
                 Problems
               </a>
             ),
@@ -136,7 +136,7 @@ const ProblemsDetail = () => {
                 className={styles.baseBtnStyle}
                 onClick={() => setMore(!more)}
               >
-                View more&nbsp;&nbsp; {!more ? <ArrowDonw /> : <ArrowUpper />}
+                {!more ? <>View more &nbsp;&nbsp;<ArrowDonw /></> : <>View less &nbsp;&nbsp;<ArrowUpper /></>}
               </BaseButton>
             </div>
           )}

@@ -9,7 +9,7 @@ export const useStyles = createStyles(({ css, responsive }) => {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
-      marginBottom: 33,
+      marginBottom: 21,
     },
     title: {
       display: 'inline-block',
@@ -57,6 +57,7 @@ export const useStyles = createStyles(({ css, responsive }) => {
     border: 1px solid rgba(43, 51, 45, 0.10);
     padding: 6px;
     .proof-segmented-item{
+      justify-content: center;
         border-radius: 100px;
         height: 30px;
         display: flex;
