@@ -13,9 +13,9 @@ export const useStyles = createStyles(({ token, responsive }) => {
     },
     title: {
       display: 'inline-block',
-      margin: '0px 12px 0px 0px',
+      margin: '0px 10px 0px 0px',
       fontSize: 24,
-      fontWeight: 500,
+      fontWeight: 600,
       position: 'relative',
     },
     titleBlock: {
@@ -74,12 +74,12 @@ export const useStyles = createStyles(({ token, responsive }) => {
       position: 'static',
     },
     problemsDetailHeadBox: {
+      marginBottom: 40,
       display: 'flex',
       justifyContent: 'space-between',
       [responsive.mobile]: {
         flexDirection: 'column',
         gap: 18,
-        marginBottom: 20,
       },
     },
     problemsDetailMainBox: {
@@ -165,5 +165,12 @@ export const useStyles = createStyles(({ token, responsive }) => {
       height: 44,
     },
     baseBtnStyle: { width: 143, height: 48, background: '#fff', fontSize: 16 },
+    loadingPis: {
+      fontSize: 54,
+      position: 'absolute',
+      top: '50%',
+      left: '50%',
+      transform: 'translate(-50%,-50%)',
+    },
   };
 });

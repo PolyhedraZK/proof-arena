@@ -3,14 +3,17 @@ import { Link, useNavigate } from 'react-router-dom';
 
 import { links } from './Header';
 import useStyles from './header.style';
-import { useResponsive, useThemeMode } from 'antd-style';
-import GighubButton from '@/assets/footerIcons/githubButton.svg?r';
-import MenuIcon from '@/assets/menuIcon.svg?r';
+import { useResponsive, useThemeMode } from 'antd-style'
+import GighubButton from '@/assets/footerIcons/githubButton.svg?r'
+import GithubIcon from '@/assets/icons/githubIcon.svg?r'
+import ArrowRightTop from '@/assets/icons/arrow-right-top.svg?r'
+import MenuIcon from '@/assets/menuIcon.svg?r'
 import Icon, { CloseOutlined } from '@ant-design/icons';
 import Logo from '@/assets/logo.svg';
 import WhiteLogo from '@/assets/white-logo.svg';
 import { useState } from 'react';
 import { Drawer } from 'antd';
+import BaseButton from '@/components/base/BaseButton';
 function PcNavBar() {
   const { styles } = useStyles();
   const navigate = useNavigate();
@@ -81,14 +84,8 @@ function PcNavBar() {
           </Link>
         ))}
       </div>
-      <GighubButton
-        className={styles.githubBtn}
-        onClick={() =>
-          window.open('https://github.com/PolyhedraZK/proof-arena')
-        }
-      />
-    </div>
-  );
+      <BaseButton className={styles.githubBtn} onClick={() => window.open('https://github.com/PolyhedraZK/proof-arena')} ><GithubIcon/> &nbsp;Github<ArrowRightTop/></BaseButton>
+    </div>);
 }
 
 export default PcNavBar;

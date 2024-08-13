@@ -34,48 +34,42 @@ const Footer = () => {
       name: 'medium',
       width: 28,
     },
-  ];
-  const Copyright = () => (
-    <div className={styles.copyright}>
-      © 2024 Proof Arena. All rights reserved
-    </div>
-  );
-  const IconsDom = () => (
-    <Space align="center" size={24}>
-      {Icons?.map(item => (
-        <img
-          className={styles.footerIconStyle}
-          style={{ width: item.width }}
-          onClick={() => window.open(item.address)}
-          key={item.name}
-          alt={item.name}
-          src={item.icon}
-        />
-      ))}
+  ]
+  const Copyright = () => <div className={styles.copyright}>
+    © 2024 Proof Arena. All rights reserved
+  </div>
+  const IconsDom = () => <div className={styles.footerItemBox}>
+    <Space className={styles.footerIconBox} size={24}>
+      {Icons?.map(item => <img
+        className={styles.footerIconStyle}
+        style={{ width: item.width }}
+        onClick={() => window.open(item.address)}
+        key={item.name}
+        alt={item.name}
+        src={item.icon} />)}
     </Space>
-  );
-  return (
-    <footer className={styles.footerBox}>
-      <div className={styles.footerContent}>
+  </div>
+  return <footer className={styles.footerBox}>
+    <div className={styles.footerContent}>
+      <div className={styles.footerItemBox}>
         <img
           className={styles.logo}
           src={themeMode == 'dark' ? Logo : WhiteLogo}
           alt="logo"
         />
-        {mobile ? (
-          <>
-            <IconsDom />
-            <Copyright />
-          </>
-        ) : (
-          <>
-            <Copyright />
-            <IconsDom />
-          </>
-        )}
       </div>
-    </footer>
-  );
+      {
+        mobile ? <>
+          <IconsDom />
+          <Copyright />
+        </>
+          : <>
+            <Copyright />
+            <IconsDom />
+          </>
+      }
+    </div>
+  </footer>
 };
 
 export default Footer;

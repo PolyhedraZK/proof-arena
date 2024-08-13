@@ -32,7 +32,7 @@ export default createStyles(({ responsive, isDarkMode }) => {
     copyright: {
       flex: 1,
       textAlign: 'center',
-      marginLeft: -62,
+      // marginLeft: -62,
       color: 'rgba(0,0,0,.5)',
       [responsive.mobile]: {
         marginLeft: 0,
@@ -40,6 +40,21 @@ export default createStyles(({ responsive, isDarkMode }) => {
     },
     footerIconStyle: {
       cursor: 'pointer',
+    },
+    footerIconBox: {
+      display: 'flex',
+      justifyContent: 'end',
+      alignItems: 'center',
+      [responsive.mobile]: {
+        justifyContent: 'center',
+      },
+    },
+    footerItemBox: {
+      width: 230,
+      [responsive.mobile]: {
+        width: '100%',
+        textAlign: 'center',
+      },
     },
   };
 });

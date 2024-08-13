@@ -22,7 +22,7 @@ const ProblemsListItem = ({ info, onClick }: IproblemsListItemProps) => {
       <div className={styles.boxSpace}>
         <div className={styles.boxSpace}>
           <Text>
-            <span className={styles.secondary}>ID: </span>
+            <span>ID: </span>
             <Paragraph
               className={styles.copyStyle}
               copyable={{

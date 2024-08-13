@@ -8,9 +8,12 @@ interface IEmptyProps extends EmptyProps {
 
 const useStyles = createStyles({
   descStyle: {
-    color: 'rgba(0, 0, 0, 0.45)',
-  },
-});
+    color: '#2B332D',
+    fontSize: 18,
+    fontWeight: 500,
+    fontFamily: 'Poppins',
+  }
+})
 const BaseEmpty = ({ ...props }: IEmptyProps) => {
   const { styles, cx } = useStyles();
   const { image = EmptySvg, description = 'No data', desClassName } = props;

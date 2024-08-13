@@ -73,8 +73,5 @@ export const useStyles = createStyles(() => {
       top: '50%',
       transform: 'translateY(-50%)',
     },
-    secondary: {
-      color: 'rgba(43, 51, 45, .6)',
-    },
   };
 });
