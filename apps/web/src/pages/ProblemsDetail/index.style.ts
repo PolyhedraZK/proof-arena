@@ -164,7 +164,7 @@ export const useStyles = createStyles(({ token, responsive }) => {
       fontWeight: 500,
       height: 44,
     },
-    baseBtnStyle: { width: 143, height: 48, background: '#fff', fontSize: 16 },
+    baseBtnStyle: { height: 48, background: '#fff', fontSize: 16 },
     loadingPis: {
       fontSize: 54,
       position: 'absolute',
