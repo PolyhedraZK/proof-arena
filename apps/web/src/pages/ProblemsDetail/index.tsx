@@ -57,7 +57,7 @@ const ProblemsDetail = () => {
     isImageByLoading(detaileData?.proposer_icon).then(imgUrl =>
       setAvatar(imgUrl),
     );
-    fetch(detaileData?.submission_data_path)
+    detaileData && fetch(detaileData?.submission_data_path)
       .then(response => {
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -65,8 +65,9 @@ const ProblemsDetail = () => {
         return response.json();
       })
       .then(data => {
-        setDataSource(data);
-      });
+        setDataSource(data || []);
+      })
+      .catch(error => console.log(error))
   }, [detaileData]);
 
 
@@ -115,7 +116,7 @@ const ProblemsDetail = () => {
             </div>
             <div className={cx(styles.boxSpace, styles.headBoxBtom)}>
               <div className={styles.headBoxBtomTitle}>
-                <Avatar size={24} icon={<img src={avatar} />} />
+                <Avatar style={{ border: 'none' }} size={24} icon={<img src={avatar} />} />
                 <span>{detaileData?.proposer}</span>
               </div>
             </div>
