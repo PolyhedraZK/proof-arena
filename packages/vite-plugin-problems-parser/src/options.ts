@@ -1,8 +1,8 @@
-type Config = {
+export type ParseOptionItem = {
   src: string;
   exclude?: string;
 };
 export type ViteProblemParseOptions = {
-  problems: Config;
-  spj: Config;
+  problems: ParseOptionItem;
+  spj: ParseOptionItem;
 };
