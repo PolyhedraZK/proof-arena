@@ -26,7 +26,6 @@ function ProofLayout() {
       </Layout>
       <Footer />
     </div>
-
   );
 }
 export default ProofLayout;

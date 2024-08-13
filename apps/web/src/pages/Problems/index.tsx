@@ -10,7 +10,6 @@ import { useProverStyles } from './index.style';
 import ProblemsListItem from './ProblemsListItem';
 import LoadingCard from './LoadingCard';
 
-
 function ProversPage() {
   const { styles } = useProverStyles();
   const navigate = useNavigate();
@@ -18,7 +17,7 @@ function ProversPage() {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    setIsLoading(true)
+    setIsLoading(true);
     fetch('/problemData.json')
       .then(response => {
         if (!response.ok) {
@@ -28,11 +27,11 @@ function ProversPage() {
       })
       .then(data => {
         setProblemsListData(data?.filter(item => !item.draft));
-        setIsLoading(false)
+        setIsLoading(false);
       })
       .catch(error => {
-        console.error('Fetch error:', error)
-        setIsLoading(false)
+        console.error('Fetch error:', error);
+        setIsLoading(false);
       });
   }, []);
 
@@ -41,25 +40,27 @@ function ProversPage() {
       <div className="my-provers">
         {problemsListData?.length ? (
           <Row gutter={[16, 16]}>
-            {
-              problemsListData.map(item => {
-                const { problem_id } = item;
-                return (
-                  <Col
-                    key={problem_id}
-                    xs={{ flex: '100%' }}
-                    sm={{ flex: '100%' }}
-                    md={{ flex: '50%' }}
-                    lg={{ flex: '33.33%' }}
-                  >
-                    <ProblemsListItem
-                      onClick={() => navigate(`/problemsDetail/${problem_id}`)}
-                      info={item} />
-                  </Col>);
-              })}
+            {problemsListData.map(item => {
+              const { problem_id } = item;
+              return (
+                <Col
+                  key={problem_id}
+                  xs={{ flex: '100%' }}
+                  sm={{ flex: '100%' }}
+                  md={{ flex: '50%' }}
+                  lg={{ flex: '33.33%' }}
+                >
+                  <ProblemsListItem
+                    onClick={() => navigate(`/problemsDetail/${problem_id}`)}
+                    info={item}
+                  />
+                </Col>
+              );
+            })}
           </Row>
-        ) : (isLoading ?
-          <LoadingCard num={8} /> :
+        ) : isLoading ? (
+          <LoadingCard num={8} />
+        ) : (
           <Empty />
         )}
       </div>

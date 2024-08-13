@@ -18,7 +18,7 @@ const SubmissionsTable = ({
     {
       title: createTableHead('Task ID'),
       dataIndex: 'id',
-      render: (_: any, __: any, index: number) => (index + 1),
+      render: (_: any, __: any, index: number) => index + 1,
     },
     {
       title: createTableHead('Prover Name'),

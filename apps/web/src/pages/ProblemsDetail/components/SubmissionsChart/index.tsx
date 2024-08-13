@@ -1,7 +1,7 @@
 import { ConfigProvider, Drawer, Segmented } from 'antd';
 import ReactEcharts from 'echarts-for-react';
 import { useEffect, useState } from 'react';
-import { useResponsive } from 'antd-style'
+import { useResponsive } from 'antd-style';
 import { CloseOutlined } from '@ant-design/icons';
 import FilterIcon from '@/assets/icons/filterIcon.svg?r';
 import CheckMark from '@/assets/icons/check-mark.svg?r';
@@ -83,16 +83,18 @@ const SubmissionsChart = ({ chartData }: SubmissionsChartType) => {
         rotate: mobile ? 90 : 0,
         fontSize: 12,
         lineHeight: 6,
-        formatter: mobile ? (value: string) => {
-          if (value?.length > 7) {
-            var result: string[] = [];
-            for (var i = 0; i < value.length; i += 7) {
-              result.push(value.substring(i, 7));
+        formatter: mobile
+          ? (value: string) => {
+              if (value?.length > 7) {
+                var result: string[] = [];
+                for (var i = 0; i < value.length; i += 7) {
+                  result.push(value.substring(i, 7));
+                }
+                return result.join('\n');
+              }
+              return value;
             }
-            return result.join('\n');
-          }
-          return value
-        } : (value: string) => value,
+          : (value: string) => value,
       },
     },
     yAxis: {
@@ -124,67 +126,89 @@ const SubmissionsChart = ({ chartData }: SubmissionsChartType) => {
   }, [chartData]);
   return (
     <div className={styles.submissionsChartBox}>
-      {chartData?.length ? <>
-      <div className={styles.boxSpace}>
-        <span className={styles.title}>Metric analysis charts</span>
-        <ConfigProvider
-          theme={{
-            components: {
-              Segmented: {
-                itemColor: 'rgba(43, 51, 45, 0.60)',
-                itemActiveBg: 'rgba(52, 168, 83, 0.10)',
-                itemHoverBg: 'rgba(52, 168, 83, 0.10)',
-                itemSelectedBg: 'rgba(52, 168, 83, 0.10)',
-                itemSelectedColor: '#2B332D',
-                trackBg: '#fff',
-                borderRadius: 100,
-              },
-            },
-          }}
-        >
-          {mobile ?
-            <div>
-              <FilterIcon onClick={() => setDrawerOpen(true)} style={{ marginTop: 5 }} />
-              <Drawer
-                height={439}
-                style={{ background: 'rgba(0, 0, 0, 0.1)' }}
-                styles={{
-                  body: {
-                    borderStartStartRadius: 16,
-                    borderStartEndRadius: 16,
-                    background: '#fff',
-                    padding: '20px 16px',
-                  }
-                }}
-                placement={'bottom'}
-                closable={false}
-                onClose={() => setDrawerOpen(false)}
-                open={drawerOpen}
-              >
-                <div className={styles.drawerTitleBox}>
-                  <div className={styles.drawerTitleBox}> <FilterIcon /> &nbsp;Select</div>
-                  <CloseOutlined onClick={() => setDrawerOpen(false)} />
-                </div>
-                <div className={styles.drawerList}>
-                  {segmentedOptions?.map(item => <div onClick={() => setSegmentedValue(item.value)} className={styles.drawerListItem}>
-                    <span>{item.label}</span>
-                    {segmentedValue === item.value && <CheckMark className={styles.checkMarkIcon} />}
-                  </div>)}
-                </div>
-              </Drawer>
-            </div>
-            : <Segmented<string>
-              className={styles.segmentedStyle}
-              options={segmentedOptions}
-              onChange={value => {
-                setSegmentedValue(value);
+      {chartData?.length ? (
+        <>
+          <div className={styles.boxSpace}>
+            <span className={styles.title}>Metric analysis charts</span>
+            <ConfigProvider
+              theme={{
+                components: {
+                  Segmented: {
+                    itemColor: 'rgba(43, 51, 45, 0.60)',
+                    itemActiveBg: 'rgba(52, 168, 83, 0.10)',
+                    itemHoverBg: 'rgba(52, 168, 83, 0.10)',
+                    itemSelectedBg: 'rgba(52, 168, 83, 0.10)',
+                    itemSelectedColor: '#2B332D',
+                    trackBg: '#fff',
+                    borderRadius: 100,
+                  },
+                },
               }}
-              value={segmentedValue}
-            />}
-        </ConfigProvider>
-      </div>
-      <ReactEcharts style={{ height: mobile ? 430 : 484 }} option={options} />
-      </> : <BaseEmpty description={'No Submissions'}/>}
+            >
+              {mobile ? (
+                <div>
+                  <FilterIcon
+                    onClick={() => setDrawerOpen(true)}
+                    style={{ marginTop: 5 }}
+                  />
+                  <Drawer
+                    height={439}
+                    style={{ background: 'rgba(0, 0, 0, 0.1)' }}
+                    styles={{
+                      body: {
+                        borderStartStartRadius: 16,
+                        borderStartEndRadius: 16,
+                        background: '#fff',
+                        padding: '20px 16px',
+                      },
+                    }}
+                    placement={'bottom'}
+                    closable={false}
+                    onClose={() => setDrawerOpen(false)}
+                    open={drawerOpen}
+                  >
+                    <div className={styles.drawerTitleBox}>
+                      <div className={styles.drawerTitleBox}>
+                        {' '}
+                        <FilterIcon /> &nbsp;Select
+                      </div>
+                      <CloseOutlined onClick={() => setDrawerOpen(false)} />
+                    </div>
+                    <div className={styles.drawerList}>
+                      {segmentedOptions?.map(item => (
+                        <div
+                          onClick={() => setSegmentedValue(item.value)}
+                          className={styles.drawerListItem}
+                        >
+                          <span>{item.label}</span>
+                          {segmentedValue === item.value && (
+                            <CheckMark className={styles.checkMarkIcon} />
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </Drawer>
+                </div>
+              ) : (
+                <Segmented<string>
+                  className={styles.segmentedStyle}
+                  options={segmentedOptions}
+                  onChange={value => {
+                    setSegmentedValue(value);
+                  }}
+                  value={segmentedValue}
+                />
+              )}
+            </ConfigProvider>
+          </div>
+          <ReactEcharts
+            style={{ height: mobile ? 430 : 484 }}
+            option={options}
+          />
+        </>
+      ) : (
+        <BaseEmpty description={'No Submissions'} />
+      )}
     </div>
   );
 };

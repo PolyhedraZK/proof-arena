@@ -45,7 +45,8 @@ const ProblemsDetail = () => {
   const [avatar, setAvatar] = useState<string>('');
   const [more, setMore] = useState(false);
   const { styles, cx } = useStyles();
-  const autoHeightDesMd = detaileData?.details && detaileData?.details?.length > 1000
+  const autoHeightDesMd =
+    detaileData?.details && detaileData?.details?.length > 1000;
   useEffect(() => {
     fetch('/problemData.json')
       .then(response => {
@@ -64,7 +65,7 @@ const ProblemsDetail = () => {
     isImageByLoading(detaileData?.proposer_icon).then(imgUrl =>
       setAvatar(imgUrl),
     );
-    console.log(detaileData?.description?.length)
+    console.log(detaileData?.description?.length);
     detaileData?.submission_data_path &&
       fetch(detaileData?.submission_data_path)
         .then(response => {
@@ -86,14 +87,24 @@ const ProblemsDetail = () => {
       <Breadcrumb
         items={[
           {
-            title: <a href='javascript:void(0)' onClick={onGoBack}>Problems</a>,
+            title: (
+              <a href="javascript:void(0)" onClick={onGoBack}>
+                Problems
+              </a>
+            ),
           },
           {
             title: detaileData?.title,
-          }
+          },
         ]}
       />
-      <div className={cx(styles.headBox, more && styles.heightAuto, !autoHeightDesMd && styles.heightAuto)}>
+      <div
+        className={cx(
+          styles.headBox,
+          more && styles.heightAuto,
+          !autoHeightDesMd && styles.heightAuto,
+        )}
+      >
         <div className={styles.problemsDetailHeadBox}>
           <div className={styles.boxSpace}>
             <div className={styles.boxSpace}>
@@ -122,12 +133,26 @@ const ProblemsDetail = () => {
             </div>
           </div>
         </div>
-        {detaileData?.details && <div className={styles.problemsDescriptionBox}>
-          <ProblemsDescription mdFile={detaileData?.details || ''} />
-        </div>}
-        {autoHeightDesMd && <div className={cx(styles.headBoxChangeHeight, more && styles.headBoxChange)}>
-          <BaseButton className={styles.baseBtnStyle} onClick={() => setMore(!more)}>View more&nbsp;&nbsp; {!more ? <ArrowDonw /> : <ArrowUpper />}</BaseButton>
-        </div>}
+        {detaileData?.details && (
+          <div className={styles.problemsDescriptionBox}>
+            <ProblemsDescription mdFile={detaileData?.details || ''} />
+          </div>
+        )}
+        {autoHeightDesMd && (
+          <div
+            className={cx(
+              styles.headBoxChangeHeight,
+              more && styles.headBoxChange,
+            )}
+          >
+            <BaseButton
+              className={styles.baseBtnStyle}
+              onClick={() => setMore(!more)}
+            >
+              View more&nbsp;&nbsp; {!more ? <ArrowDonw /> : <ArrowUpper />}
+            </BaseButton>
+          </div>
+        )}
       </div>
       <div className={styles.problemsDetailMainBox}>
         <div className={styles.customTitleBox}>

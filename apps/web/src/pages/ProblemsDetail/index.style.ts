@@ -70,7 +70,7 @@ export const useStyles = createStyles(({ token, responsive }) => {
       alignItems: 'end',
       paddingBottom: 24,
     },
-    headBoxChange:{
+    headBoxChange: {
       position: 'static',
     },
     problemsDetailHeadBox: {

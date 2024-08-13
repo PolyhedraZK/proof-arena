@@ -17,7 +17,7 @@ const Footer = () => {
       icon: twitter,
       address: 'https://twitter.com/PolyhedraZK',
       name: 'twitter',
-      width: 28
+      width: 28,
     },
 
     {
@@ -25,48 +25,57 @@ const Footer = () => {
       icon: discord,
       address: 'https://discord.com/invite/polyhedra-network',
       name: 'discord',
-      width: 28
+      width: 28,
     },
     {
       id: '3',
       icon: medium,
       address: 'https://polyhedra.medium.com/',
       name: 'medium',
-      width: 28
+      width: 28,
     },
-  ]
-  const Copyright = () => <div className={styles.copyright}>
-    © 2024 Proof Arena. All rights reserved
-  </div>
-  const IconsDom = () => <Space align='center' size={24}>
-    {Icons?.map(item => <img
-      className={styles.footerIconStyle}
-      style={{ width: item.width }}
-      onClick={() => window.open(item.address)}
-      key={item.name}
-      alt={item.name}
-      src={item.icon} />)}
-  </Space>
-  return <footer className={styles.footerBox}>
-    <div className={styles.footerContent}>
-      <img
-        className={styles.logo}
-        src={themeMode == 'dark' ? Logo : WhiteLogo}
-        alt="logo"
-      />
-      {
-        mobile ? <>
-          <IconsDom />
-          <Copyright />
-        </>
-          : <>
+  ];
+  const Copyright = () => (
+    <div className={styles.copyright}>
+      © 2024 Proof Arena. All rights reserved
+    </div>
+  );
+  const IconsDom = () => (
+    <Space align="center" size={24}>
+      {Icons?.map(item => (
+        <img
+          className={styles.footerIconStyle}
+          style={{ width: item.width }}
+          onClick={() => window.open(item.address)}
+          key={item.name}
+          alt={item.name}
+          src={item.icon}
+        />
+      ))}
+    </Space>
+  );
+  return (
+    <footer className={styles.footerBox}>
+      <div className={styles.footerContent}>
+        <img
+          className={styles.logo}
+          src={themeMode == 'dark' ? Logo : WhiteLogo}
+          alt="logo"
+        />
+        {mobile ? (
+          <>
+            <IconsDom />
+            <Copyright />
+          </>
+        ) : (
+          <>
             <Copyright />
             <IconsDom />
           </>
-      }
-    </div>
-  </footer>
-
-}
+        )}
+      </div>
+    </footer>
+  );
+};
 
 export default Footer;
