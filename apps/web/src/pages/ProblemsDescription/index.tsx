@@ -2,9 +2,17 @@ import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { github } from 'react-syntax-highlighter/dist/esm/styles/hljs';
+import { createStyles } from 'antd-style';
 
+const useStyles = createStyles({
+  markdownStyle: {
+    fontFamily: 'Poppins'
+  }
+})
 const ProblemsDescription = ({ mdFile }: { mdFile: string }) => {
+  const { styles } = useStyles()
   return <Markdown
+    className={styles.markdownStyle}
     children={mdFile}
     remarkPlugins={[remarkGfm]}
     components={{
