@@ -1,87 +1,53 @@
-import { Flex, Pagination } from 'antd';
+import { Col, Row } from 'antd';
 import classNames from 'clsx';
-import { useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 
 import Empty from '@/components/biz/problems/Empty';
-import SubTitle from '@/components/biz/problems/SubTitle';
 import { IProblems } from '@/services/problems/types';
 
 import { useProverStyles } from './index.style';
 import ProblemsListItem from './ProblemsListItem';
-
-const pageSize = 10;
+import LoadingCard from './LoadingCard';
+import { useRequest } from 'ahooks';
 
 function ProversPage() {
   const { styles } = useProverStyles();
   const navigate = useNavigate();
-  // 横向或者纵向展示
-  const [layoutType, setLayoutType] = useState<'column' | 'row'>('column');
-  const [currentPage, setCurrentPage] = useState(1);
-  const [problemsListData, setProblemsListData] = useState<IProblems[]>([]);
-
-  useEffect(() => {
-    fetch('/problemData.json')
-      .then(response => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return response.json();
-      })
-      .then(data => setProblemsListData(data?.filter(item => !item.draft)))
-      .catch(error => console.error('Fetch error:', error));
-  }, []);
+  const { data, loading } = useRequest(() => fetch('/problemData.json')
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.json();
+    }))
+  const problemsListData: IProblems[] = data?.filter(item => !item.draft) || []
 
   return (
     <div className={classNames('main-container', styles.proversWrapper)}>
       <div className="my-provers">
-        <SubTitle layoutType={layoutType} setLayoutType={setLayoutType} />
-        {problemsListData?.length ? (
-          <Flex
-            vertical
-            style={{
-              height: 'calc(100vh - 300px)',
-              minHeight: 400,
-              overflow: 'hidden',
-              overflowY: 'auto',
-            }}
-            gap={12}
-            wrap="nowrap"
-          >
-            {problemsListData
-              ?.slice(pageSize * currentPage - pageSize, currentPage * pageSize)
-              .map(item => {
-                const { problem_id } = item;
-                return (
-                  <div
-                    onClick={() => navigate(`/problemsDetail/${problem_id}`)}
-                    key={problem_id}
-                  >
-                    <ProblemsListItem info={item} />
-                  </div>
-                );
-              })}
-          </Flex>
-        ) : (
-          <Empty />
-        )}
+        {loading ? <LoadingCard num={8} /> : <Fragment>
+          {problemsListData?.length > 0 ?
+            <Row gutter={[16, 16]}>
+              {
+                problemsListData.map(item => {
+                  const { problem_id } = item;
+                  return (
+                    <Col
+                      key={problem_id}
+                      xs={{ flex: '100%' }}
+                      sm={{ flex: '100%' }}
+                      md={{ flex: '50%' }}
+                      lg={{ flex: '33.33%' }}
+                    >
+                      <ProblemsListItem
+                        onClick={() => navigate(`/problemsDetail/${problem_id}`)}
+                        info={item} />
+                    </Col>);
+                })}
+            </Row> : <Empty />}
+        </Fragment>}
       </div>
-      {problemsListData &&
-      problemsListData.length &&
-      problemsListData.length > 0 ? (
-        <Pagination
-          style={{ marginTop: 30, marginBottom: 20, textAlign: 'center' }}
-          showSizeChanger={false}
-          onChange={(page: number) => {
-            setCurrentPage(page);
-          }}
-          defaultCurrent={1}
-          pageSize={pageSize}
-          total={problemsListData?.length}
-        />
-      ) : (
-        <></>
-      )}
     </div>
   );
 }

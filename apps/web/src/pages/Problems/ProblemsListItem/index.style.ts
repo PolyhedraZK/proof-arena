@@ -4,18 +4,25 @@ export const useStyles = createStyles(() => {
   return {
     title: {
       display: 'inline-block',
-      fontSize: 24,
+      fontSize: 20,
+      fontFamily: 'PingFang SC',
       fontWeight: 500,
       lineHeight: 1,
+      marginTop: 18,
+      color: '#2B332D',
     },
     problemsDetailHeadBox: {
-      width: '100%',
+      maxWidth: '100%',
+      flex: 1,
       background: 'white',
-      padding: 24,
+      padding: '24px 20px 20px 20px',
       border: '1px solid rgba(43, 51, 45, 0.05)',
       backdropFilter: 'blur(25px)',
       borderRadius: 16,
       cursor: 'pointer',
+      '&:hover': {
+        border: '1px solid rgba(43, 51, 45, 0.60)',
+      },
     },
     problemsDetailMainBox: {
       background: 'white',
@@ -35,8 +42,7 @@ export const useStyles = createStyles(() => {
 
     boxSpace: {
       display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'space-between',
+      flexDirection: 'column',
     },
     headBoxBtom: {
       borderRadius: '8px',
@@ -54,6 +60,7 @@ export const useStyles = createStyles(() => {
       display: 'flex',
       alignItems: 'center',
       gap: 8,
+      marginTop: 54,
     },
     mt16: {
       marginTop: 16,
@@ -65,9 +72,6 @@ export const useStyles = createStyles(() => {
       position: 'absolute',
       top: '50%',
       transform: 'translateY(-50%)',
-    },
-    secondary: {
-      color: 'rgba(43, 51, 45, .6)',
     },
   };
 });

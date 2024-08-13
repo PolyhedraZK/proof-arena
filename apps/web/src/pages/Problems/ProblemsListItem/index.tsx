@@ -6,7 +6,11 @@ import { useStyles } from './index.style.ts';
 import isImageByLoading from '@/utils/checkImg.ts';
 import { useEffect, useState } from 'react';
 
-const ProblemsListItem = ({ info }: { info: IProblems }) => {
+interface IproblemsListItemProps {
+  info: IProblems;
+  onClick: () => void;
+}
+const ProblemsListItem = ({ info, onClick }: IproblemsListItemProps) => {
   const { styles } = useStyles();
   const { Paragraph, Text } = Typography;
   const [avatar, setAvatar] = useState<string>('');
@@ -14,13 +18,11 @@ const ProblemsListItem = ({ info }: { info: IProblems }) => {
     isImageByLoading(info?.proposer_icon).then(imgUrl => setAvatar(imgUrl));
   }, [info]);
   return (
-    <div className={styles.problemsDetailHeadBox}>
+    <div onClick={onClick} className={styles.problemsDetailHeadBox}>
       <div className={styles.boxSpace}>
         <div className={styles.boxSpace}>
-          <span className={styles.title}>{info.title || '--'}</span>
-          &emsp;
           <Text>
-            <span className={styles.secondary}>ID: </span>
+            <span>ID: </span>
             <Paragraph
               className={styles.copyStyle}
               copyable={{
@@ -31,6 +33,7 @@ const ProblemsListItem = ({ info }: { info: IProblems }) => {
               {info.problem_id}
             </Paragraph>
           </Text>
+          <span className={styles.title}>{info.title || '--'}</span>
         </div>
         <div className={styles.headBoxBtomTitle}>
           <Avatar size={24} icon={<img src={avatar} />} />

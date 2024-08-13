@@ -6,7 +6,7 @@ import Logo from '@/assets/logo.svg';
 import WhiteLogo from '@/assets/white-logo.svg';
 
 import useStyles from './header.style';
-import PcNavBar from './PcNavBar';
+import NavBar from './NavBar';
 
 const Header = memo(() => {
   const { styles } = useStyles();
@@ -21,7 +21,7 @@ const Header = memo(() => {
           alt="logo"
         />
       </Link>
-      <PcNavBar />
+      <NavBar />
     </div>
   );
 });

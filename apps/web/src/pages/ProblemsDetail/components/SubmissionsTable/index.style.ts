@@ -1,6 +1,6 @@
 import { createStyles } from 'antd-style';
 
-export const useStyles = createStyles(({ css }) => ({
+export const useStyles = createStyles(({ css, prefixCls }) => ({
   TableTitle: {
     color: 'rgba(43, 51, 45, .5)',
     fontSize: 14,
@@ -20,8 +20,8 @@ export const useStyles = createStyles(({ css }) => ({
     overflow: 'hidden',
   },
   tableStyle: css(`
-  .proof-table-thead{
-    .proof-table-cell{
+  .${prefixCls}-table-thead{
+    .${prefixCls}-table-cell{
       padding: 12px;
     }
   }
