@@ -3,7 +3,7 @@ import ArrowDonw from '@/assets/icons/arrow-donw.svg?r';
 import ArrowUpper from '@/assets/icons/arrow-upper.svg?r';
 import Loading from '@/assets/icons/loading.svg?r'
 import Giscus from '@giscus/react';
-import { Avatar, Breadcrumb, Spin, Typography } from 'antd';
+import { Avatar, Breadcrumb, Flex, Spin, Typography } from 'antd';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 
@@ -136,7 +136,8 @@ const ProblemsDetail = () => {
                 className={styles.baseBtnStyle}
                 onClick={() => setMore(!more)}
               >
-                {!more ? <>View more &nbsp;&nbsp;<ArrowDonw /></> : <>View less &nbsp;&nbsp;<ArrowUpper /></>}
+                {!more ? <Flex gap={6} align='center'><span>View more</span> <ArrowDonw /></Flex>
+                  : <Flex gap={6} align='center'><span>View less</span> <ArrowUpper /></Flex>}
               </BaseButton>
             </div>
           )}

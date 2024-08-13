@@ -119,7 +119,7 @@ const SubmissionsTable = ({
             }
           />
         </div>
-        {dataSource?.length && dataSource?.length > 8 && (
+        {dataSource?.length && dataSource?.length > 8 ? (
           <Pagination
             onChange={(page: number) => {
               setPage(page);
@@ -130,7 +130,7 @@ const SubmissionsTable = ({
             pageSize={pageSize}
             total={dataSource?.length}
           />
-        )}
+        ):null}
       </ConfigProvider>
     </>
   );
