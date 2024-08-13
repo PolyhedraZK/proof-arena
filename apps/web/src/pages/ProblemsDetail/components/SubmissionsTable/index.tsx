@@ -75,7 +75,7 @@ const SubmissionsTable = ({
       key: 'verify_time',
     },
     {
-      title: createTableHead('Peak memory（MB）'),
+      title: createTableHead('Peak memory（KB）'),
       width: 180,
       dataIndex: 'peak_memory',
       key: 'peak_memory',
