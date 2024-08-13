@@ -36,7 +36,7 @@ const ProblemsListItem = ({ info, onClick }: IproblemsListItemProps) => {
           <span className={styles.title}>{info.title || '--'}</span>
         </div>
         <div className={styles.headBoxBtomTitle}>
-          <Avatar size={24} icon={<img src={avatar} />} />
+          <Avatar style={{border: 'none'}} size={24} icon={<img src={avatar} />} />
           <span>{info.proposer}</span>
         </div>
       </div>
