@@ -29,5 +29,5 @@ const Header = memo(() => {
 export default Header;
 
 export const links = [
-  { title: 'Problems', to: '/problems', isExternalLink: false },
+  { to: '/problems', label: 'Problems' },
 ];
