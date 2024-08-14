@@ -12,7 +12,7 @@ import Icon, { CloseOutlined } from '@ant-design/icons';
 import Logo from '@/assets/logo.svg';
 import WhiteLogo from '@/assets/white-logo.svg';
 import { useState } from 'react';
-import { Drawer } from 'antd';
+import { Drawer, Menu } from 'antd';
 import BaseButton from '@/components/base/BaseButton';
 function PcNavBar() {
   const { styles } = useStyles();
@@ -21,6 +21,15 @@ function PcNavBar() {
   const [isOpen, setIsOpen] = useState(false);
   const { themeMode } = useThemeMode();
 
+  const createMenuItems = () => (links.map(item => ({
+    label: <Link
+      key={item.label}
+      to={item.to}
+    >
+      {item.label}
+    </Link>,
+    key: item.to
+  })))
   return mobile ? (
     <div className={styles.navLinks}>
       <div className={styles.mobileNav}>
@@ -56,10 +65,10 @@ function PcNavBar() {
                 navigate(item.to);
                 setIsOpen(false);
               }}
-              key={item.title}
+              key={item.label}
               className={styles.dropdownItem}
             >
-              {item.title}
+              {item.label}
             </div>
           ))}
           <GighubButton
@@ -73,18 +82,8 @@ function PcNavBar() {
     </div>
   ) : (
     <div className={styles.navLinks}>
-      <div className="links">
-        {links.map(({ title, to }, idx) => (
-          <Link
-            className={classNames('link', { active: idx === 0 })}
-            key={title}
-            to={to}
-          >
-            {title}
-          </Link>
-        ))}
-      </div>
-      <BaseButton className={styles.githubBtn} onClick={() => window.open('https://github.com/PolyhedraZK/proof-arena')} ><GithubIcon/> &nbsp;Github<ArrowRightTop/></BaseButton>
+      <Menu defaultSelectedKeys={[links[0].to]} className={styles.antMenuStyle} mode="horizontal" items={createMenuItems()} />
+      <BaseButton className={styles.githubBtn} onClick={() => window.open('https://github.com/PolyhedraZK/proof-arena')} ><GithubIcon /> &nbsp;Github<ArrowRightTop /></BaseButton>
     </div>);
 }
 

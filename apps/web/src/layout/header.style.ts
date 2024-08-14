@@ -30,14 +30,11 @@ export default createStyles(({ responsive, isDarkMode, prefixCls }) => {
     navLogo: {
       display: 'flex',
       alignItems: 'center',
-      position: 'absolute',
-      left: 32,
       '& .logo': {
         width: 203,
         height: 'auto',
       },
       [responsive.sm]: {
-        left: 22,
         '& .logo': {
           width: '162px',
           height: 'auto',
@@ -48,16 +45,19 @@ export default createStyles(({ responsive, isDarkMode, prefixCls }) => {
       flex: 1,
       display: 'flex',
       alignItems: 'center',
+      marginLeft: 32,
+      justifyContent: 'flex-end',
       '.links': {
         flex: 1,
-        minWidth: '500px',
         display: 'flex',
         justifyContent: 'right',
         gap: '48px',
-        height: '87px',
         '.link': {
           color: hex2rgba(colors.textColor, 60),
           fontSize: '18px',
+          [responsive.sm]: {
+            padding: '26px 0px',
+          },
           '&.active': {
             color: colors.textColor,
             borderBottom: '2px solid #34A853',
@@ -74,6 +74,12 @@ export default createStyles(({ responsive, isDarkMode, prefixCls }) => {
       marginLeft: '80px',
       fontWeight: 500,
       cursor: 'pointer',
+      [responsive.tablet]: {
+        marginLeft: '0px',
+      },
+      [responsive.laptop]: {
+        marginLeft: '0px',
+      },
     },
     mdGithubBtn: {
       width: 140,
@@ -124,5 +130,33 @@ export default createStyles(({ responsive, isDarkMode, prefixCls }) => {
       borderBottom: '1px solid #f0f0f0',
     },
     menuList: { padding: '0px 16px' },
+
+    antMenuStyle: {
+      width: '100%',
+      justifyContent: 'right',
+      border: 'none',
+      flex: 1,
+      '.proof-menu-item': {
+        height: 88,
+        lineHeight: '88px',
+        fontSize: 18,
+        color: 'rgba(43, 51, 45, 0.6)',
+        [responsive.sm]: {
+          height: 72,
+          lineHeight: '72px',
+        },
+      },
+      '.proof-menu-item-selected':{
+        color: '#2B332D'
+      },
+      '.proof-menu-submenu-title': {
+        height: 88,
+        lineHeight: '88px',
+        [responsive.sm]: {
+          height: 72,
+          lineHeight: '72px',
+        },
+      },
+    },
   };
 });
