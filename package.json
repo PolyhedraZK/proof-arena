@@ -2,7 +2,7 @@
   "name": "proof-arena",
   "private": true,
   "scripts": {
-    "build": "turbo build",
+    "build:production": "turbo build",
     "build:testing": "turbo build:testing",
     "dev": "turbo dev",
     "lint": "turbo lint",
