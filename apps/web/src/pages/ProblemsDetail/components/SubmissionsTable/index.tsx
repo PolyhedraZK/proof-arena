@@ -81,7 +81,7 @@ const SubmissionsTable = ({
       key: 'peak_memory',
     },
     {
-      title: createTableHead('Proof size（KB）'),
+      title: createTableHead('Proof size（Byte）'),
       width: 150,
       dataIndex: 'proof_size',
       key: 'proof_size',
