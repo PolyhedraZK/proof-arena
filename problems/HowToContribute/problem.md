@@ -22,7 +22,7 @@ Contributing a problem allows you to define new challenges that will be used to 
     - Create a new directory with a descriptive name for your problem.
     - Inside this directory, create a `problem.md` file. This file should a header of following format:
 
-    ![Problem Header format](image.png)
+    ![Problem Header format](https://storage.googleapis.com/proof-cloud-assets/problem-header.png)
     
     - Fill in the header with the appropriate information for your problem.
     - Write a detailed description of the problem in markdown format, typically including the following sections:
