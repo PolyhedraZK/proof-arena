@@ -21,8 +21,9 @@ const createUnit = (type: string) => {
     case 'verify_time':
       return 'seconds';
     case 'peak_memory':
-    case 'proof_size':
       return 'KB';
+    case 'proof_size':
+      return 'B';
     default:
       return '';
   }
