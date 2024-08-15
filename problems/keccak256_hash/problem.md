@@ -10,6 +10,10 @@ proposer_icon: assets/icons/xxx.png (24x24)
 
 ## Problem Description
 
+In this problem, your prover is required to generate a proof for the Keccak256 hash function. The Keccak256 hash function is a cryptographic hash function that takes an 512-bit input and produces a 256-bit output. The Keccak256 hash function is used in many blockchain applications, including Ethereum. The challenge will benchmark the performance of your prover in generating a proof for the Keccak256 hash function.
+
+## Instructions
+
 Your prover program must read bytes from stdin and print bytes to stdout. We will use a special judge program (SPJ) to interact with your prover by providing inputs and checking outputs. The SPJ communicates with the prover through the prover's stdin and stdout. Additionally, the SPJ will invoke your verifier to check your proof.
 
 ### Steps for the Prover Program:
@@ -81,7 +85,9 @@ Your prover program must read bytes from stdin and print bytes to stdout. We wil
    - The prover sends the hash results to the SPJ.
     - Prover Sample:
     ```golang
-    func calculateExpectedOutput(in []byte) []byte {
+    func calculateExpectedOutput(in []byte, N int) []byte {
+        OutputSize := 16
+        InputSize := 32
         expectedBytes := make([]byte, N*OutputSize)
         for i := 0; i < N; i++ {
             h := sha3.NewLegacyKeccak256()
