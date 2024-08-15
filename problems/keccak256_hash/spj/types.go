@@ -18,10 +18,11 @@ type ProofStats struct {
 	WitnessGenerationTime float64 `json:"witness_generation_time"`
 	ProofGenerationTime   float64 `json:"proof_generation_time"`
 	VerifyTime            float64 `json:"verify_time"`
-	PeakMemory            int     `json:"peak_memory"`
-	ProofSize             int     `json:"proof_size"`
+	PeakMemory            float64 `json:"peak_memory"`
+	ProofSize             float64 `json:"proof_size"`
 	Successful            bool    `json:"successful"`
 	ErrorMsg              string  `json:"error_msg"`
+	N                     int     `json:"n"`
 }
 
 type Timer struct {

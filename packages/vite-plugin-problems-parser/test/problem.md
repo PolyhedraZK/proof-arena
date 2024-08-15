@@ -1,22 +1,14 @@
 ---
-problem_id: 3
-title: Poseidon2 Hash M31
-description: Poseidon2 Hash M31
+problem_id: 1
+title: Keccak256 Hash
+description: Keccak256 hash
 draft: false
 enable_comments: true
 proposer: Polyhedra Network
-proposer_icon: /assets/avatars/user_p.svg
+proposer_icon: assets/icons/xxx.png (24x24)
 ---
 
 ## Problem Description
-
-In this problem, your prover is required to generate a proof for the Poseidon2 hash function over Mersenee prime field mod $2^{31}-1$. The Poseidon2 hash function is a cryptographic hash function that takes an 512-bit input and produces a 256-bit output. The challenge will benchmark the performance of your prover in generating a proof for the Poseidon2 M31 hash function.
-
-## Poseidon2 M31 Hash Function
-
-We provide the standard Poseidon2 M31 hash function for this problem as your reference [here](https://github.com/PolyhedraZK/ExpanderCompilerCollection/blob/master/poseidon/poseidon.go). You can use it to generate the expected output for the given input.
-
-## Instructions
 
 Your prover program must read bytes from stdin and print bytes to stdout. We will use a special judge program (SPJ) to interact with your prover by providing inputs and checking outputs. The SPJ communicates with the prover through the prover's stdin and stdout. Additionally, the SPJ will invoke your verifier to check your proof.
 
@@ -27,6 +19,11 @@ Your prover program must read bytes from stdin and print bytes to stdout. We wil
    - Prover Sample:
 
    ```golang
+       ---
+   aa: aa
+   bb:bb
+   ---
+
    // open a named pipe to avoid blocking on stdin
    // read pipe name from stdin
    spjToProverPipeName := ipc.Read_string(os.Stdin)
@@ -51,9 +48,9 @@ Your prover program must read bytes from stdin and print bytes to stdout. We wil
 
    ```golang
    // send the prover name, algorithm name, and proof system name
-   ipc.Write_string(ProverToSPJPipe, "Expander^2 Poseidon2 M31")
-   ipc.Write_string(ProverToSPJPipe, "GKR")
-   ipc.Write_string(ProverToSPJPipe, "Expander^2")
+   ipc.Write_string(ProverToSPJPipe, "GNARK KECCAK-256")
+   ipc.Write_string(ProverToSPJPipe, "Groth16")
+   ipc.Write_string(ProverToSPJPipe, "GNARK")
    ```
 
 3. **Read the serialized circuit bytes from the SPJ:**
@@ -71,9 +68,9 @@ Your prover program must read bytes from stdin and print bytes to stdout. We wil
    vkBytes := ipc.Read_byte_array(byteReader)
    ```
 
-4. **Output the Number of Poseidon Instances:**
+4. **Output the Number of SHA256 Instances:**
 
-   - Print an 8-byte, little-endian long integer `N` to stdout. This indicates the number of Poseidon instances you are going to prove. Provers can choose `N` to optimize performance.
+   - Print an 8-byte, little-endian long integer `N` to stdout. This indicates the number of SHA256 instances you are going to prove. Provers can choose `N` to optimize performance.
    - Prover Sample:
 
    ```golang
@@ -100,8 +97,26 @@ Your prover program must read bytes from stdin and print bytes to stdout. We wil
 
 7. **Hash the Data:**
 
-   - For each 64-byte block, compute the Poseidon hash, resulting in a 32-byte output.
+   - For each 64-byte block, compute the SHA256 hash, resulting in a 32-byte output.
    - The prover sends the hash results to the SPJ.
+   - Prover Sample:
+
+   ```golang
+   func calculateExpectedOutput(in []byte) []byte {
+       expectedBytes := make([]byte, N*OutputSize)
+       for i := 0; i < N; i++ {
+           h := sha3.NewLegacyKeccak256()
+           h.Write(in[i*InputSize : (i+1)*InputSize])
+           copy(expectedBytes[i*OutputSize:(i+1)*OutputSize], h.Sum(nil))
+       }
+       return expectedBytes
+   }
+   ```
+
+   ```golang
+   expectedBytes := calculateExpectedOutput(in) // it calculates the hash of the input
+   ipc.Write_byte_array(ProverToSPJPipe, expectedBytes)
+   ```
 
 8. **Output a String to Indicate Witness Generation Finished:**
 
@@ -201,6 +216,10 @@ Your prover program must read bytes from stdin and print bytes to stdout. We wil
 - You need to submit a binary prover file that matches our requirements.
 - You need to submit a circuit file. (This is not required for all provers, for example Halo2 doesn't have a circuit, so you can submit an empty file.)
 - You need to submit the source code of your verifier code that matches our requirements. The code will be reviewed and published on the website.
+
+## Hint
+
+Use hex mode and remove all spaces to reproduce the sample input/output on https://emn178.github.io/online-tools/keccak_256.html
 
 ## Benchmark Details
 

@@ -20,7 +20,7 @@ func RunBenchmark(prover *Prover, circuitBytes []byte, proofStats *ProofStats, r
 			proofStats.ErrorMsg = err.Error()
 			proofStats.Successful = false
 		}
-		proofStats.PeakMemory = peakMemory
+		proofStats.PeakMemory = float64(peakMemory)
 	}()
 
 	logger.Info("Starting interactive benchmark")
@@ -35,7 +35,8 @@ func InteractiveBenchmark(prover *Prover, circuitBytes []byte, timer *Timer, req
 
 	logger.Info("Sent circuit", zap.Int("size", len(circuitBytes)))
 
-	N := ipc.Read_uint64(prover.FromProverPipe)
+	N, _ := ipc.Read_uint64(prover.FromProverPipe)
+	timer.ProofStats.N = int(N)
 	logger.Info("Got N", zap.Uint64("N", N))
 
 	if N > requirement.InstanceUpperLimit {
@@ -126,7 +127,7 @@ func InteractiveBenchmark(prover *Prover, circuitBytes []byte, timer *Timer, req
 	timer.ProofStats.WitnessGenerationTime = timer.GetDuration("setup", "witness")
 	timer.ProofStats.ProofGenerationTime = timer.GetDuration("setup", "proof")
 	timer.ProofStats.VerifyTime = timer.GetDuration("proof", "verification")
-	timer.ProofStats.ProofSize = len(proofBytes)
+	timer.ProofStats.ProofSize = float64(len(proofBytes))
 
 	done <- true
 }

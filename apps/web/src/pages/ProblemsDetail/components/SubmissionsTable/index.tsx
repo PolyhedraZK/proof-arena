@@ -81,10 +81,15 @@ const SubmissionsTable = ({
       key: 'peak_memory',
     },
     {
-      title: createTableHead('Proof size（KB）'),
+      title: createTableHead('Proof size（Byte）'),
       width: 150,
       dataIndex: 'proof_size',
       key: 'proof_size',
+    },
+    {
+      title: createTableHead('Instance Number'),
+      dataIndex: 'n',
+      key: 'n',
     },
   ];
 
@@ -107,7 +112,14 @@ const SubmissionsTable = ({
           <Table
             size="middle"
             pagination={false}
-            locale={{ emptyText: <BaseEmpty style={{margin: '76px auto 126px auto'}} description={'No Submissions'} /> }}
+            locale={{
+              emptyText: (
+                <BaseEmpty
+                  style={{ margin: '76px auto 126px auto' }}
+                  description={'No Submissions'}
+                />
+              ),
+            }}
             rowKey={'id'}
             className={styles.tableStyle}
             bordered={false}
@@ -130,7 +142,7 @@ const SubmissionsTable = ({
             pageSize={pageSize}
             total={dataSource?.length}
           />
-        ):null}
+        ) : null}
       </ConfigProvider>
     </>
   );
