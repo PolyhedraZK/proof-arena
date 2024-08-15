@@ -35,6 +35,14 @@ func main() {
 
 	RunBenchmark(prover, circuitBytes, proofStats, config.requirements, logger)
 
+	// Normalize proof stats
+	proofStats.WitnessGenerationTime /= float64(proofStats.N)
+	proofStats.ProofGenerationTime /= float64(proofStats.N)
+	proofStats.VerifyTime /= float64(proofStats.N)
+	proofStats.ProofSize /= float64(proofStats.N)
+	proofStats.SetupTime /= float64(proofStats.N)
+	proofStats.PeakMemory /= float64(proofStats.N)
+
 	pathStr := fmt.Sprintf("%d-%s.json", proofStats.ProblemID, proofStats.ProverName)
 	if err := writeProofStats(pathStr, proofStats); err != nil {
 		logger.Fatal("Failed to write proof stats", zap.Error(err))

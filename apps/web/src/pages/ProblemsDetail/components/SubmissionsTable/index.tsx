@@ -86,6 +86,11 @@ const SubmissionsTable = ({
       dataIndex: 'proof_size',
       key: 'proof_size',
     },
+    {
+      title: createTableHead('Instance Number'),
+      dataIndex: 'n',
+      key: 'n',
+    }
   ];
 
   return (
