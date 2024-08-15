@@ -55,8 +55,8 @@ Your prover program must read bytes from stdin and print bytes to stdout. We wil
 	vkBytes := ipc.Read_byte_array(byteReader)
     ```
 
-4. **Output the Number of SHA256 Instances:**
-   - Print an 8-byte, little-endian long integer `N` to stdout. This indicates the number of SHA256 instances you are going to prove. Provers can choose `N` to optimize performance.
+4. **Output the Number of Keccak Instances:**
+   - Print an 8-byte, little-endian long integer `N` to stdout. This indicates the number of Keccak instances you are going to prove. Provers can choose `N` to optimize performance.
    - Prover Sample:
    ```golang
    ipc.Write_uint64(ProverToSPJPipe, uint64(N))
@@ -77,7 +77,7 @@ Your prover program must read bytes from stdin and print bytes to stdout. We wil
     ```
 
 7. **Hash the Data:**
-   - For each 64-byte block, compute the SHA256 hash, resulting in a 32-byte output.
+   - For each 64-byte block, compute the Keccak hash, resulting in a 32-byte output.
    - The prover sends the hash results to the SPJ.
     - Prover Sample:
     ```golang
