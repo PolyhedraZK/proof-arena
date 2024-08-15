@@ -21,17 +21,9 @@ Contributing a problem allows you to define new challenges that will be used to 
     - Navigate to the `problems` directory.
     - Create a new directory with a descriptive name for your problem.
     - Inside this directory, create a `problem.md` file. This file should a header of following format:
-    ```
-    ---
-    problem_id: a unique number
-    title: YOUR INSPIRING TITLE 
-    description: A GREAT DESCRIPTION
-    draft: true/false
-    enable_comments: true/false
-    proposer: YOUR WONDERFUL NAME
-    proposer_icon: assets/icons/xxx.png (24x24)
-    ---
-    ```
+
+    ![Problem Header format](image.png)
+    
     - Fill in the header with the appropriate information for your problem.
     - Write a detailed description of the problem in markdown format, typically including the following sections:
         - **Problem Description**: A detailed description of the problem, including any relevant background information.
