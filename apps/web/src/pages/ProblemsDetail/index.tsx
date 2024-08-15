@@ -67,7 +67,7 @@ const ProblemsDetail = () => {
       .then(data => {
         setDataSource(data || []);
       })
-      .catch(error => console.log('no submission data'))
+      .catch(error => console.log('no submission data')) 
   }, [detaileData]);
 
 
