@@ -6,7 +6,7 @@
     "build:testing": "turbo build:testing",
     "dev": "turbo dev",
     "lint": "turbo lint",
-    "prettier": "prettier --log-level warn --write '**/*.{ts,tsx,js,jsx}'",
+    "prettier": "turbo prettier",
     "prepare": "husky"
   },
   "devDependencies": {
@@ -19,11 +19,5 @@
   "packageManager": "pnpm@8.15.6",
   "engines": {
     "node": ">=18"
-  },
-  "lint-staged": {
-    "*.{ts,tsx}": [
-      "npm run prettier"
-    ],
-    "*.{json,less,md,yaml}": "prettier --ignore-unknown --write"
   }
 }

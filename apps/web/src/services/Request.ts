@@ -10,10 +10,7 @@ import Cookies from 'js-cookie';
 class IRequest {
   private instance: AxiosInstance;
 
-  constructor(
-    private BASE_URL: string,
-    private TIMEOUT: number = 10000,
-  ) {
+  constructor(private BASE_URL: string, private TIMEOUT: number = 10000) {
     const instance = axios.create({
       baseURL: BASE_URL,
       timeout: TIMEOUT,
@@ -41,7 +38,7 @@ class IRequest {
           Cookies.remove('accountId');
           window.location.replace('/login');
         }
-      },
+      }
     );
 
     this.instance = instance;
@@ -62,7 +59,7 @@ class IRequest {
   post = <R = any>(
     url: string,
     data,
-    headers?: RawAxiosRequestHeaders | AxiosHeaders | Partial<HeadersDefaults>,
+    headers?: RawAxiosRequestHeaders | AxiosHeaders | Partial<HeadersDefaults>
   ) => {
     return this.request<R>(url, 'POST', { data, headers });
   };

@@ -1,0 +1,4 @@
+{
+  "*.{ts,tsx}": ["npm run prettier", "npm run lint"],
+  "*.{json,md,yaml}": ["prettier --ignore-unknown --write"]
+}

@@ -1,5 +1,6 @@
 import { Empty, type EmptyProps } from 'antd';
 import { createStyles } from 'antd-style';
+
 import EmptySvg from '@/assets/arena-empty.svg';
 
 interface IEmptyProps extends EmptyProps {
@@ -12,8 +13,8 @@ const useStyles = createStyles({
     fontSize: 18,
     fontWeight: 500,
     fontFamily: 'Poppins',
-  }
-})
+  },
+});
 const BaseEmpty = ({ ...props }: IEmptyProps) => {
   const { styles, cx } = useStyles();
   const { image = EmptySvg, description = 'No data', desClassName } = props;

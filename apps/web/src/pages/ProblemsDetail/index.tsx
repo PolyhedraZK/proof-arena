@@ -1,25 +1,28 @@
 import Icon, { UnorderedListOutlined } from '@ant-design/icons';
-import ArrowDonw from '@/assets/icons/arrow-donw.svg?r';
-import ArrowUpper from '@/assets/icons/arrow-upper.svg?r';
-import Loading from '@/assets/icons/loading.svg?r'
 import Giscus from '@giscus/react';
+import { useRequest } from 'ahooks';
 import { Avatar, Breadcrumb, Flex, Spin, Typography } from 'antd';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 
 import analysisCharts from '@/assets/icons/analysis-charts.svg';
 import analysisChartsAction from '@/assets/icons/analysis-charts-action.svg';
+import ArrowDonw from '@/assets/icons/arrow-donw.svg?r';
+import ArrowUpper from '@/assets/icons/arrow-upper.svg?r';
 import CopySvg from '@/assets/icons/copy.svg';
+import Loading from '@/assets/icons/loading.svg?r';
 import BaseButton from '@/components/base/BaseButton.tsx';
 import CustomTitle from '@/components/base/CustomTitle.tsx';
-import { IPSubmissionsTableItem, IProblemsDetail } from '@/services/problems/types.ts';
+import {
+  IProblemsDetail,
+  IPSubmissionsTableItem,
+} from '@/services/problems/types.ts';
 import isImageByLoading from '@/utils/checkImg.ts';
 
 import ProblemsDescription from '../ProblemsDescription/index.tsx';
 import SubmissionsChart from './components/SubmissionsChart';
 import SubmissionsTable from './components/SubmissionsTable';
 import { useStyles } from './index.style.ts';
-import { useRequest } from 'ahooks';
 
 type BaseGiscusConfig = {
   repo: `${string}/${string}`;
@@ -44,32 +47,36 @@ const ProblemsDetail = () => {
   const { styles, cx } = useStyles();
   const [dataSource, setDataSource] = useState<IPSubmissionsTableItem[]>([]);
 
-  const { data, loading } = useRequest(() => fetch('/problemData.json')
-    .then(response => {
+  const { data, loading } = useRequest(() =>
+    fetch('/problemData.json').then(response => {
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       return response.json();
-    }))
-  const detaileData: IProblemsDetail = data?.find(item => item.problem_id === Number(detailId))
-  const autoHeightDesMd = detaileData?.details && detaileData?.details?.length > 1000;
+    })
+  );
+  const detaileData: IProblemsDetail = data?.find(
+    item => item.problem_id === Number(detailId)
+  );
+  const autoHeightDesMd =
+    detaileData?.details && detaileData?.details?.length > 1000;
   useEffect(() => {
     isImageByLoading(detaileData?.proposer_icon).then(imgUrl =>
-      setAvatar(imgUrl),
+      setAvatar(imgUrl)
     );
-    detaileData && fetch(detaileData?.submission_data_path)
-      .then(response => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return response.json();
-      })
-      .then(data => {
-        setDataSource(data || []);
-      })
-      .catch(error => console.log('no submission data')) 
+    detaileData &&
+      fetch(detaileData?.submission_data_path)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then(data => {
+          setDataSource(data || []);
+        })
+        .catch(error => console.log('no submission data'));
   }, [detaileData]);
-
 
   const onGoBack = () => {
     navigate('/problems');
@@ -80,19 +87,24 @@ const ProblemsDetail = () => {
       <Breadcrumb
         items={[
           {
-            title: (
-              <a onClick={onGoBack}>
-                Problems
-              </a>
-            ),
+            title: <a onClick={onGoBack}>Problems</a>,
           },
           {
             title: detaileData?.title,
           },
         ]}
       />
-      <Spin spinning={loading} indicator={<Icon className={styles.loadingPis} component={Loading} />}>
-        <div className={cx(styles.headBox, more && styles.heightAuto, !autoHeightDesMd && styles.heightAuto)}>
+      <Spin
+        spinning={loading}
+        indicator={<Icon className={styles.loadingPis} component={Loading} />}
+      >
+        <div
+          className={cx(
+            styles.headBox,
+            more && styles.heightAuto,
+            !autoHeightDesMd && styles.heightAuto
+          )}
+        >
           <div className={styles.problemsDetailHeadBox}>
             <div className={styles.boxSpace}>
               <div className={styles.boxSpace}>
@@ -116,7 +128,11 @@ const ProblemsDetail = () => {
             </div>
             <div className={cx(styles.boxSpace, styles.headBoxBtom)}>
               <div className={styles.headBoxBtomTitle}>
-                <Avatar style={{ border: 'none' }} size={24} icon={<img src={avatar} />} />
+                <Avatar
+                  style={{ border: 'none' }}
+                  size={24}
+                  icon={<img src={avatar} />}
+                />
                 <span>{detaileData?.proposer}</span>
               </div>
             </div>
@@ -130,15 +146,22 @@ const ProblemsDetail = () => {
             <div
               className={cx(
                 styles.headBoxChangeHeight,
-                more && styles.headBoxChange,
+                more && styles.headBoxChange
               )}
             >
               <BaseButton
                 className={styles.baseBtnStyle}
                 onClick={() => setMore(!more)}
               >
-                {!more ? <Flex gap={6} align='center'><span>View more</span> <ArrowDonw /></Flex>
-                  : <Flex gap={6} align='center'><span>View less</span> <ArrowUpper /></Flex>}
+                {!more ? (
+                  <Flex gap={6} align="center">
+                    <span>View more</span> <ArrowDonw />
+                  </Flex>
+                ) : (
+                  <Flex gap={6} align="center">
+                    <span>View less</span> <ArrowUpper />
+                  </Flex>
+                )}
               </BaseButton>
             </div>
           )}

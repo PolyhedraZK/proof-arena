@@ -146,8 +146,8 @@ export default createStyles(({ responsive, isDarkMode, prefixCls }) => {
           lineHeight: '72px',
         },
       },
-      '.proof-menu-item-selected':{
-        color: '#2B332D'
+      '.proof-menu-item-selected': {
+        color: '#2B332D',
       },
       '.proof-menu-submenu-title': {
         height: 88,

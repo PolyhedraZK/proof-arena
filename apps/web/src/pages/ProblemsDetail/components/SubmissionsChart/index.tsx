@@ -1,13 +1,14 @@
+import { CloseOutlined } from '@ant-design/icons';
 import { ConfigProvider, Drawer, Segmented } from 'antd';
+import { useResponsive } from 'antd-style';
 import ReactEcharts from 'echarts-for-react';
 import { useEffect, useState } from 'react';
-import { useResponsive } from 'antd-style';
-import { CloseOutlined } from '@ant-design/icons';
-import FilterIcon from '@/assets/icons/filterIcon.svg?r';
+
 import CheckMark from '@/assets/icons/check-mark.svg?r';
+import FilterIcon from '@/assets/icons/filterIcon.svg?r';
+import BaseEmpty from '@/components/base/BaseEmpty.tsx';
 
 import { useStyles } from './index.style.ts';
-import BaseEmpty from '@/components/base/BaseEmpty.tsx';
 
 type SubmissionsChartType = {
   chartData: any[];
@@ -66,7 +67,7 @@ const SubmissionsChart = ({ chartData }: SubmissionsChartType) => {
   const options = {
     title: {
       subtext: `${findChartName(segmentedValue)}: ${createUnit(
-        segmentedValue,
+        segmentedValue
       )}`,
     },
     height: '86%',
@@ -86,8 +87,8 @@ const SubmissionsChart = ({ chartData }: SubmissionsChartType) => {
         formatter: mobile
           ? (value: string) => {
               if (value?.length > 7) {
-                var result: string[] = [];
-                for (var i = 0; i < value.length; i += 7) {
+                const result: string[] = [];
+                for (let i = 0; i < value.length; i += 7) {
                   result.push(value.substring(i, 7));
                 }
                 return result.join('\n');
