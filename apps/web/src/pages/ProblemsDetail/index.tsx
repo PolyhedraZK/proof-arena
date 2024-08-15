@@ -189,7 +189,7 @@ const ProblemsDetail = () => {
               {...giscusConfig}
               mapping="url"
               term="Welcome to Proof Arena"
-              strict="0"
+              strict="1"
               reactionsEnabled="0"
               emitMetadata="1"
               inputPosition="top"
