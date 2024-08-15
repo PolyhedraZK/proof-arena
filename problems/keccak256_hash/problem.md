@@ -10,6 +10,10 @@ proposer_icon: assets/icons/xxx.png (24x24)
 
 ## Problem Description
 
+In this problem, your prover is required to generate a proof for the Keccak256 hash function. The Keccak256 hash function is a cryptographic hash function that takes an 512-bit input and produces a 256-bit output. The Keccak256 hash function is used in many blockchain applications, including Ethereum. The challenge will benchmark the performance of your prover in generating a proof for the Keccak256 hash function.
+
+## Instructions
+
 Your prover program must read bytes from stdin and print bytes to stdout. We will use a special judge program (SPJ) to interact with your prover by providing inputs and checking outputs. The SPJ communicates with the prover through the prover's stdin and stdout. Additionally, the SPJ will invoke your verifier to check your proof.
 
 ### Steps for the Prover Program:
@@ -19,11 +23,6 @@ Your prover program must read bytes from stdin and print bytes to stdout. We wil
    - Prover Sample:
 
    ```golang
-       ---
-   aa: aa
-   bb:bb
-   ---
-
    // open a named pipe to avoid blocking on stdin
    // read pipe name from stdin
    spjToProverPipeName := ipc.Read_string(os.Stdin)
@@ -68,9 +67,9 @@ Your prover program must read bytes from stdin and print bytes to stdout. We wil
    vkBytes := ipc.Read_byte_array(byteReader)
    ```
 
-4. **Output the Number of SHA256 Instances:**
+4. **Output the Number of Keccak Instances:**
 
-   - Print an 8-byte, little-endian long integer `N` to stdout. This indicates the number of SHA256 instances you are going to prove. Provers can choose `N` to optimize performance.
+   - Print an 8-byte, little-endian long integer `N` to stdout. This indicates the number of Keccak instances you are going to prove. Provers can choose `N` to optimize performance.
    - Prover Sample:
 
    ```golang
@@ -97,12 +96,14 @@ Your prover program must read bytes from stdin and print bytes to stdout. We wil
 
 7. **Hash the Data:**
 
-   - For each 64-byte block, compute the SHA256 hash, resulting in a 32-byte output.
+   - For each 64-byte block, compute the Keccak hash, resulting in a 32-byte output.
    - The prover sends the hash results to the SPJ.
    - Prover Sample:
 
    ```golang
-   func calculateExpectedOutput(in []byte) []byte {
+   func calculateExpectedOutput(in []byte, N int) []byte {
+       OutputSize := 16
+       InputSize := 32
        expectedBytes := make([]byte, N*OutputSize)
        for i := 0; i < N; i++ {
            h := sha3.NewLegacyKeccak256()
