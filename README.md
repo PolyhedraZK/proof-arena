@@ -26,7 +26,7 @@ Here's a comparison of different benchmarking methods:
 
 ## How It Works
 
-1. **Visit Proof Arena**: Start by visiting our platform at [Proof Arena](https://arena.proof.cloud). Here, you can explore detailed information about our benchmarking process, current challenges, and the community's contributions.
+1. **Visit Proof Arena**: Start by visiting our platform at [Proof Arena](https://proofarena.org). Here, you can explore detailed information about our benchmarking process, current challenges, and the community's contributions.
 
 2. **Understand the Benchmarking Process**: Familiarize yourself with our benchmarking process. Our list of challenges is maintained on [GitHub](https://github.com/PolyhedraZK/proof-arena), where you can view existing tasks and see how benchmarks are structured.
 
