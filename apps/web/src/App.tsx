@@ -19,7 +19,7 @@ function App() {
           <Route path="/" element={<Layout />}>
             <Route path="problems" element={<ProblemsPage />} />
             <Route
-              path="problemsDetail/:detailId"
+              path="problems/problemsDetail/:detailId"
               element={<ProblemsDetail />}
             />
             <Route path="howToContribute" element={<HowToContribute />} />

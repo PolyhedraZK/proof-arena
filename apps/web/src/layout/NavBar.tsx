@@ -1,7 +1,7 @@
 import Icon, { CloseOutlined } from '@ant-design/icons';
 import { Drawer, Menu } from 'antd';
 import { useResponsive, useThemeMode } from 'antd-style';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 import GighubButton from '@/assets/footerIcons/githubButton.svg?r';
@@ -21,7 +21,7 @@ function PcNavBar() {
   const { mobile } = useResponsive();
   const [isOpen, setIsOpen] = useState(false);
   const { themeMode } = useThemeMode();
-
+  const selectd = `/${location.pathname.split('/')[1]}`;
   const createMenuItems = () =>
     links.map(item => ({
       label: (
@@ -70,7 +70,7 @@ function PcNavBar() {
               className={styles.dropdownItem}
             >
               {item.label}
-              {item.to === location.pathname && (
+              {item.to === selectd && (
                 <CheckMark className={styles.checkMarkIcon} />
               )}
             </div>
@@ -87,7 +87,7 @@ function PcNavBar() {
   ) : (
     <div className={styles.navLinks}>
       <Menu
-        selectedKeys={[location.pathname]}
+        selectedKeys={[selectd]}
         className={styles.antMenuStyle}
         mode="horizontal"
         items={createMenuItems()}
