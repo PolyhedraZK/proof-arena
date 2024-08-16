@@ -118,6 +118,10 @@ export default createStyles(({ responsive, isDarkMode, prefixCls }) => {
       borderBottom: '1px solid #f0f0f0',
       background: '#fff',
     },
+    checkMarkIcon: {
+      position: 'absolute',
+      right: 26,
+    },
     logo: {
       width: 162,
       height: 'auto',
