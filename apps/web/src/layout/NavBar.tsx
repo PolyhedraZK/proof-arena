@@ -21,9 +21,7 @@ function PcNavBar() {
   const { mobile } = useResponsive();
   const [isOpen, setIsOpen] = useState(false);
   const { themeMode } = useThemeMode();
-  const selectd = useMemo(() => {
-    return location.pathname;
-  }, [location.pathname]);
+
   const createMenuItems = () =>
     links.map(item => ({
       label: (
@@ -72,7 +70,7 @@ function PcNavBar() {
               className={styles.dropdownItem}
             >
               {item.label}
-              {item.to === selectd && (
+              {item.to === location.pathname && (
                 <CheckMark className={styles.checkMarkIcon} />
               )}
             </div>
@@ -89,7 +87,7 @@ function PcNavBar() {
   ) : (
     <div className={styles.navLinks}>
       <Menu
-        selectedKeys={[selectd]}
+        selectedKeys={[location.pathname]}
         className={styles.antMenuStyle}
         mode="horizontal"
         items={createMenuItems()}

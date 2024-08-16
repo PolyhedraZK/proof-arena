@@ -1,1 +1,3 @@
-lint-staged
+#!/bin/bash
+
+npx lint-staged
