@@ -28,4 +28,8 @@ const Header = memo(() => {
 
 export default Header;
 
-export const links = [{ to: '/problems', label: 'Problems' }];
+export const links = [
+  { to: '/problems', label: 'Problems' },
+  { to: '/howToContribute', label: 'HowToContribute' },
+  { to: '/judgerSpec', label: 'JudgerSpec' },
+];

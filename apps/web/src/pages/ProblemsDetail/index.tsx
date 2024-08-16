@@ -19,7 +19,7 @@ import {
 } from '@/services/problems/types.ts';
 import isImageByLoading from '@/utils/checkImg.ts';
 
-import ProblemsDescription from '../ProblemsDescription/index.tsx';
+import MdDescription from '../../components/MdDescription/index.tsx';
 import SubmissionsChart from './components/SubmissionsChart';
 import SubmissionsTable from './components/SubmissionsTable';
 import { useStyles } from './index.style.ts';
@@ -139,7 +139,7 @@ const ProblemsDetail = () => {
           </div>
           {detaileData?.details && (
             <div className={styles.problemsDescriptionBox}>
-              <ProblemsDescription mdFile={detaileData?.details || ''} />
+              <MdDescription mdFile={detaileData?.details || ''} />
             </div>
           )}
           {autoHeightDesMd && (
