@@ -1,3 +1,5 @@
+// apps/web/src/pages/Problems/index.tsx
+
 import { Col, Row } from 'antd';
 import classNames from 'clsx';
 import { Fragment, useEffect, useState } from 'react';
@@ -21,7 +23,7 @@ function ProversPage() {
       }
       return response.json();
     }))
-  const problemsListData: IProblems[] = data?.filter(item => !item.draft) || []
+  const problemsListData: IProblems[] = data?.filter(item => !item.draft && item.problem_id > 0) || []
 
   return (
     <div className={classNames('main-container', styles.proversWrapper)}>
