@@ -1,7 +1,8 @@
 import { join } from 'node:path';
-
 import { createFilter } from '@rollup/pluginutils';
 import type { Plugin, ResolvedConfig } from 'vite';
+import fs from 'fs-extra';
+import { glob } from 'glob';
 
 import { ViteProblemParseOptions } from './options';
 import { parseProblem } from './problemParser';
@@ -12,6 +13,8 @@ export const servePlugin = (options: ViteProblemParseOptions): Plugin => {
   let config: ResolvedConfig;
   const problemData: Array<any> = [];
   let submissionMap: Map<string, Array<any>> = new Map();
+  let docContents: Map<string, string> = new Map();
+
   return {
     name: 'vite-plugin-docs-parser:serve',
     apply: 'serve',
@@ -25,6 +28,8 @@ export const servePlugin = (options: ViteProblemParseOptions): Plugin => {
         ? join(root, options.problems.exclude)
         : undefined;
       const spjDataPath = join(root, options.spj.src);
+      const docsPath = join(root, options.docs.src);
+
       submissionMap = await summarySpjData(spjDataPath, options.spj);
 
       const problemDirs = await readDirectories(problemsPath, problemsExcludePath);
@@ -38,7 +43,6 @@ export const servePlugin = (options: ViteProblemParseOptions): Plugin => {
           problemData.push({
             ...problemInfo.metadata,
             details: problemInfo.details,
-            // submission_data: submissionMap.get(id),
             submission_data_path: `/data/${id}/submissions.json`,
           });
         } catch (e) {
@@ -46,15 +50,31 @@ export const servePlugin = (options: ViteProblemParseOptions): Plugin => {
         }
       }
       problemData.sort((a, b) => a.problem_id - b.problem_id);
+
+      // Handle docs
+      const docFiles = glob.sync(docsPath);
+      for (const file of docFiles) {
+        const content = await fs.readFile(file, 'utf-8');
+        const fileName = file.split('/').pop();
+        docContents.set(fileName!, content);
+      }
     },
     configureServer({ middlewares }) {
-      const regex = /^\/data\/(\d+)\/submissions\.json$/;
       middlewares.use((req, res, next) => {
         if (req.url === '/problemData.json') {
           res.setHeader('Content-Type', 'application/json');
           res.end(JSON.stringify(problemData));
+        } else if (req.url?.startsWith('/docs/')) {
+          const docName = req.url.split('/').pop();
+          if (docContents.has(docName!)) {
+            res.setHeader('Content-Type', 'text/markdown');
+            res.end(docContents.get(docName!));
+          } else {
+            res.statusCode = 404;
+            res.end('Document not found');
+          }
         } else {
-          const match = regex.exec(req.url || '');
+          const match = /^\/data\/(\d+)\/submissions\.json$/.exec(req.url || '');
           if (match) {
             const id = match[1];
             const submission = submissionMap.get(id);
@@ -66,7 +86,6 @@ export const servePlugin = (options: ViteProblemParseOptions): Plugin => {
               res.end('Submission not found');
             }
           } else {
-            // 继续处理其他请求
             next();
           }
         }

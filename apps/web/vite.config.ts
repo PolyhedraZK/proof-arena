@@ -1,16 +1,16 @@
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
 import problemsParser from '@proofarena/vite-plugin-problems-parser';
 import replace from '@rollup/plugin-replace';
-import react from '@vitejs/plugin-react';
 import dayjs from 'dayjs';
 import rollupNodePolyFill from 'rollup-plugin-polyfill-node';
-import { defineConfig } from 'vite';
 import Inspect from 'vite-plugin-inspect';
 import svgr from 'vite-plugin-svgr';
+
 const alias = {
   '@': '/src',
 };
 
-// https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
     Inspect(),
@@ -22,6 +22,9 @@ export default defineConfig({
       spj: {
         src: '../../spj_output/**/*.json',
         exclude: undefined,
+      },
+      docs: {
+        src: '../../docs/*.md',
       },
     }),
     react(),
@@ -45,8 +48,6 @@ export default defineConfig({
   build: {
     rollupOptions: {
       plugins: [
-        // Enable rollup polyfills plugin
-        // used during production bundling
         rollupNodePolyFill(),
       ],
     },

@@ -4,20 +4,22 @@ import { useRequest } from 'ahooks';
 import ProblemsDescription from '../ProblemsDescription';
 
 const MachineSpec = () => {
-  const { data: problemData } = useRequest(() => fetch('/problemData.json')
-    .then(response => {
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      return response.json();
-    }));
+  const { data: machineSpecData, error } = useRequest(() => 
+    fetch('/docs/machine_specification.md').then(res => res.text())
+  );
 
-  const judgeSpec = problemData?.find(item => item.problem_id === 0);
+  if (error) {
+    return <div>Failed to load Machine Specification content</div>;
+  }
+
+  if (!machineSpecData) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="main-container" style={{ paddingTop: '24px' }}>
       <h1>Judge Machine Specification</h1>
-      <ProblemsDescription mdFile={judgeSpec?.details || ''} />
+      <ProblemsDescription mdFile={machineSpecData} />
     </div>
   );
 };

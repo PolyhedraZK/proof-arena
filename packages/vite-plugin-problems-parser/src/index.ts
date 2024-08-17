@@ -1,8 +1,6 @@
 import type { Plugin } from 'vite';
-
 import { buildPlugin } from './build';
 import { ViteProblemParseOptions } from './options';
-// dev server plugin
 import { servePlugin } from './serve';
 
 const vitePluginProblemParse = (options: ViteProblemParseOptions): Plugin[] => {
@@ -10,3 +8,10 @@ const vitePluginProblemParse = (options: ViteProblemParseOptions): Plugin[] => {
 };
 
 export default vitePluginProblemParse;
+
+// Add or update the ViteProblemParseOptions type
+export type ViteProblemParseOptions = {
+  problems: ParseOptionItem;
+  spj: ParseOptionItem;
+  docs: ParseOptionItem;  // Add this line
+};
