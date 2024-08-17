@@ -1,14 +1,3 @@
----
-problem_id: -1
-title: How to contribute 
-description: How to contribute
-draft: false
-enable_comments: true
-proposer: Polyhedra Network
-proposer_icon: assets/icons/xxx.png (24x24)
----
-# How to Contribute
-
 Proof Arena is an open platform for benchmarking zero-knowledge (ZK) algorithms, and we welcome contributions from the community. Whether you're interested in proposing a new problem or contributing a solution, this guide will walk you through the process.
 
 ## How to Contribute a Problem

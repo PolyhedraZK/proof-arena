@@ -1,15 +1,3 @@
----
-problem_id: 0
-title: Judge Machine Specification 
-description: Machine Specification
-draft: false
-enable_comments: true
-proposer: Polyhedra Network
-proposer_icon: assets/icons/xxx.png (24x24)
----
-
-# Machine Specification
-
 ## Provider
 - **Main CPU Judge**: Google Cloud  `c3d-standard-90` (Your prover can only use 64 cores for simplicity.)
 - **Main GPU Judge**: Coming soon
