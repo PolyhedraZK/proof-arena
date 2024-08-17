@@ -1,4 +1,5 @@
 import type { Plugin } from 'vite';
+
 import { buildPlugin } from './build';
 import { ViteProblemParseOptions } from './options';
 import { servePlugin } from './serve';
@@ -9,9 +10,26 @@ const vitePluginProblemParse = (options: ViteProblemParseOptions): Plugin[] => {
 
 export default vitePluginProblemParse;
 
-// Add or update the ViteProblemParseOptions type
+export type ParseOptionItem = {
+  src: string;
+  exclude?: string;
+};
+
 export type ViteProblemParseOptions = {
   problems: ParseOptionItem;
   spj: ParseOptionItem;
-  docs: ParseOptionItem;  // Add this line
+  docs: ParseOptionItem;
 };
+
+export interface IProblemData {
+  problem_id: number;
+  title: string;
+  description: string;
+  draft: boolean;
+  enable_comments: boolean;
+  proposer: string;
+  proposer_icon: string;
+  details: string;
+  submission_data_path: string;
+  track: 'zk-prover' | 'zkVM';
+}

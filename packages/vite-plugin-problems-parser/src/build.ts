@@ -42,6 +42,7 @@ export const buildPlugin = (options: ViteProblemParseOptions): Plugin => {
             ...problemInfo.metadata,
             details: problemInfo.details,
             submission_data_path: `/data/${id}/submissions.json`,
+            track: problemInfo.metadata.track,
           });
         } catch (e) {
           console.warn(e);
