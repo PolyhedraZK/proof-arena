@@ -20,6 +20,7 @@ interface ProverInfo {
   name: string;
   status: string;
   inventor: string;
+  type: string;
 }
 
 const SupportedProversPage: React.FC = () => {
@@ -44,6 +45,11 @@ const SupportedProversPage: React.FC = () => {
       title: 'Inventor',
       dataIndex: 'inventor',
       key: 'inventor',
+    },
+    {
+      title: 'Type',
+      dataIndex: 'type',
+      key: 'type',
     },
   ];
 
