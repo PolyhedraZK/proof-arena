@@ -1,7 +1,7 @@
-// apps/web/src/pages/HowToContribute/index.tsx
-
 import { useRequest } from 'ahooks';
+import Giscus from '@giscus/react';
 import ProblemsDescription from '../ProblemsDescription';
+import { giscusConfig } from '@/config/giscus';
 
 const HowToContribute = () => {
   const { data: howToContributeData, error } = useRequest(() => 
@@ -20,6 +20,14 @@ const HowToContribute = () => {
     <div className="main-container" style={{ paddingTop: '24px' }}>
       <h1>How to Contribute</h1>
       <ProblemsDescription mdFile={howToContributeData} />
+      <div style={{ marginTop: '48px' }}>
+        <h2>Discussions</h2>
+        <Giscus
+          {...giscusConfig}
+          term="How to Contribute"
+          mapping="specific"
+        />
+      </div>
     </div>
   );
 };
