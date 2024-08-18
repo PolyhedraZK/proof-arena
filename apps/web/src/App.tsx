@@ -1,16 +1,14 @@
-// apps/web/src/App.tsx
-
 import React from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 import Layout from '@/layout/index';
 
-// lazy pages
+const HomePage = React.lazy(() => import('./pages/Home'));
 const ProblemsPage = React.lazy(() => import('./pages/Problems/index'));
 const ProblemsDetail = React.lazy(() => import('./pages/ProblemsDetail'));
 const HowToContributePage = React.lazy(() => import('./pages/HowToContribute'));
 const MachineSpecPage = React.lazy(() => import('./pages/MachineSpec'));
-// Use NiceModal to register modal
+
 import '@/components/modal';
 
 function App() {
@@ -19,6 +17,7 @@ function App() {
       <React.Suspense>
         <Routes>
           <Route path="/" element={<Layout />}>
+            <Route index element={<HomePage />} />
             <Route path="problems" element={<ProblemsPage />} />
             <Route
               path="problemsDetail/:detailId"
