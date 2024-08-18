@@ -20,19 +20,8 @@ import SubmissionsChart from './components/SubmissionsChart';
 import SubmissionsTable from './components/SubmissionsTable';
 import { useStyles } from './index.style.ts';
 import { useRequest } from 'ahooks';
+import { giscusConfig } from '@/config/giscus';
 
-type BaseGiscusConfig = {
-  repo: `${string}/${string}`;
-  repoId: string;
-  category: string;
-  categoryId: string;
-};
-const giscusConfig: BaseGiscusConfig = {
-  repo: import.meta.env.VITE_APP_GISCUS_REPO_NAME as `${string}/${string}`,
-  repoId: import.meta.env.VITE_APP_GISCUS_REPO_ID,
-  category: import.meta.env.VITE_APP_GISCUS_CATEGORY,
-  categoryId: import.meta.env.VITE_APP_GISCUS_CATEGORY_ID,
-};
 const ProblemsDetail = () => {
   const navigate = useNavigate();
   const { detailId } = useParams();
@@ -69,7 +58,6 @@ const ProblemsDetail = () => {
       })
       .catch(error => console.log('no submission data')) 
   }, [detaileData]);
-
 
   const onGoBack = () => {
     navigate('/problems');
@@ -187,14 +175,7 @@ const ProblemsDetail = () => {
           {detaileData?.enable_comments && (
             <Giscus
               {...giscusConfig}
-              mapping="url"
-              term="Welcome to Proof Arena"
-              strict="1"
-              reactionsEnabled="0"
-              emitMetadata="1"
-              inputPosition="top"
-              lang="en"
-              loading="lazy"
+              term={`Problem ${detaileData.problem_id}: ${detaileData.title}`}
             />
           )}
         </div>

@@ -15,6 +15,7 @@ export interface IProblems {
   proposer_icon: string;
   submission_data_path: string;
   details: string;
+  track?: 'zk-prover' | 'zkVM'; 
 }
 
 export interface IPSubmissionsTableItem {

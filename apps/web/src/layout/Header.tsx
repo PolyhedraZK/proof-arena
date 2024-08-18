@@ -14,7 +14,7 @@ const Header = memo(() => {
 
   return (
     <div className={styles.headerWrapper}>
-      <Link className={styles.navLogo} to="/problems">
+      <Link className={styles.navLogo} to="/">
         <img
           className="logo"
           src={themeMode == 'dark' ? Logo : WhiteLogo}
@@ -28,6 +28,9 @@ const Header = memo(() => {
 
 export default Header;
 
-export const links = [
-  { to: '/problems', label: 'Problems' },
-];
+// Remove this export if it's no longer needed or conflicts with NavBar.tsx
+// export const links = [
+//   { to: '/problems', label: 'Problems' },
+//   { to: '/how-to-contribute', label: 'How to Contribute' },
+//   { to: '/machine-spec', label: 'Machine Specification' },
+// ];

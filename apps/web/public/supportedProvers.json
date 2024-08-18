@@ -1,0 +1,37 @@
+[
+  {
+    "name": "Expander",
+    "inventor": "Polyhedra Network",
+    "status": "In Progress"
+  },
+  {
+    "name": "Gnark",
+    "inventor": "Consensys",
+    "status": "Tested on problem 1"
+  },
+  {
+    "name": "Plonky3",
+    "inventor": "Polygon",
+    "status": "In Progress"
+  },
+  {
+    "name": "Stwo",
+    "inventor": "Starkware",
+    "status": "In Progress"
+  },
+  {
+    "name": "Risc0",
+    "inventor": "Risc0",
+    "status": "Not started"
+  },
+  {
+    "name": "SP1",
+    "inventor": "Succinct",
+    "status": "Not started"
+  },
+  {
+    "name": "Boojum (Replica of Plonky2)",
+    "inventor": "zkSync",
+    "status": "Not started"
+  }
+]
