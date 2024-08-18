@@ -1,31 +1,41 @@
-import { Layout } from 'antd';
-import { useEffect } from 'react';
-import { Outlet, useLocation, useNavigate } from 'react-router';
-
+import React from 'react';
+import { Layout as AntLayout } from 'antd';
+import { Outlet, useLocation } from 'react-router-dom';
 import Header from './Header';
-import useStyles from './layout.style';
 import Footer from './Footer';
+import { createStyles } from 'antd-style';
 
-function ProofLayout() {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { styles } = useStyles();
+const { Content } = AntLayout;
 
-  // 监听路由变化的时候
-  useEffect(() => {
-    if (location.pathname === '/') {
-      return navigate('/problems', { replace: true });
+const useStyles = createStyles(({ token, css }) => ({
+  layout: css`
+    min-height: 100vh;
+  `,
+  content: css`
+    padding-top: 88px;  // 根据你的 Header 高度调整
+    @media (max-width: ${token.screenSM}px) {
+      padding-top: 72px;  // 移动设备上的 Header 高度
     }
-  }, [location]);
+  `,
+  homeContent: css`
+    padding-top: 0;
+  `
+}));
+
+const Layout: React.FC = () => {
+  const { styles, cx } = useStyles();
+  const location = useLocation();
+  const isHomePage = location.pathname === '/';
 
   return (
-    <div className={styles.layout}>
-      <Layout className={styles.layoutMain}>
-        <Header />
+    <AntLayout className={styles.layout}>
+      <Header />
+      <Content className={cx(styles.content, isHomePage && styles.homeContent)}>
         <Outlet />
-      </Layout>
+      </Content>
       <Footer />
-    </div>
+    </AntLayout>
   );
-}
-export default ProofLayout;
+};
+
+export default Layout;

@@ -16,7 +16,7 @@ const Header = memo(() => {
 
   return (
     <div className={styles.headerWrapper}>
-      <Link className={styles.navLogo} to="/problems">
+      <Link className={styles.navLogo} to="/">
         <img
           className="logo"
           src={themeMode == 'dark' ? Logo : WhiteLogo}
