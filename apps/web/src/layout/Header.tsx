@@ -1,5 +1,3 @@
-// apps/web/src/layout/Header.tsx
-
 import { useThemeMode } from 'antd-style';
 import { memo } from 'react';
 import { Link } from 'react-router-dom';
@@ -30,8 +28,9 @@ const Header = memo(() => {
 
 export default Header;
 
-export const links = [
-  { to: '/problems', label: 'Problems' },
-  { to: '/how-to-contribute', label: 'How to Contribute' },
-  { to: '/machine-spec', label: 'Machine Specification' },
-];
+// Remove this export if it's no longer needed or conflicts with NavBar.tsx
+// export const links = [
+//   { to: '/problems', label: 'Problems' },
+//   { to: '/how-to-contribute', label: 'How to Contribute' },
+//   { to: '/machine-spec', label: 'Machine Specification' },
+// ];

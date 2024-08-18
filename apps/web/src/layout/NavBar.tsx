@@ -1,8 +1,5 @@
 import classNames from 'clsx';
 import { Link, useNavigate } from 'react-router-dom';
-
-import { links } from './Header';
-import useStyles from './header.style';
 import { useResponsive, useThemeMode } from 'antd-style'
 import GighubButton from '@/assets/footerIcons/githubButton.svg?r'
 import GithubIcon from '@/assets/icons/githubIcon.svg?r'
@@ -14,7 +11,16 @@ import WhiteLogo from '@/assets/white-logo.svg';
 import { useState } from 'react';
 import { Drawer, Menu } from 'antd';
 import BaseButton from '@/components/base/BaseButton';
-function PcNavBar() {
+import useStyles from './header.style';
+
+export const links = [
+  { to: '/problems', label: 'Problems' },
+  { to: '/how-to-contribute', label: 'How to Contribute' },
+  { to: '/machine-spec', label: 'Machine Specification' },
+  { to: '/supported-provers', label: 'Supported Provers' },
+];
+
+function NavBar() {
   const { styles } = useStyles();
   const navigate = useNavigate();
   const { mobile } = useResponsive();
@@ -30,6 +36,7 @@ function PcNavBar() {
     </Link>,
     key: item.to
   })))
+
   return mobile ? (
     <div className={styles.navLinks}>
       <div className={styles.mobileNav}>
@@ -87,4 +94,4 @@ function PcNavBar() {
     </div>);
 }
 
-export default PcNavBar;
+export default NavBar;
