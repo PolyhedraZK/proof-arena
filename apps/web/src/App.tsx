@@ -8,6 +8,7 @@ const ProblemsPage = React.lazy(() => import('./pages/Problems/index'));
 const ProblemsDetail = React.lazy(() => import('./pages/ProblemsDetail'));
 const HowToContributePage = React.lazy(() => import('./pages/HowToContribute'));
 const MachineSpecPage = React.lazy(() => import('./pages/MachineSpec'));
+const SupportedProversPage = React.lazy(() => import('./pages/SupportedProvers'));
 
 import '@/components/modal';
 
@@ -25,6 +26,7 @@ function App() {
             />
             <Route path="how-to-contribute" element={<HowToContributePage />} />
             <Route path="machine-spec" element={<MachineSpecPage />} />
+            <Route path="supported-provers" element={<SupportedProversPage />} />
           </Route>
         </Routes>
       </React.Suspense>
