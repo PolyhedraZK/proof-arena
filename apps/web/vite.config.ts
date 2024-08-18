@@ -5,6 +5,7 @@ import dayjs from 'dayjs';
 import rollupNodePolyFill from 'rollup-plugin-polyfill-node';
 import { defineConfig } from 'vite';
 import Inspect from 'vite-plugin-inspect';
+import { viteStaticCopy } from 'vite-plugin-static-copy';
 import svgr from 'vite-plugin-svgr';
 const alias = {
   '@': '/src',
@@ -14,6 +15,14 @@ const alias = {
 export default defineConfig({
   plugins: [
     Inspect(),
+    viteStaticCopy({
+      targets: [
+        {
+          src: '../../docs/*',
+          dest: 'docs',
+        },
+      ],
+    }),
     problemsParser({
       problems: {
         src: '../../problems/*/',
@@ -24,6 +33,7 @@ export default defineConfig({
         exclude: undefined,
       },
     }),
+
     react(),
     replace({
       preventAssignment: true,

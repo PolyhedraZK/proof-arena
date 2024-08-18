@@ -82,7 +82,7 @@ const useConfirmModalStyles = createStyles(
         },
       },
     };
-  },
+  }
 );
 
 interface IConfirmModalProps {

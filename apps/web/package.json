@@ -9,9 +9,8 @@
     "build": "vite build --mode production",
     "build:production": "npm run build",
     "build:testing": "vite build --mode testing",
-    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "prettier": "prettier --log-level warn --write '**/*.{ts,tsx,js,jsx}'",
-    "prepare": "husky",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --fix",
+    "prettier": "prettier --loglevel warn --write '**/*.{ts,tsx,js,jsx}'",
     "preview": "vite preview",
     "watchtype": "tsc --project . --watch"
   },

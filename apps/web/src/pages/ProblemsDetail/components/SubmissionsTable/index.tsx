@@ -1,8 +1,10 @@
-import { Table, ConfigProvider, Pagination } from 'antd';
-import { useStyles } from './index.style.ts';
-import { IPSubmissionsTableItem } from '@/services/problems/types.ts';
+import { ConfigProvider, Pagination, Table } from 'antd';
 import { useState } from 'react';
+
 import BaseEmpty from '@/components/base/BaseEmpty.tsx';
+import { IPSubmissionsTableItem } from '@/services/problems/types.ts';
+
+import { useStyles } from './index.style.ts';
 const SubmissionsTable = ({
   dataSource,
 }: {
