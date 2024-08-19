@@ -1,45 +1,31 @@
-import { createStyles } from 'antd-style';
-import { useEffect, useState } from 'react';
+import Giscus from '@giscus/react';
+import { useRequest } from 'ahooks';
 
-import MdDescription from '@/components/MdDescription';
-import { customThemeVariables } from '@/theme';
+import { giscusConfig } from '@/config/giscus';
 
-const useStyles = createStyles(({ isDarkMode, responsive }) => {
-  const colors = isDarkMode
-    ? customThemeVariables.dark
-    : customThemeVariables.light;
-  return {
-    box: {
-      margin: '0 auto',
-      marginTop: 24,
-      borderRadius: 8,
-      background: colors.cardBgColor,
-      maxWidth: 1200,
-      padding: 24,
-      [responsive.mobile]: {
-        margin: 16,
-      },
-    },
-  };
-});
+import ProblemsDescription from '../ProblemsDescription';
+
 const HowToContribute = () => {
-  const [mdFile, setMdFile] = useState('');
-  const { styles } = useStyles();
-  useEffect(() => {
-    fetch('/docs/how_to_contribute.md')
-      .then(response => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return response.text();
-      })
-      .then(text => {
-        setMdFile(text);
-      });
-  }, []);
+  const { data: howToContributeData, error } = useRequest(() =>
+    fetch('/docs/how_to_contribute.md').then(res => res.text())
+  );
+
+  if (error) {
+    return <div>Failed to load How to Contribute content</div>;
+  }
+
+  if (!howToContributeData) {
+    return <div>Loading...</div>;
+  }
+
   return (
-    <div className={styles.box}>
-      <MdDescription mdFile={mdFile || ''} />
+    <div className="main-container" style={{ paddingTop: '24px' }}>
+      <h1>How to Contribute</h1>
+      <ProblemsDescription mdFile={howToContributeData} />
+      <div style={{ marginTop: '48px' }}>
+        <h2>Discussions</h2>
+        <Giscus {...giscusConfig} term="How to Contribute" mapping="specific" />
+      </div>
     </div>
   );
 };

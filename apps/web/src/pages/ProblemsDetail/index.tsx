@@ -13,29 +13,18 @@ import CopySvg from '@/assets/icons/copy.svg';
 import Loading from '@/assets/icons/loading.svg?r';
 import BaseButton from '@/components/base/BaseButton.tsx';
 import CustomTitle from '@/components/base/CustomTitle.tsx';
+import { giscusConfig } from '@/config/giscus';
 import {
   IProblemsDetail,
   IPSubmissionsTableItem,
 } from '@/services/problems/types.ts';
 import isImageByLoading from '@/utils/checkImg.ts';
 
-import MdDescription from '../../components/MdDescription/index.tsx';
+import ProblemsDescription from '../ProblemsDescription/index.tsx';
 import SubmissionsChart from './components/SubmissionsChart';
 import SubmissionsTable from './components/SubmissionsTable';
 import { useStyles } from './index.style.ts';
 
-type BaseGiscusConfig = {
-  repo: `${string}/${string}`;
-  repoId: string;
-  category: string;
-  categoryId: string;
-};
-const giscusConfig: BaseGiscusConfig = {
-  repo: import.meta.env.VITE_APP_GISCUS_REPO_NAME as `${string}/${string}`,
-  repoId: import.meta.env.VITE_APP_GISCUS_REPO_ID,
-  category: import.meta.env.VITE_APP_GISCUS_CATEGORY,
-  categoryId: import.meta.env.VITE_APP_GISCUS_CATEGORY_ID,
-};
 const ProblemsDetail = () => {
   const navigate = useNavigate();
   const { detailId } = useParams();
@@ -139,7 +128,7 @@ const ProblemsDetail = () => {
           </div>
           {detaileData?.details && (
             <div className={styles.problemsDescriptionBox}>
-              <MdDescription mdFile={detaileData?.details || ''} />
+              <ProblemsDescription mdFile={detaileData?.details || ''} />
             </div>
           )}
           {autoHeightDesMd && (
@@ -210,14 +199,7 @@ const ProblemsDetail = () => {
           {detaileData?.enable_comments && (
             <Giscus
               {...giscusConfig}
-              mapping="url"
-              term="Welcome to Proof Arena"
-              strict="0"
-              reactionsEnabled="0"
-              emitMetadata="1"
-              inputPosition="top"
-              lang="en"
-              loading="lazy"
+              term={`Problem ${detaileData.problem_id}: ${detaileData.title}`}
             />
           )}
         </div>

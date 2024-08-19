@@ -60,15 +60,16 @@ We are currently developing an automatic submission system. Until it is availabl
 
 ## Current Proof Systems
 
-| Number | Proof system name | Inventor | Integration status |
-| --- | --- | --- | --- |
-| 1 | Expander | Polyhedra Network | In Progress |
-| 3 | Gnark | Consensys | Tested on problem 1 |
-| 4 | Plonky3 | Polygon | In Progress |
-| 5 | Stwo | Starkware | In Progress |
-| 6 | Risc0 | Risc0 | Not started |
-| 7 | SP1 | Succinct | Not started |
-| 8 | Boojum (Replica of Plonky2) | zkSync | Not started |
+| Number | Proof system name | Inventor | Integration status | Type |
+| --- | --- | --- | --- | --- |
+| 1 | Expander | Polyhedra Network | In Progress | ZK Circuit Prover |
+| 3 | Gnark | Consensys | Tested on problem 1 | ZK Circuit Prover |
+| 4 | Plonky3 | Polygon | In Progress | ZK Circuit Prover |
+| 5 | Stwo | Starkware | In Progress | ZK Circuit Prover |
+| 6 | Risc0 | Risc0 | Not started | zkVM |
+| 7 | SP1 | Succinct | Not started | zkVM |
+| 8 | Boojum (Replica of Plonky2) | zkSync | Not started | ZK Circuit Prover |
+| 9 | Valida | Lita Foundation | Not started | zkVM |
 
 ### Thanks
 

@@ -1,5 +1,3 @@
-# How to Contribute
-
 Proof Arena is an open platform for benchmarking zero-knowledge (ZK) algorithms, and we welcome contributions from the community. Whether you're interested in proposing a new problem or contributing a solution, this guide will walk you through the process.
 
 ## How to Contribute a Problem
@@ -38,7 +36,6 @@ Contributing a problem allows you to define new challenges that will be used to 
    - Address any feedback provided during the review process.
 
 5. **Approval and Integration**:
-
    - Once your problem is approved, it will be merged into the main repository and become available for benchmarking.
 
 ## How to Contribute a Solution
