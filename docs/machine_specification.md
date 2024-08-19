@@ -1,5 +1,3 @@
-<<<<<<<< HEAD:docs/judger_spec.md
-
 # Machine Specification
 
 ## Provider
@@ -97,5 +95,4 @@
 - **Total Memory**: 353.92 GB
 - **Memory Configuration**: 22 DIMMs
   - 21 × 16 GB DIMMs (Synchronous, 64-bit width, DIMM)
-    > > > > > > > > main:docs/machine_specification.md
   - 1 × 8 GB DIMM (Synchronous, 64-bit width, DIMM)

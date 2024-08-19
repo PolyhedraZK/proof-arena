@@ -44,7 +44,7 @@ const Footer = () => {
   );
   const IconsDom = () => (
     <div className={styles.footerItemBox}>
-      <Space className={styles.footerIconBox} size={24}>
+      <div className={styles.footerIconBox}>
         {Icons?.map(item => (
           <img
             className={styles.footerIconStyle}
@@ -55,19 +55,19 @@ const Footer = () => {
             src={item.icon}
           />
         ))}
-      </Space>
+      </div>
     </div>
   );
   return (
     <footer className={styles.footerBox}>
       <div className={styles.footerContent}>
-        <div className={styles.footerItemBox}>
-          <img
-            className={styles.logo}
-            src={themeMode == 'dark' ? Logo : WhiteLogo}
-            alt="logo"
-          />
-        </div>
+        {/* <div className={styles.footerItemBox}> */}
+        <img
+          className={styles.logo}
+          src={themeMode == 'dark' ? Logo : WhiteLogo}
+          alt="logo"
+        />
+        {/* </div> */}
         {mobile ? (
           <>
             <IconsDom />
