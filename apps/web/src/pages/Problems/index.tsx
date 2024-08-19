@@ -48,7 +48,7 @@ function ProversPage() {
             lg={{ flex: '33.33%' }}
           >
             <ProblemsListItem
-              onClick={() => navigate(`/problems/problemsDetail/${problem_id}`)}
+              onClick={() => navigate(`/problems/${problem_id}`)}
               info={item}
             />
           </Col>

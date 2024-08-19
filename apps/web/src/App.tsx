@@ -24,10 +24,7 @@ function App() {
           <Route path="/" element={<Layout />}>
             <Route index element={<HomePage />} />
             <Route path="problems" element={<ProblemsPage />} />
-            <Route
-              path="problemsDetail/:detailId"
-              element={<ProblemsDetail />}
-            />
+            <Route path="problems/:detailId" element={<ProblemsDetail />} />
             <Route path="how-to-contribute" element={<HowToContributePage />} />
             <Route path="machine-spec" element={<MachineSpecPage />} />
             <Route
