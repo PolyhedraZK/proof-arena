@@ -6,13 +6,14 @@ import { createStyles } from 'antd-style';
 
 import MdDescription from '@/components/MdDescription';
 import { customThemeVariables } from '@/theme';
-const useStyles = createStyles(({ isDarkMode, css }) => {
+const useStyles = createStyles(({ isDarkMode, css, responsive }) => {
   const colors = isDarkMode
     ? customThemeVariables.dark
     : customThemeVariables.light;
   return {
     baseBox: {
       padding: 16,
+      marginBottom: 50,
     },
     box: {
       margin: '0 auto',
@@ -22,6 +23,9 @@ const useStyles = createStyles(({ isDarkMode, css }) => {
       maxWidth: 1200,
       width: '100%',
       padding: 24,
+      [responsive.mobile]: {
+        marginTop: 8,
+      },
     },
     title: css`
       color: #2b332d;

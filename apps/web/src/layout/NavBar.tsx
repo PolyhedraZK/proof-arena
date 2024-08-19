@@ -5,13 +5,10 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 import GighubButton from '@/assets/footerIcons/githubButton.svg?r';
-import ArrowRightTop from '@/assets/icons/arrow-right-top.svg?r';
 import CheckMark from '@/assets/icons/check-mark.svg?r';
-import GithubIcon from '@/assets/icons/githubIcon.svg?r';
 import Logo from '@/assets/logo.svg';
 import MenuIcon from '@/assets/menuIcon.svg?r';
 import WhiteLogo from '@/assets/white-logo.svg';
-import BaseButton from '@/components/base/BaseButton';
 
 import useStyles from './header.style';
 
@@ -102,15 +99,6 @@ function NavBar() {
         items={createMenuItems()}
         expandIcon
       />
-      <BaseButton
-        className={styles.githubBtn}
-        onClick={() =>
-          window.open('https://github.com/PolyhedraZK/proof-arena')
-        }
-      >
-        <GithubIcon /> &nbsp;Github
-        <ArrowRightTop />
-      </BaseButton>
     </div>
   );
 }

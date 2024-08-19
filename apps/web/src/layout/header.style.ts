@@ -45,8 +45,6 @@ export default createStyles(({ responsive, isDarkMode }) => {
       flex: 1,
       display: 'flex',
       alignItems: 'center',
-      marginLeft: '5%',
-      justifyContent: 'flex-end',
       '.links': {
         flex: 1,
         display: 'flex',
@@ -79,6 +77,11 @@ export default createStyles(({ responsive, isDarkMode }) => {
       [responsive.laptop]: {
         marginLeft: '0px',
       },
+    },
+    btnBox: {
+      width: 203,
+      display: 'flex',
+      justifyContent: 'flex-end',
     },
     mdGithubBtn: {
       width: 140,
@@ -135,10 +138,10 @@ export default createStyles(({ responsive, isDarkMode }) => {
     menuList: { padding: '0px 16px' },
 
     antMenuStyle: {
-      width: '100%',
-      // justifyContent: 'right',
+      justifyContent: 'center',
       border: 'none',
-      flex: 1,
+      // flex: 1,
+      width: '100%',
       '.proof-menu-item': {
         height: 88,
         lineHeight: '88px',

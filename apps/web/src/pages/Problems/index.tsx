@@ -60,7 +60,10 @@ function ProversPage() {
   return (
     <div className={`main-container ${styles.proversWrapper}`}>
       <Tabs activeKey={activeTrack} onChange={setActiveTrack}>
-        <TabPane tab="ZK Prover Track" key="zk-prover">
+        <TabPane
+          tab={<span className={styles.tabTitle}>ZK Prover Track</span>}
+          key="zk-prover"
+        >
           <div className="my-provers">
             {loading ? (
               <LoadingCard num={8} />
@@ -75,7 +78,10 @@ function ProversPage() {
             )}
           </div>
         </TabPane>
-        <TabPane tab="zkVM Track" key="zkvm">
+        <TabPane
+          tab={<span className={styles.tabTitle}>zkVM Track</span>}
+          key="zkvm"
+        >
           <div className="my-provers">
             {loading ? (
               <LoadingCard num={8} />

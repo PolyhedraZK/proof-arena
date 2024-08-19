@@ -7,6 +7,7 @@ export const useStyles = createStyles(({ css, prefixCls, responsive }) => ({
     margin: '0 auto',
     marginTop: 60,
     padding: 16,
+    marginBottom: 50,
     [responsive.mobile]: {
       marginTop: 8,
     },

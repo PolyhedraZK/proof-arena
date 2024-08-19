@@ -109,8 +109,13 @@ const HomePage: React.FC = () => {
         <section className={styles.section}>
           <div className={styles.titleLevel2}>Key Features</div>
           <div className={styles.cardContainer}>
-            {cardList.map(item => (
-              <Card bordered={false} title={item.title} className={styles.card}>
+            {cardList.map((item, index) => (
+              <Card
+                key={index}
+                bordered={false}
+                title={item.title}
+                className={styles.card}
+              >
                 {item.text}
               </Card>
             ))}
