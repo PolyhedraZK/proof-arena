@@ -29,6 +29,25 @@ const useStyles = createStyles(({ css }) => ({
     li {
       line-height: 160%;
     }
+    img {
+      max-width: 100%;
+      height: auto;
+    }
+    code {
+      word-break: break-all;
+      padding: 0.2em 0.4em;
+      background-color: #afb8c133;
+      border-radius: 6px;
+      // font-size: 85%;
+    }
+    pre {
+      overflow: hidden;
+      overflow-x: auto;
+    }
+    pre code {
+      background: none;
+      display: block;
+    }
   `,
 }));
 const ProblemsDescription = ({ mdFile }: { mdFile: string }) => {

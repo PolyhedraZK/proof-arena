@@ -1,12 +1,12 @@
 import Icon, { CloseOutlined } from '@ant-design/icons';
 import { Drawer, Menu } from 'antd';
 import { useResponsive, useThemeMode } from 'antd-style';
-import classNames from 'clsx';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 import GighubButton from '@/assets/footerIcons/githubButton.svg?r';
 import ArrowRightTop from '@/assets/icons/arrow-right-top.svg?r';
+import CheckMark from '@/assets/icons/check-mark.svg?r';
 import GithubIcon from '@/assets/icons/githubIcon.svg?r';
 import Logo from '@/assets/logo.svg';
 import MenuIcon from '@/assets/menuIcon.svg?r';
@@ -28,6 +28,7 @@ function NavBar() {
   const { mobile } = useResponsive();
   const [isOpen, setIsOpen] = useState(false);
   const { themeMode } = useThemeMode();
+  const selectd = `/${location.pathname.split('/')[1]}`;
 
   const createMenuItems = () =>
     links.map(item => ({
@@ -78,6 +79,9 @@ function NavBar() {
               className={styles.dropdownItem}
             >
               {item.label}
+              {item.to === selectd && (
+                <CheckMark className={styles.checkMarkIcon} />
+              )}
             </div>
           ))}
           <GighubButton
@@ -92,10 +96,11 @@ function NavBar() {
   ) : (
     <div className={styles.navLinks}>
       <Menu
-        defaultSelectedKeys={[links[0].to]}
+        selectedKeys={[selectd]}
         className={styles.antMenuStyle}
         mode="horizontal"
         items={createMenuItems()}
+        expandIcon
       />
       <BaseButton
         className={styles.githubBtn}
