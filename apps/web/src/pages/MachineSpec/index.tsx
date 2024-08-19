@@ -2,7 +2,7 @@
 
 import { useRequest } from 'ahooks';
 
-import ProblemsDescription from '../ProblemsDescription';
+import MdDescription from '@/components/MdDescription';
 
 const MachineSpec = () => {
   const { data: machineSpecData, error } = useRequest(() =>
@@ -20,7 +20,7 @@ const MachineSpec = () => {
   return (
     <div className="main-container" style={{ paddingTop: '24px' }}>
       <h1>Judge Machine Specification</h1>
-      <ProblemsDescription mdFile={machineSpecData} />
+      <MdDescription mdFile={machineSpecData} />
     </div>
   );
 };

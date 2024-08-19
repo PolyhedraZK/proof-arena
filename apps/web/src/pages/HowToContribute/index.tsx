@@ -1,9 +1,8 @@
 import Giscus from '@giscus/react';
 import { useRequest } from 'ahooks';
 
+import MdDescription from '@/components/MdDescription';
 import { giscusConfig } from '@/config/giscus';
-
-import ProblemsDescription from '../ProblemsDescription';
 
 const HowToContribute = () => {
   const { data: howToContributeData, error } = useRequest(() =>
@@ -21,7 +20,7 @@ const HowToContribute = () => {
   return (
     <div className="main-container" style={{ paddingTop: '24px' }}>
       <h1>How to Contribute</h1>
-      <ProblemsDescription mdFile={howToContributeData} />
+      <MdDescription mdFile={howToContributeData} />
       <div style={{ marginTop: '48px' }}>
         <h2>Discussions</h2>
         <Giscus {...giscusConfig} term="How to Contribute" mapping="specific" />

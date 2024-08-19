@@ -13,6 +13,7 @@ import CopySvg from '@/assets/icons/copy.svg';
 import Loading from '@/assets/icons/loading.svg?r';
 import BaseButton from '@/components/base/BaseButton.tsx';
 import CustomTitle from '@/components/base/CustomTitle.tsx';
+import MdDescription from '@/components/MdDescription/index.tsx';
 import { giscusConfig } from '@/config/giscus';
 import {
   IProblemsDetail,
@@ -20,7 +21,6 @@ import {
 } from '@/services/problems/types.ts';
 import isImageByLoading from '@/utils/checkImg.ts';
 
-import ProblemsDescription from '../ProblemsDescription/index.tsx';
 import SubmissionsChart from './components/SubmissionsChart';
 import SubmissionsTable from './components/SubmissionsTable';
 import { useStyles } from './index.style.ts';
@@ -128,7 +128,7 @@ const ProblemsDetail = () => {
           </div>
           {detaileData?.details && (
             <div className={styles.problemsDescriptionBox}>
-              <ProblemsDescription mdFile={detaileData?.details || ''} />
+              <MdDescription mdFile={detaileData?.details || ''} />
             </div>
           )}
           {autoHeightDesMd && (
