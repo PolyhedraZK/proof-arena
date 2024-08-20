@@ -140,8 +140,8 @@ export default createStyles(({ responsive, isDarkMode }) => {
     antMenuStyle: {
       justifyContent: 'center',
       border: 'none',
-      // flex: 1,
-      width: '100%',
+      width: '150px',
+      flex: 1,
       '.proof-menu-item': {
         height: 88,
         lineHeight: '88px',
