@@ -1,10 +1,11 @@
 import { Avatar, Typography } from 'antd';
+import { useEffect, useState } from 'react';
+
 import CopySvg from '@/assets/icons/copy.svg';
 import { IProblems } from '@/services/problems/types.ts';
+import isImageByLoading from '@/utils/checkImg.ts';
 
 import { useStyles } from './index.style.ts';
-import isImageByLoading from '@/utils/checkImg.ts';
-import { useEffect, useState } from 'react';
 
 interface IproblemsListItemProps {
   info: IProblems;
@@ -36,7 +37,11 @@ const ProblemsListItem = ({ info, onClick }: IproblemsListItemProps) => {
           <span className={styles.title}>{info.title || '--'}</span>
         </div>
         <div className={styles.headBoxBtomTitle}>
-          <Avatar style={{border: 'none'}} size={24} icon={<img src={avatar} />} />
+          <Avatar
+            style={{ border: 'none' }}
+            size={24}
+            icon={<img src={avatar} />}
+          />
           <span>{info.proposer}</span>
         </div>
       </div>

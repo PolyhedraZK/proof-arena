@@ -1,10 +1,11 @@
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
 import problemsParser from '@proofarena/vite-plugin-problems-parser';
 import replace from '@rollup/plugin-replace';
+import react from '@vitejs/plugin-react';
 import dayjs from 'dayjs';
 import rollupNodePolyFill from 'rollup-plugin-polyfill-node';
+import { defineConfig } from 'vite';
 import Inspect from 'vite-plugin-inspect';
+import { viteStaticCopy } from 'vite-plugin-static-copy';
 import svgr from 'vite-plugin-svgr';
 
 const alias = {
@@ -14,6 +15,14 @@ const alias = {
 export default defineConfig({
   plugins: [
     Inspect(),
+    viteStaticCopy({
+      targets: [
+        {
+          src: '../../docs/*',
+          dest: 'docs',
+        },
+      ],
+    }),
     problemsParser({
       problems: {
         src: '../../problems/*/',
@@ -27,6 +36,7 @@ export default defineConfig({
         src: '../../docs/*.md',
       },
     }),
+
     react(),
     replace({
       preventAssignment: true,
@@ -47,9 +57,7 @@ export default defineConfig({
   },
   build: {
     rollupOptions: {
-      plugins: [
-        rollupNodePolyFill(),
-      ],
+      plugins: [rollupNodePolyFill()],
     },
   },
   optimizeDeps: {
@@ -62,5 +70,9 @@ export default defineConfig({
         bigint: true,
       },
     },
+  },
+  server: {
+    host: '0.0.0.0',
+    port: 3000,
   },
 });

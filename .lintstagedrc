@@ -1,0 +1,4 @@
+{
+  "*.{ts,tsx}": ["turbo run lint --filter", "prettier --write", "eslint --fix"],
+  "*.{json,md,yaml}": ["prettier --ignore-unknown --write"]
+}
