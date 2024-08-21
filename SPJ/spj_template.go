@@ -3,9 +3,14 @@ package SPJ
 import (
 	"flag"
 	"fmt"
+	"io"
 	"os"
 	"os/exec"
+	"runtime"
+	"strings"
+	"syscall"
 	"time"
+	"unsafe"
 )
 
 type Config struct {
@@ -31,7 +36,6 @@ type SPJTemplate struct {
 	PipeManager     *PipeManager
 	Timer           *Timer
 	ResourceMonitor *ResourceMonitor
-	CgroupManager   *CgroupManager
 	Logger          *Logger
 	ResultCollector *ResultCollector
 	ProverName      string
@@ -56,6 +60,11 @@ func parseFlags() Config {
 
 	flag.Parse()
 
+	if flag.NFlag() != 7 {
+		flag.Usage()
+		os.Exit(1)
+	}
+
 	config.Requirements = ProblemRequirement{
 		TimeLimit:          *timeLimit,
 		MemoryLimit:        *memoryLimit,
@@ -76,20 +85,10 @@ func NewSPJTemplate(implementation SPJImplementation) (*SPJTemplate, error) {
 
 	resourceMonitor := NewResourceMonitor()
 
-	cgroupManager, err := NewCgroupManager("spj_prover")
-	if err != nil {
-		return nil, fmt.Errorf("failed to create CgroupManager: %v", err)
-	}
-
-	if err := cgroupManager.SetCPULimit(config.Requirements.CPULimit); err != nil {
-		return nil, fmt.Errorf("failed to set CPU limit: %v", err)
-	}
-
 	return &SPJTemplate{
 		PipeManager:     pipeManager,
 		Timer:           NewTimer(),
 		ResourceMonitor: resourceMonitor,
-		CgroupManager:   cgroupManager,
 		Logger:          NewLogger(os.Stderr),
 		ResultCollector: NewResultCollector(),
 		Config:          config,
@@ -99,20 +98,16 @@ func NewSPJTemplate(implementation SPJImplementation) (*SPJTemplate, error) {
 
 func (spj *SPJTemplate) Run() error {
 	defer spj.PipeManager.Close()
-	defer spj.CgroupManager.Cleanup()
 
 	done := spj.ResourceMonitor.StartPeriodicUpdate(time.Second)
 	defer close(done)
-
-	if err := spj.setup(); err != nil {
-		return fmt.Errorf("setup failed: %v", err)
-	}
-
-	if err := spj.runProver(); err != nil {
+	var proof *proofData
+	var err error
+	if proof, err = spj.runProver(); err != nil {
 		return fmt.Errorf("prover run failed: %v", err)
 	}
 
-	if err := spj.runVerifier(); err != nil {
+	if err := spj.runVerifier(proof); err != nil {
 		return fmt.Errorf("verifier run failed: %v", err)
 	}
 
@@ -122,12 +117,8 @@ func (spj *SPJTemplate) Run() error {
 	return nil
 }
 
-func (spj *SPJTemplate) setup() error {
-	spj.Logger.Log("Starting setup...")
-	spj.Timer.Start("setup")
-	defer spj.Timer.Stop("setup")
-
-	if err := spj.PipeManager.SendPipeNames(); err != nil {
+func (spj *SPJTemplate) setup(proverStdin io.Writer) error {
+	if err := spj.PipeManager.SendProverPipeNames(proverStdin); err != nil {
 		return err
 	}
 
@@ -146,85 +137,129 @@ func (spj *SPJTemplate) setup() error {
 	return spj.waitForSetupFinished()
 }
 
-func (spj *SPJTemplate) runProver() error {
+type proofData struct {
+	proof      []byte
+	vk         []byte
+	pubWitness []byte
+}
+
+func (spj *SPJTemplate) runProver() (*proofData, error) {
 	spj.Logger.Log("Running prover...")
-	spj.Timer.Start("prover")
-	defer spj.Timer.Stop("prover")
 
-	cmd := exec.Command(spj.Config.ProverPath)
-	cmd.Stdout = spj.PipeManager.SpjToProverPipe
-	cmd.Stdin = spj.PipeManager.ProverToSPJPipe
+	pathAndArg := strings.Split(spj.Config.ProverPath, " ")
+	path := pathAndArg[0]
+	args := pathAndArg[1:]
 
+	cmd := exec.Command(path, args...)
+	proverStdin, err := cmd.StdinPipe()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get prover stdin: %v", err)
+	}
+
+	spj.Timer.Start("setup")
 	if err := cmd.Start(); err != nil {
-		return fmt.Errorf("failed to start prover: %v", err)
+		return nil, fmt.Errorf("failed to start prover: %v", err)
 	}
 
-	if err := spj.CgroupManager.AddProcess(cmd.Process.Pid); err != nil {
-		return fmt.Errorf("failed to add prover to cgroup: %v", err)
+	if err := spj.setCPUAffinity(cmd.Process.Pid); err != nil {
+		spj.Logger.Log(fmt.Sprintf("Warning: Failed to set CPU affinity: %v", err))
+	} else {
+		spj.Logger.Log(fmt.Sprintf("Successfully set CPU affinity to %d cores", spj.Config.Requirements.CPULimit))
 	}
-
+	// setup
+	if err := spj.setup(proverStdin); err != nil {
+		return nil, fmt.Errorf("setup failed: %v", err)
+	}
+	spj.Timer.Stop("setup")
+	spj.Timer.Start("proof")
+	spj.Timer.Start("witness")
 	testData := spj.Implementation.GenerateTestData(spj.N)
+	spj.ResultCollector.SetN(spj.N)
 	if err := spj.PipeManager.SendToProver(testData); err != nil {
-		return err
+		return nil, err
 	}
 
 	results, err := spj.PipeManager.ReadFromProver()
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	if !spj.Implementation.VerifyResults(testData, results) {
-		return fmt.Errorf("results verification failed")
+		return nil, fmt.Errorf("results verification failed")
 	}
 
 	if err := spj.waitForWitnessGenerated(); err != nil {
-		return err
+		return nil, err
 	}
+	spj.Timer.Stop("witness")
 
-	proof, err := spj.PipeManager.ReadFromProver()
+	proofByte, err := spj.PipeManager.ReadFromProver()
 	if err != nil {
-		return err
+		return nil, err
 	}
+	vkByte, err := spj.PipeManager.ReadFromProver()
+	if err != nil {
+		return nil, err
+	}
+	pubWitnessByte, err := spj.PipeManager.ReadFromProver()
+	if err != nil {
+		return nil, err
+	}
+	spj.Timer.Stop("proof")
 
-	spj.ResultCollector.SetProofSize(len(proof))
+	spj.ResultCollector.SetProofSize(len(proofByte))
 
 	if err := cmd.Wait(); err != nil {
-		return fmt.Errorf("prover execution failed: %v", err)
+		return nil, fmt.Errorf("prover execution failed: %v", err)
 	}
 
-	return nil
+	return &proofData{
+		proof:      proofByte,
+		vk:         vkByte,
+		pubWitness: pubWitnessByte,
+	}, nil
 }
 
-func (spj *SPJTemplate) runVerifier() error {
+func (spj *SPJTemplate) runVerifier(proof *proofData) error {
 	spj.Logger.Log("Running verifier...")
-	spj.Timer.Start("verifier")
-	defer spj.Timer.Stop("verifier")
 
-	cmd := exec.Command(spj.Config.VerifierPath)
-	cmd.Stdout = spj.PipeManager.SpjToVerifierPipe
-	cmd.Stdin = spj.PipeManager.VerifierToSPJPipe
+	pathAndArg := strings.Split(spj.Config.VerifierPath, " ")
+	path := pathAndArg[0]
+	args := pathAndArg[1:]
+
+	cmd := exec.Command(path, args...)
+	verifierStdin, err := cmd.StdinPipe()
+	verifierStdout, err := cmd.StdoutPipe()
+	verifierStderr, err := cmd.StderrPipe()
+
+	// pipe verifier stdout to SPJ stderr
+	go io.Copy(os.Stdout, verifierStdout)
+	go io.Copy(os.Stderr, verifierStderr)
 
 	if err := cmd.Start(); err != nil {
 		return fmt.Errorf("failed to start verifier: %v", err)
 	}
-
-	if err := spj.PipeManager.SendVerifierPipeNames(); err != nil {
+	spj.Timer.Start("verify")
+	if err := spj.PipeManager.SendVerifierPipeNames(verifierStdin); err != nil {
 		return fmt.Errorf("failed to send verifier pipe names: %v", err)
 	}
-
-	combinedProofData, err := spj.PipeManager.ReadFromProver()
-	if err != nil {
-		return fmt.Errorf("failed to read proof data from prover: %v", err)
+	fmt.Println("Sent verifier pipe names")
+	if err := spj.PipeManager.SendToVerifier(proof.proof); err != nil {
+		return fmt.Errorf("failed to send proof data to verifier: %v", err)
 	}
-
-	if err := spj.PipeManager.SendToVerifier(combinedProofData); err != nil {
-		return fmt.Errorf("failed to send combined proof data to verifier: %v", err)
+	if err := spj.PipeManager.SendToVerifier(proof.vk); err != nil {
+		return fmt.Errorf("failed to send vk to verifier: %v", err)
 	}
+	if err := spj.PipeManager.SendToVerifier(proof.pubWitness); err != nil {
+		return fmt.Errorf("failed to send public witness to verifier: %v", err)
+	}
+	fmt.Println("Sent proof to verifier")
 
 	result, err := spj.PipeManager.ReadFromVerifier()
 	if err != nil {
 		return fmt.Errorf("failed to read verification result: %v", err)
 	}
+	spj.Timer.Stop("verify")
 
 	if len(result) != 1 {
 		panic(fmt.Sprintf("Unexpected verification result format: %v", result))
@@ -241,6 +276,24 @@ func (spj *SPJTemplate) runVerifier() error {
 
 	if err := cmd.Wait(); err != nil {
 		return fmt.Errorf("verifier execution failed: %v", err)
+	}
+
+	return nil
+}
+
+func (spj *SPJTemplate) setCPUAffinity(pid int) error {
+	if runtime.GOOS != "linux" {
+		return fmt.Errorf("setCPUAffinity is only supported on Linux")
+	}
+
+	var mask uint64
+	for i := 0; i < spj.Config.Requirements.CPULimit; i++ {
+		mask |= 1 << i
+	}
+
+	_, _, errno := syscall.RawSyscall(syscall.SYS_SCHED_SETAFFINITY, uintptr(pid), uintptr(unsafe.Sizeof(mask)), uintptr(unsafe.Pointer(&mask)))
+	if errno != 0 {
+		return fmt.Errorf("failed to set CPU affinity: %v", errno)
 	}
 
 	return nil
@@ -295,6 +348,7 @@ func (spj *SPJTemplate) waitForWitnessGenerated() error {
 }
 
 func (spj *SPJTemplate) collectResults() {
+	spj.ResultCollector.SetStatus(true)
 	spj.ResultCollector.SetTimes(spj.Timer.GetTimes())
 	spj.ResultCollector.SetPeakMemory(spj.ResourceMonitor.GetPeakMemory())
 	spj.ResultCollector.SetMaxCPU(spj.Config.Requirements.CPULimit)

@@ -2,6 +2,7 @@ package SPJ
 
 import (
 	"fmt"
+	"io"
 	"os"
 
 	ipc "github.com/PolyhedraZK/proof-arena/SPJ/IPCUtils"
@@ -54,11 +55,21 @@ func (pm *PipeManager) Close() {
 	os.Remove("/tmp/verifier_to_spj")
 }
 
-func (pm *PipeManager) SendPipeNames() error {
-	if err := ipc.Write_string(os.Stdout, "/tmp/spj_to_prover"); err != nil {
+func (pm *PipeManager) SendProverPipeNames(stdPipe io.Writer) error {
+	if err := ipc.Write_string(stdPipe, "/tmp/spj_to_prover"); err != nil {
 		return err
 	}
-	if err := ipc.Write_string(os.Stdout, "/tmp/prover_to_spj"); err != nil {
+	if err := ipc.Write_string(stdPipe, "/tmp/prover_to_spj"); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (pm *PipeManager) SendVerifierPipeNames(stdPipe io.Writer) error {
+	if err := ipc.Write_string(stdPipe, "/tmp/spj_to_verifier"); err != nil {
+		return err
+	}
+	if err := ipc.Write_string(stdPipe, "/tmp/verifier_to_spj"); err != nil {
 		return err
 	}
 	return nil
@@ -87,18 +98,6 @@ func (pm *PipeManager) WaitForProverMessage(expected string) error {
 	}
 	if message != expected {
 		return fmt.Errorf("expected '%s', got '%s'", expected, message)
-	}
-	return nil
-}
-
-// Verifier related methods
-
-func (pm *PipeManager) SendVerifierPipeNames() error {
-	if err := ipc.Write_string(os.Stdout, "/tmp/spj_to_verifier"); err != nil {
-		return err
-	}
-	if err := ipc.Write_string(os.Stdout, "/tmp/verifier_to_spj"); err != nil {
-		return err
 	}
 	return nil
 }

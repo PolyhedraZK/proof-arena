@@ -3,14 +3,11 @@ module github.com/PolyhedraZK/proof-arena/problems/keccak/expectedProver
 go 1.22.5
 
 require (
+	github.com/PolyhedraZK/proof-arena/SPJ/IPCUtils v0.0.0-00010101000000-000000000000
 	github.com/consensys/gnark v0.10.0
 	github.com/consensys/gnark-crypto v0.12.2-0.20240215234832-d72fcb379d3e
 	golang.org/x/crypto v0.17.0
 )
-
-require github.com/PolyhedraZK/proof-arena/problems/IPCUtils v0.0.0
-
-replace github.com/PolyhedraZK/proof-arena/problems/IPCUtils => ../../IPCUtils
 
 require (
 	github.com/bits-and-blooms/bitset v1.8.0 // indirect
@@ -33,3 +30,5 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	rsc.io/tmplfunc v0.0.3 // indirect
 )
+
+replace github.com/PolyhedraZK/proof-arena/SPJ/IPCUtils => ../../../SPJ/IPCUtils

@@ -15,12 +15,13 @@ type BenchmarkResult struct {
 	WitnessGenerationTime float64           `json:"witness_generation_time"`
 	ProofGenerationTime   float64           `json:"proof_generation_time"`
 	VerifyTime            float64           `json:"verify_time"`
-	PeakMemory            uint64            `json:"peak_memory"`
-	ProofSize             int               `json:"proof_size"`
+	PeakMemory            float64           `json:"peak_memory"`
+	ProofSize             float64           `json:"proof_size"`
 	Status                bool              `json:"status"`
 	ErrorMsg              string            `json:"error_msg"`
 	MaxCPU                int               `json:"max_cpu"`
 	AdditionalMetrics     map[string]string `json:"additional_metrics,omitempty"`
+	N                     uint64            `json:"n,omitempty"`
 }
 
 type ResultCollector struct {
@@ -45,19 +46,24 @@ func (rc *ResultCollector) SetProverInfo(name, proofSystem, algorithm string) {
 	rc.result.Algorithm = algorithm
 }
 
+func (rc *ResultCollector) SetN(n uint64) {
+	fmt.Printf("Setting N: %d\n", n)
+	rc.result.N = n
+}
+
 func (rc *ResultCollector) SetTimes(times map[string]time.Duration) {
-	rc.result.SetupTime = times["setup"].Seconds()
-	rc.result.WitnessGenerationTime = times["witness"].Seconds()
-	rc.result.ProofGenerationTime = times["proof"].Seconds()
-	rc.result.VerifyTime = times["verify"].Seconds()
+	rc.result.SetupTime = times["setup"].Seconds() / float64(rc.result.N)
+	rc.result.WitnessGenerationTime = times["witness"].Seconds() / float64(rc.result.N)
+	rc.result.ProofGenerationTime = times["proof"].Seconds() / float64(rc.result.N)
+	rc.result.VerifyTime = times["verify"].Seconds() / float64(rc.result.N)
 }
 
 func (rc *ResultCollector) SetPeakMemory(memory uint64) {
-	rc.result.PeakMemory = memory / (1024 * 1024) // Convert to MB
+	rc.result.PeakMemory = float64(memory/(1024*1024)) / float64(rc.result.N) // Convert to MB
 }
 
 func (rc *ResultCollector) SetProofSize(size int) {
-	rc.result.ProofSize = size
+	rc.result.ProofSize = float64(size) / float64(rc.result.N)
 }
 
 func (rc *ResultCollector) SetStatus(status bool) {

@@ -8,7 +8,7 @@ import (
 	"io"
 	"os"
 
-	ipc "github.com/PolyhedraZK/proof-arena/problems/IPCUtils"
+	ipc "github.com/PolyhedraZK/proof-arena/SPJ/IPCUtils"
 	"github.com/consensys/gnark-crypto/ecc"
 	"github.com/consensys/gnark/backend/groth16"
 	"github.com/consensys/gnark/backend/witness"
@@ -272,6 +272,12 @@ func main() {
 	mode := flag.String("mode", "prove", "compile or prove or verify")
 	flag.Parse()
 
+	switch *mode {
+	case "compile":
+		_ = compile()
+		return
+	}
+
 	// open a named pipe to avoid blocking on stdin
 	// read pipe name from stdin
 	spjToProverPipeName, err := ipc.Read_string(os.Stdin)
@@ -297,8 +303,6 @@ func main() {
 	defer ProverToSPJPipe.Close()
 
 	switch *mode {
-	case "compile":
-		err = compile()
 	case "prove":
 		// send the prover name, algorithm name, and proof system name
 		ipc.Write_string(ProverToSPJPipe, "GNARK KECCAK-256")
