@@ -118,7 +118,7 @@ const ProofModal = memo(
         {children}
       </Modal>
     );
-  },
+  }
 );
 
 export default ProofModal;

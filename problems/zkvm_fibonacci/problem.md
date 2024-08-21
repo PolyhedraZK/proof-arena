@@ -27,8 +27,7 @@ Your program should output a single integer, which is the nth Fibonacci number.
 
 ## Example
 
-Input: 10
-Output: 55
+Input: 10 Output: 55
 
 Explanation: The 10th number in the Fibonacci sequence is 55. The sequence goes: 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, ...
 
