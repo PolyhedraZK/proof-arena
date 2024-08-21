@@ -40,3 +40,4 @@ maliciousProver
 !maliciousProver/
 /.turbo
 .env
+/results.sarif

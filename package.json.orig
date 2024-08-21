@@ -6,9 +6,14 @@
     "build:testing": "node apps/web/scripts/syncProvers.js && turbo build:testing",
     "dev": "turbo dev",
     "lint": "turbo lint",
+<<<<<<< HEAD
     "prettier": "turbo prettier",
+    "prepare": "husky"
+=======
+    "prettier": "prettier --log-level warn --write '**/*.{ts,tsx,js,jsx}'",
     "prepare": "husky",
     "sync-provers": "node apps/web/scripts/syncProvers.js"
+>>>>>>> main
   },
   "devDependencies": {
     "husky": "^9.0.11",

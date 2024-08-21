@@ -1,5 +1,3 @@
-# Machine Specification
-
 ## Provider
 
 - **Main CPU Judge**: Google Cloud `c3d-standard-90` (Your prover can only use 64 cores for simplicity.)

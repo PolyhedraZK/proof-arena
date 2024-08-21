@@ -1,6 +1,7 @@
+// packages/vite-plugin-problems-parser/src/problemParser.ts
+
 import fs from 'node:fs';
 import path from 'node:path';
-
 import { parseMatter } from './gfmFrontMatterParser';
 
 type ProblemData = {
@@ -14,9 +15,11 @@ export async function parseProblem(dirPath: string, fileName: string): Promise<P
   if (problemFile.isFile()) {
     const mdContent = fs.readFileSync(filePath, 'utf-8');
     const matterResolved = parseMatter(mdContent);
-    // console.log('matterResolved = ', matterResolved);
     return {
-      metadata: matterResolved.data,
+      metadata: {
+        ...matterResolved.data,
+        track: matterResolved.data.track || 'zk-prover', // 默认为 'zk-prover' 如果没有指定
+      },
       details: matterResolved.content,
     };
   } else {

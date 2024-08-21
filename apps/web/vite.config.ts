@@ -7,11 +7,11 @@ import { defineConfig } from 'vite';
 import Inspect from 'vite-plugin-inspect';
 import { viteStaticCopy } from 'vite-plugin-static-copy';
 import svgr from 'vite-plugin-svgr';
+
 const alias = {
   '@': '/src',
 };
 
-// https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
     Inspect(),
@@ -31,6 +31,9 @@ export default defineConfig({
       spj: {
         src: '../../spj_output/**/*.json',
         exclude: undefined,
+      },
+      docs: {
+        src: '../../docs/*.md',
       },
     }),
 
@@ -54,11 +57,7 @@ export default defineConfig({
   },
   build: {
     rollupOptions: {
-      plugins: [
-        // Enable rollup polyfills plugin
-        // used during production bundling
-        rollupNodePolyFill(),
-      ],
+      plugins: [rollupNodePolyFill()],
     },
   },
   optimizeDeps: {
@@ -71,5 +70,9 @@ export default defineConfig({
         bigint: true,
       },
     },
+  },
+  server: {
+    host: '0.0.0.0',
+    port: 3000,
   },
 });

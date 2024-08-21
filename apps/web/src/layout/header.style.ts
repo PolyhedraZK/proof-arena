@@ -3,7 +3,7 @@ import { createStyles } from 'antd-style';
 import { customThemeVariables } from '@/theme';
 import { hex2rgba } from '@/utils';
 
-export default createStyles(({ responsive, isDarkMode, prefixCls }) => {
+export default createStyles(({ responsive, isDarkMode }) => {
   const colors = isDarkMode ? customThemeVariables.dark : customThemeVariables.light;
 
   return {
@@ -45,8 +45,6 @@ export default createStyles(({ responsive, isDarkMode, prefixCls }) => {
       flex: 1,
       display: 'flex',
       alignItems: 'center',
-      marginLeft: 32,
-      justifyContent: 'flex-end',
       '.links': {
         flex: 1,
         display: 'flex',
@@ -71,7 +69,6 @@ export default createStyles(({ responsive, isDarkMode, prefixCls }) => {
     githubBtn: {
       width: 144,
       height: 44,
-      marginLeft: '80px',
       fontWeight: 500,
       cursor: 'pointer',
       [responsive.tablet]: {
@@ -80,6 +77,11 @@ export default createStyles(({ responsive, isDarkMode, prefixCls }) => {
       [responsive.laptop]: {
         marginLeft: '0px',
       },
+    },
+    btnBox: {
+      width: 203,
+      display: 'flex',
+      justifyContent: 'flex-end',
     },
     mdGithubBtn: {
       width: 140,
@@ -136,9 +138,9 @@ export default createStyles(({ responsive, isDarkMode, prefixCls }) => {
     menuList: { padding: '0px 16px' },
 
     antMenuStyle: {
-      width: '100%',
-      justifyContent: 'right',
+      justifyContent: 'center',
       border: 'none',
+      width: '150px',
       flex: 1,
       '.proof-menu-item': {
         height: 88,

@@ -1,0 +1,50 @@
+[
+  {
+    "name": "Expander",
+    "inventor": "Polyhedra Network",
+    "status": "In Progress",
+    "type": "ZK Circuit Prover"
+  },
+  {
+    "name": "Gnark",
+    "inventor": "Consensys",
+    "status": "Tested on problem 1",
+    "type": "ZK Circuit Prover"
+  },
+  {
+    "name": "Plonky3",
+    "inventor": "Polygon",
+    "status": "In Progress",
+    "type": "ZK Circuit Prover"
+  },
+  {
+    "name": "Stwo",
+    "inventor": "Starkware",
+    "status": "In Progress",
+    "type": "ZK Circuit Prover"
+  },
+  {
+    "name": "Risc0",
+    "inventor": "Risc0",
+    "status": "Not started",
+    "type": "zkVM"
+  },
+  {
+    "name": "SP1",
+    "inventor": "Succinct",
+    "status": "Not started",
+    "type": "zkVM"
+  },
+  {
+    "name": "Boojum (Replica of Plonky2)",
+    "inventor": "zkSync",
+    "status": "Not started",
+    "type": "ZK Circuit Prover"
+  },
+  {
+    "name": "Valida",
+    "inventor": "Lita Foundation",
+    "status": "Not started",
+    "type": "zkVM"
+  }
+]

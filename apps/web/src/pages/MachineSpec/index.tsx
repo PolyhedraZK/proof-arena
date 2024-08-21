@@ -1,10 +1,10 @@
-import Giscus from '@giscus/react';
+// apps/web/src/pages/MachineSpec/index.tsx
+
 import { useRequest } from 'ahooks';
 import { Skeleton } from 'antd';
 import { createStyles } from 'antd-style';
 
 import MdDescription from '@/components/MdDescription';
-import { giscusConfig } from '@/config/giscus';
 import { customThemeVariables } from '@/theme';
 const useStyles = createStyles(({ isDarkMode, css, responsive }) => {
   const colors = isDarkMode
@@ -48,26 +48,26 @@ const useStyles = createStyles(({ isDarkMode, css, responsive }) => {
     `,
   };
 });
-const HowToContribute = () => {
+const MachineSpec = () => {
   const { styles } = useStyles();
 
   const {
-    data: howToContributeData,
+    data: machineSpecData,
     error,
     loading,
   } = useRequest(() =>
-    fetch('/docs/how_to_contribute.md').then(res => res.text())
+    fetch('/docs/machine_specification.md').then(res => res.text())
   );
 
   if (error) {
-    return <div>Failed to load How to Contribute content</div>;
+    return <div>Failed to load Machine Specification content</div>;
   }
 
   return (
     <div className={styles.baseBox}>
       <div className={styles.box}>
         <div className={styles.title}>
-          How to Contribute <div className={styles.green} />
+          Judge Machine Specification <div className={styles.green} />
         </div>
         {loading ? (
           <>
@@ -75,19 +75,11 @@ const HowToContribute = () => {
             <Skeleton active />
           </>
         ) : (
-          howToContributeData && <MdDescription mdFile={howToContributeData} />
+          machineSpecData && <MdDescription mdFile={machineSpecData} />
         )}
-        <div style={{ marginTop: '48px' }}>
-          <h2>Discussions</h2>
-          <Giscus
-            {...giscusConfig}
-            term="How to Contribute"
-            mapping="specific"
-          />
-        </div>
       </div>
     </div>
   );
 };
 
-export default HowToContribute;
+export default MachineSpec;

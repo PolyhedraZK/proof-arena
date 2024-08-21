@@ -1,32 +1,39 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 import Layout from '@/layout/index';
 
-// lazy页面
+import HomePage from './pages/Home';
 const ProblemsPage = React.lazy(() => import('./pages/Problems/index'));
 const ProblemsDetail = React.lazy(() => import('./pages/ProblemsDetail'));
-const HowToContribute = React.lazy(() => import('./pages/HowToContribute'));
-const JudgerSpec = React.lazy(() => import('./pages/JudgerSpec'));
-// 使用NiceModal注册modal
+const HowToContributePage = React.lazy(() => import('./pages/HowToContribute'));
+const MachineSpecPage = React.lazy(() => import('./pages/MachineSpec'));
+const SupportedProversPage = React.lazy(
+  () => import('./pages/SupportedProvers')
+);
+
 import '@/components/modal';
+
+import Loading from './components/base/Loading';
 
 function App() {
   return (
     <BrowserRouter>
-      <React.Suspense>
+      <Suspense fallback={<Loading />}>
         <Routes>
           <Route path="/" element={<Layout />}>
+            <Route index element={<HomePage />} />
             <Route path="problems" element={<ProblemsPage />} />
+            <Route path="problems/:detailId" element={<ProblemsDetail />} />
+            <Route path="how-to-contribute" element={<HowToContributePage />} />
+            <Route path="machine-spec" element={<MachineSpecPage />} />
             <Route
-              path="problems/problemsDetail/:detailId"
-              element={<ProblemsDetail />}
+              path="supported-provers"
+              element={<SupportedProversPage />}
             />
-            <Route path="howToContribute" element={<HowToContribute />} />
-            <Route path="judgerSpec" element={<JudgerSpec />} />
           </Route>
         </Routes>
-      </React.Suspense>
+      </Suspense>
     </BrowserRouter>
   );
 }

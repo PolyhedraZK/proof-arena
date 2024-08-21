@@ -5,23 +5,28 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 import GighubButton from '@/assets/footerIcons/githubButton.svg?r';
-import ArrowRightTop from '@/assets/icons/arrow-right-top.svg?r';
 import CheckMark from '@/assets/icons/check-mark.svg?r';
-import GithubIcon from '@/assets/icons/githubIcon.svg?r';
 import Logo from '@/assets/logo.svg';
 import MenuIcon from '@/assets/menuIcon.svg?r';
 import WhiteLogo from '@/assets/white-logo.svg';
-import BaseButton from '@/components/base/BaseButton';
 
-import { links } from './Header';
 import useStyles from './header.style';
-function PcNavBar() {
+
+export const links = [
+  { to: '/problems', label: 'Problems' },
+  { to: '/how-to-contribute', label: 'How to Contribute' },
+  { to: '/machine-spec', label: 'Machine Specification' },
+  { to: '/supported-provers', label: 'Supported Provers' },
+];
+
+function NavBar() {
   const { styles } = useStyles();
   const navigate = useNavigate();
   const { mobile } = useResponsive();
   const [isOpen, setIsOpen] = useState(false);
   const { themeMode } = useThemeMode();
   const selectd = `/${location.pathname.split('/')[1]}`;
+
   const createMenuItems = () =>
     links.map(item => ({
       label: (
@@ -31,6 +36,7 @@ function PcNavBar() {
       ),
       key: item.to,
     }));
+
   return mobile ? (
     <div className={styles.navLinks}>
       <div className={styles.mobileNav}>
@@ -91,18 +97,10 @@ function PcNavBar() {
         className={styles.antMenuStyle}
         mode="horizontal"
         items={createMenuItems()}
+        expandIcon
       />
-      <BaseButton
-        className={styles.githubBtn}
-        onClick={() =>
-          window.open('https://github.com/PolyhedraZK/proof-arena')
-        }
-      >
-        <GithubIcon /> &nbsp;Github
-        <ArrowRightTop />
-      </BaseButton>
     </div>
   );
 }
 
-export default PcNavBar;
+export default NavBar;
