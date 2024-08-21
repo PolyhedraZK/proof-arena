@@ -48,7 +48,6 @@ func main() {
 	if err != nil {
 		panic(fmt.Sprintf("Failed to create SPJ template: %v", err))
 	}
-
 	err = spj.Run()
 	if err != nil {
 		panic(fmt.Sprintf("SPJ run failed: %v", err))
