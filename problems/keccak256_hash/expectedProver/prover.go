@@ -8,7 +8,7 @@ import (
 	"io"
 	"os"
 
-	ipc "github.com/PolyhedraZK/proof-arena/problems/IPCUtils"
+	ipc "github.com/PolyhedraZK/proof-arena/SPJ/IPCUtils"
 	"github.com/consensys/gnark-crypto/ecc"
 	"github.com/consensys/gnark/backend/groth16"
 	"github.com/consensys/gnark/backend/witness"
@@ -76,25 +76,6 @@ func Hash(in []uints.U8, expected []uints.U8, c *sha3Circuit, api frontend.API) 
 	return nil
 }
 
-func compile() error {
-	var c sha3Circuit
-	c.In = make([]uints.U8, N*InputSize)
-	c.Expected = make([]uints.U8, N*OutputSize)
-	c.hasher = HasherName
-
-	r1cs, err := frontend.Compile(ecc.BN254.ScalarField(), r1cs.NewBuilder, &c)
-	if err != nil {
-		return err
-	}
-
-	pk, vk, err := groth16.Setup(r1cs)
-	if err != nil {
-		return err
-	}
-
-	return writeCircuitToFile(CircuitFile, r1cs, pk, vk)
-}
-
 func writeCircuitToFile(filename string, r1cs constraint.ConstraintSystem, pk groth16.ProvingKey, vk groth16.VerifyingKey) error {
 	circuitFile, err := os.Create(filename)
 	if err != nil {
@@ -125,41 +106,31 @@ func writeCircuitToFile(filename string, r1cs constraint.ConstraintSystem, pk gr
 	return nil
 }
 
+func proverSetup() (cs constraint.ConstraintSystem, pk groth16.ProvingKey, vk groth16.VerifyingKey, err error) {
+	var c sha3Circuit
+	c.In = make([]uints.U8, N*InputSize)
+	c.Expected = make([]uints.U8, N*OutputSize)
+	c.hasher = HasherName
+
+	r1cs, err := frontend.Compile(ecc.BN254.ScalarField(), r1cs.NewBuilder, &c)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	pk, vk, err = groth16.Setup(r1cs)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	return r1cs, pk, vk, nil
+}
+
 func prove(inputPipe *os.File, outputPipe *os.File) error {
-	combinedBytes, err := ipc.Read_byte_array(inputPipe)
+	cs, pk, vk, err := proverSetup()
 	if err != nil {
-		return err
-	}
-	// split the bytes into r1cs, pk, and vk
-	byteReader := bytes.NewReader(combinedBytes)
-	r1csBytes, err := ipc.Read_byte_array(byteReader)
-	if err != nil {
-		return err
-	}
-	pkBytes, err := ipc.Read_byte_array(byteReader)
-	if err != nil {
-		return err
-	}
-	vkBytes, err := ipc.Read_byte_array(byteReader)
-	if err != nil {
-		return err
-	}
-
-	cs := groth16.NewCS(ecc.BN254)
-	pk := groth16.NewProvingKey(ecc.BN254)
-	vk := groth16.NewVerifyingKey(ecc.BN254)
-
-	if _, err := cs.ReadFrom(bytes.NewReader(r1csBytes)); err != nil {
-		return err
-	}
-	if _, err := pk.ReadFrom(bytes.NewReader(pkBytes)); err != nil {
-		return err
-	}
-	if _, err := vk.ReadFrom(bytes.NewReader(vkBytes)); err != nil {
 		return err
 	}
 	ipc.Write_uint64(outputPipe, uint64(N))
-	ipc.Write_string(outputPipe, "setup finished")
 
 	in, err := ipc.Read_byte_array(inputPipe)
 	if err != nil {
@@ -269,7 +240,7 @@ func verify(inputPipe *os.File, outputPipe *os.File) error {
 }
 
 func main() {
-	mode := flag.String("mode", "prove", "compile or prove or verify")
+	mode := flag.String("mode", "prove", "prove or verify")
 	flag.Parse()
 
 	// open a named pipe to avoid blocking on stdin
@@ -297,8 +268,6 @@ func main() {
 	defer ProverToSPJPipe.Close()
 
 	switch *mode {
-	case "compile":
-		err = compile()
 	case "prove":
 		// send the prover name, algorithm name, and proof system name
 		ipc.Write_string(ProverToSPJPipe, "GNARK KECCAK-256")

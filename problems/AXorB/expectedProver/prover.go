@@ -4,9 +4,7 @@ import (
 	"bytes"
 	"flag"
 	"fmt"
-	"hash"
 	"io"
-	"math/rand"
 	"os"
 
 	ipc "github.com/PolyhedraZK/proof-arena/SPJ/IPCUtils"
@@ -16,102 +14,31 @@ import (
 	"github.com/consensys/gnark/constraint"
 	"github.com/consensys/gnark/frontend"
 	"github.com/consensys/gnark/frontend/cs/r1cs"
-	zkhash "github.com/consensys/gnark/std/hash"
-	gnarksha3 "github.com/consensys/gnark/std/hash/sha3"
-	"github.com/consensys/gnark/std/math/uints"
-	"golang.org/x/crypto/sha3"
 )
 
 const (
-	N           = 4
-	HasherName  = "Keccak-256"
-	InputSize   = 64
-	OutputSize  = 32
+	N           = 1024
 	CircuitFile = "circuit"
 )
 
-type testCase struct {
-	zk     func(api frontend.API) (zkhash.BinaryHasher, error)
-	native func() hash.Hash
+type XorCircuit struct {
+	A []frontend.Variable
+	B []frontend.Variable
+	C []frontend.Variable
 }
 
-var testCases = map[string]testCase{
-	HasherName: {gnarksha3.NewLegacyKeccak256, sha3.NewLegacyKeccak256},
-}
-
-type sha3Circuit struct {
-	In       []uints.U8
-	Expected []uints.U8 `gnark:",public"`
-	hasher   string
-}
-
-func (c *sha3Circuit) Define(api frontend.API) error {
-	for i := 0; i < N; i++ {
-		if err := Hash(c.In[i*InputSize:(i+1)*InputSize], c.Expected[i*OutputSize:(i+1)*OutputSize], c, api); err != nil {
-			return err
-		}
+func (c *XorCircuit) Define(api frontend.API) error {
+	for i := 0; i < len(c.A); i++ {
+		api.AssertIsEqual(c.C[i], api.Xor(c.A[i], c.B[i]))
 	}
-	return nil
-}
-
-func Hash(in []uints.U8, expected []uints.U8, c *sha3Circuit, api frontend.API) error {
-	newHasher, ok := testCases[c.hasher]
-	if !ok {
-		return fmt.Errorf("hash function unknown: %s", c.hasher)
-	}
-	h, err := newHasher.zk(api)
-	if err != nil {
-		return err
-	}
-	uapi, err := uints.New[uints.U64](api)
-	if err != nil {
-		return err
-	}
-
-	h.Write(in)
-	res := h.Sum()
-
-	for i := range expected {
-		uapi.ByteAssertEq(expected[i], res[i])
-	}
-	return nil
-}
-
-func writeCircuitToFile(filename string, r1cs constraint.ConstraintSystem, pk groth16.ProvingKey, vk groth16.VerifyingKey) error {
-	circuitFile, err := os.Create(filename)
-	if err != nil {
-		return err
-	}
-	defer circuitFile.Close()
-
-	writeByteArray := func(data interface {
-		WriteTo(w io.Writer) (int64, error)
-	}) error {
-		buffer := bytes.NewBuffer(nil)
-		if _, err := data.WriteTo(buffer); err != nil {
-			return err
-		}
-		return ipc.Write_byte_array(circuitFile, buffer.Bytes())
-	}
-
-	if err := writeByteArray(r1cs); err != nil {
-		return err
-	}
-	if err := writeByteArray(pk); err != nil {
-		return err
-	}
-	if err := writeByteArray(vk); err != nil {
-		return err
-	}
-
 	return nil
 }
 
 func proverSetup() (cs constraint.ConstraintSystem, pk groth16.ProvingKey, vk groth16.VerifyingKey, err error) {
-	var c sha3Circuit
-	c.In = make([]uints.U8, N*InputSize)
-	c.Expected = make([]uints.U8, N*OutputSize)
-	c.hasher = HasherName
+	var c XorCircuit
+	c.A = make([]frontend.Variable, N)
+	c.B = make([]frontend.Variable, N)
+	c.C = make([]frontend.Variable, N)
 
 	r1cs, err := frontend.Compile(ecc.BN254.ScalarField(), r1cs.NewBuilder, &c)
 	if err != nil {
@@ -128,7 +55,9 @@ func proverSetup() (cs constraint.ConstraintSystem, pk groth16.ProvingKey, vk gr
 
 func prove(inputPipe *os.File, outputPipe *os.File) error {
 	cs, pk, vk, err := proverSetup()
-
+	if err != nil {
+		return err
+	}
 	ipc.Write_uint64(outputPipe, uint64(N))
 
 	in, err := ipc.Read_byte_array(inputPipe)
@@ -153,20 +82,23 @@ func prove(inputPipe *os.File, outputPipe *os.File) error {
 }
 
 func calculateExpectedOutput(in []byte) []byte {
-	expectedBytes := make([]byte, N*OutputSize)
+	expectedBytes := make([]byte, N)
 	for i := 0; i < N; i++ {
-		h := sha3.NewLegacyKeccak256()
-		h.Write(in[i*InputSize : (i+1)*InputSize])
-		copy(expectedBytes[i*OutputSize:(i+1)*OutputSize], h.Sum(nil))
+		expectedBytes[i] = in[i] ^ in[i+N]
 	}
 	return expectedBytes
 }
 
 func generateWitness(in, expectedBytes []byte) (witness.Witness, error) {
-	var c sha3Circuit
-	c.In = uints.NewU8Array(in)
-	c.Expected = uints.NewU8Array(expectedBytes)
-	c.hasher = HasherName
+	var c XorCircuit
+	c.A = make([]frontend.Variable, N)
+	c.B = make([]frontend.Variable, N)
+	c.C = make([]frontend.Variable, N)
+	for i := 0; i < N; i++ {
+		c.A[i] = in[i]
+		c.B[i] = in[i+N]
+		c.C[i] = expectedBytes[i]
+	}
 	return frontend.NewWitness(&c, ecc.BN254.ScalarField())
 }
 
@@ -178,8 +110,6 @@ func sendProofData(proof groth16.Proof, vk groth16.VerifyingKey, witness witness
 		if _, err := data.WriteTo(buffer); err != nil {
 			return err
 		}
-		randPos := rand.Int() % buffer.Len()
-		buffer.Bytes()[randPos] ^= 0xff
 		return ipc.Write_byte_array(outputPipe, buffer.Bytes())
 	}
 
@@ -271,12 +201,20 @@ func main() {
 	switch *mode {
 	case "prove":
 		// send the prover name, algorithm name, and proof system name
-		ipc.Write_string(ProverToSPJPipe, "GNARK KECCAK-256")
+		ipc.Write_string(ProverToSPJPipe, "GNARK_A_Xor_B")
 		ipc.Write_string(ProverToSPJPipe, "Groth16")
 		ipc.Write_string(ProverToSPJPipe, "GNARK")
 		err = prove(spjToProverPipe, ProverToSPJPipe)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+			os.Exit(1)
+		}
 	case "verify":
 		err = verify(spjToProverPipe, ProverToSPJPipe)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+			os.Exit(1)
+		}
 	default:
 		err = fmt.Errorf("invalid mode: %s", *mode)
 	}
