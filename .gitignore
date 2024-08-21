@@ -41,3 +41,5 @@ maliciousProver
 /.turbo
 .env
 /results.sarif
+SPJ
+!SPJ/

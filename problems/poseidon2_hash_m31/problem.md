@@ -1,5 +1,5 @@
 ---
-problem_id: 3
+problem_id: 4
 title: Poseidon2 Hash M31
 description: Poseidon2 Hash M31
 draft: false
@@ -56,20 +56,9 @@ Your prover program must read bytes from stdin and print bytes to stdout. We wil
    ipc.Write_string(ProverToSPJPipe, "Expander^2")
    ```
 
-3. **Read the serialized circuit bytes from the SPJ:**
 
-   - The SPJ will send the serialized circuit bytes to the prover.
-   - Prover Sample:
-
-   ```golang
-   // this single file contains the r1cs, pk, and vk
-   combinedBytes := ipc.Read_byte_array(spjToProverPipe)
-   // split the bytes into r1cs, pk, and vk
-   byteReader := bytes.NewReader(combinedBytes)
-   r1csBytes := ipc.Read_byte_array(byteReader)
-   pkBytes := ipc.Read_byte_array(byteReader)
-   vkBytes := ipc.Read_byte_array(byteReader)
-   ```
+3. **Prover make all precomputes in this step**
+You can do arbitary one-time precomputing (including setup/compile your circuit, prepare your proving key, etc.).
 
 4. **Output the Number of Poseidon Instances:**
 
@@ -80,16 +69,7 @@ Your prover program must read bytes from stdin and print bytes to stdout. We wil
    ipc.Write_uint64(ProverToSPJPipe, uint64(N))
    ```
 
-5. **Output a String to Indicate Setup Finished:**
-
-   - Print the string `setup finished` to stdout to indicate that the setup is complete.
-   - Prover Sample:
-
-   ```golang
-   ipc.Write_string(ProverToSPJPipe, "setup finished")
-   ```
-
-6. **Read Input Data:**
+5. **Read Input Data:**
 
    - The SPJ will generate `64 * N` bytes and send them to the prover.
    - Prover Sample:
@@ -98,12 +78,12 @@ Your prover program must read bytes from stdin and print bytes to stdout. We wil
    inputBytes := ipc.Read_byte_array(spjToProverPipe)
    ```
 
-7. **Hash the Data:**
+6. **Hash the Data:**
 
    - For each 64-byte block, compute the Poseidon hash, resulting in a 32-byte output.
    - The prover sends the hash results to the SPJ.
 
-8. **Output a String to Indicate Witness Generation Finished:**
+7. **Output a String to Indicate Witness Generation Finished:**
 
    - Print the string `witness generated` to stdout to indicate that the witness generation is complete.
    - Prover Sample:
@@ -112,7 +92,7 @@ Your prover program must read bytes from stdin and print bytes to stdout. We wil
    ipc.Write_string(ProverToSPJPipe, "witness generated")
    ```
 
-9. **Output the Proof:**
+8. **Output the Proof:**
 
    - After you generated your proof, send the proof to the SPJ.
    - Prover Sample:
@@ -153,7 +133,7 @@ Your prover program must read bytes from stdin and print bytes to stdout. We wil
    return sendProofData(proof, vk, witness, outputPipe)
    ```
 
-10. **SPJ starts your verifier by providing the pipe filepath that handles the input output communication.**
+9. **SPJ starts your verifier by providing the pipe filepath that handles the input output communication.**
 
     - Verifier Sample:
 
@@ -174,15 +154,18 @@ Your prover program must read bytes from stdin and print bytes to stdout. We wil
     }
     ```
 
-11. **SPJ sends the proof, verification key, and public input to the verifier.**
+10. **SPJ sends the proof, verification key, and public input to the verifier.**
     - Verifier Sample:
+
       ```golang
       proofBytes := ipc.Read_byte_array(inputPipe)
       vkBytes := ipc.Read_byte_array(inputPipe)
       publicWitnessBytes := ipc.Read_byte_array(inputPipe)
       ```
-12. **Verify the Proof, and send back result**
+
+11. **Verify the Proof, and send back result**
     - Verifier Sample:
+
     ```golang
     err = groth16.Verify(proof, vk, publicWitness)
     if err != nil {
@@ -199,14 +182,13 @@ Your prover program must read bytes from stdin and print bytes to stdout. We wil
 ## How to submit your solution?
 
 - You need to submit a binary prover file that matches our requirements.
-- You need to submit a circuit file. (This is not required for all provers, for example Halo2 doesn't have a circuit, so you can submit an empty file.)
 - You need to submit the source code of your verifier code that matches our requirements. The code will be reviewed and published on the website.
 
 ## Benchmark Details
 
-- Setup time: the time before step 5 finish.
-- Witness generation time: the time between end of step 6 and step 8.
-- Proof generation time: the time between end of step 6 and step 9.
-- Verification time: running time between end of step 9 and step 12.
+- Setup time: the time before step 4 finish.
+- Witness generation time: the time between end of step 5 and step 7.
+- Proof generation time: the time between end of step 5 and step 8.
+- Verification time: running time between end of step 8 and step 11.
 - Peak memory: the peak memory usage of your program.
 - Proof size: the byte length of the `YOUR PROOF BYTES` and `YOUR VERIFICATION KEY BYTES`. Your verifier will be audited, so please don't include any unnecessary data in the `YOUR PUBLIC INPUT BYTES`.
