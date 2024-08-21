@@ -47,7 +47,6 @@ func (rc *ResultCollector) SetProverInfo(name, proofSystem, algorithm string) {
 }
 
 func (rc *ResultCollector) SetN(n uint64) {
-	fmt.Printf("Setting N: %d\n", n)
 	rc.result.N = n
 }
 
@@ -78,6 +77,10 @@ func (rc *ResultCollector) AddAdditionalMetric(key, value string) {
 	rc.result.AdditionalMetrics[key] = value
 }
 
+func (rc *ResultCollector) SetMaxCPU(maxCPU int) {
+	rc.result.MaxCPU = maxCPU
+}
+
 func (rc *ResultCollector) OutputResults() {
 	jsonResult, err := json.MarshalIndent(rc.result, "", "  ")
 	if err != nil {
@@ -85,8 +88,4 @@ func (rc *ResultCollector) OutputResults() {
 		return
 	}
 	fmt.Println(string(jsonResult))
-}
-
-func (rc *ResultCollector) SetMaxCPU(maxCPU int) {
-	rc.result.MaxCPU = maxCPU
 }

@@ -1,10 +1,14 @@
 package SPJ
 
-import "time"
+import (
+	"sync"
+	"time"
+)
 
 type Timer struct {
 	times map[string]time.Duration
 	start map[string]time.Time
+	mutex sync.Mutex
 }
 
 func NewTimer() *Timer {
@@ -15,10 +19,14 @@ func NewTimer() *Timer {
 }
 
 func (t *Timer) Start(name string) {
+	t.mutex.Lock()
+	defer t.mutex.Unlock()
 	t.start[name] = time.Now()
 }
 
 func (t *Timer) Stop(name string) {
+	t.mutex.Lock()
+	defer t.mutex.Unlock()
 	if startTime, ok := t.start[name]; ok {
 		t.times[name] = time.Since(startTime)
 		delete(t.start, name)
@@ -26,5 +34,7 @@ func (t *Timer) Stop(name string) {
 }
 
 func (t *Timer) GetTimes() map[string]time.Duration {
+	t.mutex.Lock()
+	defer t.mutex.Unlock()
 	return t.times
 }

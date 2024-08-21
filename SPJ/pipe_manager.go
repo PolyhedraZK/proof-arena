@@ -9,90 +9,60 @@ import (
 )
 
 type PipeManager struct {
-	SpjToProverPipe   *os.File
-	ProverToSPJPipe   *os.File
-	SpjToVerifierPipe *os.File
-	VerifierToSPJPipe *os.File
+	pipes map[string]*os.File
 }
 
 func NewPipeManager() (*PipeManager, error) {
-	spjToProverPipe, err := ipc.CreatePipe("/tmp/spj_to_prover", 0666)
-	if err != nil {
-		return nil, fmt.Errorf("error creating spj to prover pipe: %v", err)
+	pipeNames := []string{"spj_to_prover", "prover_to_spj", "spj_to_verifier", "verifier_to_spj"}
+	pm := &PipeManager{pipes: make(map[string]*os.File)}
+
+	for _, name := range pipeNames {
+		pipe, err := ipc.CreatePipe("/tmp/"+name, 0666)
+		if err != nil {
+			pm.Close()
+			return nil, fmt.Errorf("error creating %s pipe: %w", name, err)
+		}
+		pm.pipes[name] = pipe
 	}
 
-	proverToSPJPipe, err := ipc.CreatePipe("/tmp/prover_to_spj", 0666)
-	if err != nil {
-		return nil, fmt.Errorf("error creating prover to spj pipe: %v", err)
-	}
-
-	spjToVerifierPipe, err := ipc.CreatePipe("/tmp/spj_to_verifier", 0666)
-	if err != nil {
-		return nil, fmt.Errorf("error creating spj to verifier pipe: %v", err)
-	}
-
-	verifierToSPJPipe, err := ipc.CreatePipe("/tmp/verifier_to_spj", 0666)
-	if err != nil {
-		return nil, fmt.Errorf("error creating verifier to spj pipe: %v", err)
-	}
-
-	return &PipeManager{
-		SpjToProverPipe:   spjToProverPipe,
-		ProverToSPJPipe:   proverToSPJPipe,
-		SpjToVerifierPipe: spjToVerifierPipe,
-		VerifierToSPJPipe: verifierToSPJPipe,
-	}, nil
+	return pm, nil
 }
 
 func (pm *PipeManager) Close() {
-	pm.SpjToProverPipe.Close()
-	pm.ProverToSPJPipe.Close()
-	pm.SpjToVerifierPipe.Close()
-	pm.VerifierToSPJPipe.Close()
-	os.Remove("/tmp/spj_to_prover")
-	os.Remove("/tmp/prover_to_spj")
-	os.Remove("/tmp/spj_to_verifier")
-	os.Remove("/tmp/verifier_to_spj")
+	for name, pipe := range pm.pipes {
+		pipe.Close()
+		os.Remove("/tmp/" + name)
+	}
 }
 
-func (pm *PipeManager) SendProverPipeNames(stdPipe io.Writer) error {
-	if err := ipc.Write_string(stdPipe, "/tmp/spj_to_prover"); err != nil {
+func (pm *PipeManager) SendProverPipeNames(w io.Writer) error {
+	if err := ipc.Write_string(w, "/tmp/spj_to_prover"); err != nil {
 		return err
 	}
-	if err := ipc.Write_string(stdPipe, "/tmp/prover_to_spj"); err != nil {
-		return err
-	}
-	return nil
+	return ipc.Write_string(w, "/tmp/prover_to_spj")
 }
 
-func (pm *PipeManager) SendVerifierPipeNames(stdPipe io.Writer) error {
-	if err := ipc.Write_string(stdPipe, "/tmp/spj_to_verifier"); err != nil {
+func (pm *PipeManager) SendVerifierPipeNames(w io.Writer) error {
+	if err := ipc.Write_string(w, "/tmp/spj_to_verifier"); err != nil {
 		return err
 	}
-	if err := ipc.Write_string(stdPipe, "/tmp/verifier_to_spj"); err != nil {
-		return err
-	}
-	return nil
+	return ipc.Write_string(w, "/tmp/verifier_to_spj")
 }
 
 func (pm *PipeManager) ReadStringFromProver() (string, error) {
-	return ipc.Read_string(pm.ProverToSPJPipe)
-}
-
-func (pm *PipeManager) ReadUint64FromProver() (uint64, error) {
-	return ipc.Read_uint64(pm.ProverToSPJPipe)
+	return ipc.Read_string(pm.pipes["prover_to_spj"])
 }
 
 func (pm *PipeManager) SendToProver(data []byte) error {
-	return ipc.Write_byte_array(pm.SpjToProverPipe, data)
+	return ipc.Write_byte_array(pm.pipes["spj_to_prover"], data)
 }
 
 func (pm *PipeManager) ReadFromProver() ([]byte, error) {
-	return ipc.Read_byte_array(pm.ProverToSPJPipe)
+	return ipc.Read_byte_array(pm.pipes["prover_to_spj"])
 }
 
 func (pm *PipeManager) WaitForProverMessage(expected string) error {
-	message, err := ipc.Read_string(pm.ProverToSPJPipe)
+	message, err := ipc.Read_string(pm.pipes["prover_to_spj"])
 	if err != nil {
 		return err
 	}
@@ -102,29 +72,14 @@ func (pm *PipeManager) WaitForProverMessage(expected string) error {
 	return nil
 }
 
-func (pm *PipeManager) ReadStringFromVerifier() (string, error) {
-	return ipc.Read_string(pm.VerifierToSPJPipe)
-}
-
-func (pm *PipeManager) ReadUint64FromVerifier() (uint64, error) {
-	return ipc.Read_uint64(pm.VerifierToSPJPipe)
-}
-
 func (pm *PipeManager) SendToVerifier(data []byte) error {
-	return ipc.Write_byte_array(pm.SpjToVerifierPipe, data)
+	return ipc.Write_byte_array(pm.pipes["spj_to_verifier"], data)
 }
 
 func (pm *PipeManager) ReadFromVerifier() ([]byte, error) {
-	return ipc.Read_byte_array(pm.VerifierToSPJPipe)
+	return ipc.Read_byte_array(pm.pipes["verifier_to_spj"])
 }
 
-func (pm *PipeManager) WaitForVerifierMessage(expected string) error {
-	message, err := ipc.Read_string(pm.VerifierToSPJPipe)
-	if err != nil {
-		return err
-	}
-	if message != expected {
-		return fmt.Errorf("expected '%s' from Verifier, got '%s'", expected, message)
-	}
-	return nil
+func (pm *PipeManager) ReadUint64FromProver() (uint64, error) {
+	return ipc.Read_uint64(pm.pipes["prover_to_spj"])
 }

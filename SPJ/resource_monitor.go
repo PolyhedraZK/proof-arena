@@ -1,9 +1,11 @@
 package SPJ
 
 import (
+	"context"
 	"fmt"
 	"runtime"
 	"time"
+	"unsafe"
 
 	"golang.org/x/sys/unix"
 )
@@ -17,11 +19,21 @@ func NewResourceMonitor() *ResourceMonitor {
 	return &ResourceMonitor{}
 }
 
-func (rm *ResourceMonitor) LimitCPU(numCPU int) error {
-	if numCPU <= 0 || numCPU > runtime.NumCPU() {
-		return fmt.Errorf("invalid number of CPUs: %d", numCPU)
+func (rm *ResourceMonitor) SetCPUAffinity(pid int, numCPU int) error {
+	if runtime.GOOS != "linux" {
+		return fmt.Errorf("setCPUAffinity is only supported on Linux")
 	}
-	runtime.GOMAXPROCS(numCPU)
+
+	var mask uint64
+	for i := 0; i < numCPU; i++ {
+		mask |= 1 << i
+	}
+
+	_, _, errno := unix.RawSyscall(unix.SYS_SCHED_SETAFFINITY, uintptr(pid), unsafe.Sizeof(mask), uintptr(unsafe.Pointer(&mask)))
+	if errno != 0 {
+		return fmt.Errorf("failed to set CPU affinity: %v", errno)
+	}
+
 	return nil
 }
 
@@ -29,7 +41,7 @@ func (rm *ResourceMonitor) UpdateMemoryUsage() error {
 	var rusage unix.Rusage
 	err := unix.Getrusage(unix.RUSAGE_SELF, &rusage)
 	if err != nil {
-		return fmt.Errorf("failed to get resource usage: %v", err)
+		return fmt.Errorf("failed to get resource usage: %w", err)
 	}
 
 	currentRSS := uint64(rusage.Maxrss) * 1024 // Maxrss is in kilobytes
@@ -50,7 +62,7 @@ func (rm *ResourceMonitor) GetCurrentMemory() uint64 {
 	return rm.lastRSS
 }
 
-func (rm *ResourceMonitor) StartPeriodicUpdate(interval time.Duration) chan struct{} {
+func (rm *ResourceMonitor) StartPeriodicUpdate(ctx context.Context, interval time.Duration) chan struct{} {
 	done := make(chan struct{})
 	go func() {
 		ticker := time.NewTicker(interval)
@@ -59,7 +71,8 @@ func (rm *ResourceMonitor) StartPeriodicUpdate(interval time.Duration) chan stru
 			select {
 			case <-ticker.C:
 				rm.UpdateMemoryUsage()
-			case <-done:
+			case <-ctx.Done():
+				close(done)
 				return
 			}
 		}
