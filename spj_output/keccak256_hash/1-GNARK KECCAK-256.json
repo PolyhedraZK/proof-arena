@@ -1,5 +1,5 @@
 {
-  "problem_id": 0,
+  "problem_id": 2,
   "prover_name": "GNARK KECCAK-256",
   "proof_system": "GNARK",
   "algorithm": "Groth16",
