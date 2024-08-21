@@ -43,6 +43,10 @@ func (k *AXorBSPJ) VerifyResults(testData, results []byte) bool {
 	return true
 }
 
+func (k *AXorBSPJ) GetProblemID() int {
+	return 1
+}
+
 func main() {
 	AXorBSPJ := &AXorBSPJ{}
 	spj, err := SPJ.NewSPJTemplate(AXorBSPJ)

@@ -42,6 +42,10 @@ func (k *KeccakSPJ) VerifyResults(testData, results []byte) bool {
 	return true
 }
 
+func (k *KeccakSPJ) GetProblemID() int {
+	return 2
+}
+
 func main() {
 	keccakSPJ := &KeccakSPJ{}
 	spj, err := SPJ.NewSPJTemplate(keccakSPJ)

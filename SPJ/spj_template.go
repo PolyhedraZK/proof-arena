@@ -68,6 +68,8 @@ func NewSPJTemplate(impl SPJImplementation) (*SPJTemplate, error) {
 		implementation:  impl,
 	}
 
+	spj.resultCollector.result.ProblemID = impl.GetProblemID()
+
 	return spj, nil
 }
 

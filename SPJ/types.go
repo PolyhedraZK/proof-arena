@@ -25,4 +25,5 @@ type ProofData struct {
 type SPJImplementation interface {
 	GenerateTestData(n uint64) []byte
 	VerifyResults(testData, results []byte) bool
+	GetProblemID() int
 }
