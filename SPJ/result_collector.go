@@ -3,6 +3,7 @@ package SPJ
 import (
 	"encoding/json"
 	"fmt"
+	"os"
 	"time"
 )
 
@@ -81,11 +82,18 @@ func (rc *ResultCollector) SetMaxCPU(maxCPU int) {
 	rc.result.MaxCPU = maxCPU
 }
 
-func (rc *ResultCollector) OutputResults() {
+func (rc *ResultCollector) OutputResults(jsonPath string) {
 	jsonResult, err := json.MarshalIndent(rc.result, "", "  ")
 	if err != nil {
 		fmt.Printf("Error marshaling results: %v\n", err)
 		return
 	}
 	fmt.Println(string(jsonResult))
+
+	if jsonPath != "" {
+		err := os.WriteFile(jsonPath, jsonResult, 0644)
+		if err != nil {
+			fmt.Printf("Error writing results to file: %v\n", err)
+		}
+	}
 }

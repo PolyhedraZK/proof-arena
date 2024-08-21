@@ -26,12 +26,12 @@ func parseFlags() Config {
 
 	flag.StringVar(&config.ProverPath, "prover", "", "Path to the prover executable")
 	flag.StringVar(&config.VerifierPath, "verifier", "", "Path to the verifier executable")
-	flag.StringVar(&config.CircuitFile, "circuit", "", "Path to the circuit file")
 
 	timeLimit := flag.Int("time", 0, "Time limit in seconds")
 	memoryLimit := flag.Int("memory", 0, "Memory limit in MB")
 	cpuLimit := flag.Int("cpu", 0, "CPU limit")
 	instanceUpperLimit := flag.Uint64("largestN", 0, "Instance upper limit in bytes")
+	jsonOutputPath := flag.String("json", "", "Path to the output JSON file")
 
 	flag.Parse()
 
@@ -41,6 +41,7 @@ func parseFlags() Config {
 	}
 	config.ProverPath, config.ProverArg = strings.Split(config.ProverPath, " ")[0], strings.Split(config.ProverPath, " ")[1:]
 	config.VerifierPath, config.VerifierArg = strings.Split(config.VerifierPath, " ")[0], strings.Split(config.VerifierPath, " ")[1:]
+	config.JsonOutputPath = *jsonOutputPath
 	config.Requirements = ProblemRequirement{
 		TimeLimit:          *timeLimit,
 		MemoryLimit:        *memoryLimit,
@@ -100,11 +101,15 @@ func (spj *SPJTemplate) runProver(ctx context.Context) (*ProofData, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to get prover stdin: %w", err)
 	}
+	proverStdout, err := cmd.StdoutPipe()
+	proverStderr, err := cmd.StderrPipe()
 
 	spj.timer.Start("setup")
 	if err := cmd.Start(); err != nil {
 		return nil, fmt.Errorf("failed to start prover: %w", err)
 	}
+	go io.Copy(os.Stdout, proverStdout)
+	go io.Copy(os.Stderr, proverStderr)
 
 	// Start monitoring the prover process
 	processDone := make(chan error, 1)
@@ -214,10 +219,12 @@ func (spj *SPJTemplate) runVerifier(ctx context.Context, proof *ProofData) error
 
 	verifierStdout, err := cmd.StdoutPipe()
 	verifierStderr, err := cmd.StderrPipe()
-	go io.Copy(os.Stdout, verifierStdout)
-	go io.Copy(os.Stderr, verifierStderr)
 	if err != nil {
 		return fmt.Errorf("failed to get verifier stdout: %w", err)
+	}
+
+	if err := cmd.Start(); err != nil {
+		return fmt.Errorf("failed to start verifier: %w", err)
 	}
 
 	processDone := make(chan error, 1)
@@ -225,9 +232,8 @@ func (spj *SPJTemplate) runVerifier(ctx context.Context, proof *ProofData) error
 		processDone <- cmd.Wait()
 	}()
 
-	if err := cmd.Start(); err != nil {
-		return fmt.Errorf("failed to start verifier: %w", err)
-	}
+	go io.Copy(os.Stdout, verifierStdout)
+	go io.Copy(os.Stderr, verifierStderr)
 
 	spj.timer.Start("verify")
 	proofVerifyDone := make(chan bool, 1)
@@ -287,15 +293,9 @@ func (spj *SPJTemplate) setup(proverStdin io.Writer) error {
 		return err
 	}
 
-	if err := spj.sendCircuitData(); err != nil {
-		return err
-	}
 	N, err := spj.pipeManager.ReadUint64FromProver()
-	if err != nil {
-		return err
-	}
 	spj.resultCollector.result.N = N
-	return spj.pipeManager.WaitForProverMessage("setup finished")
+	return err
 }
 
 func (spj *SPJTemplate) readProverInfo() error {
@@ -321,14 +321,6 @@ func (spj *SPJTemplate) readProverInfo() error {
 	return nil
 }
 
-func (spj *SPJTemplate) sendCircuitData() error {
-	circuitData, err := os.ReadFile(spj.config.CircuitFile)
-	if err != nil {
-		return fmt.Errorf("failed to read circuit file: %w", err)
-	}
-	return spj.pipeManager.SendToProver(circuitData)
-}
-
 func (spj *SPJTemplate) collectResults() {
 	spj.resultCollector.SetStatus(true)
 	spj.resultCollector.SetTimes(spj.timer.GetTimes())
@@ -337,5 +329,5 @@ func (spj *SPJTemplate) collectResults() {
 }
 
 func (spj *SPJTemplate) outputResults() {
-	spj.resultCollector.OutputResults()
+	spj.resultCollector.OutputResults(spj.config.JsonOutputPath)
 }

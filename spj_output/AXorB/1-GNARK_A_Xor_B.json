@@ -1,0 +1,16 @@
+{
+  "problem_id": 0,
+  "prover_name": "GNARK_A_Xor_B",
+  "proof_system": "GNARK",
+  "algorithm": "Groth16",
+  "setup_time": 0.0000924195263671875,
+  "witness_generation_time": 6.514931640625e-7,
+  "proof_generation_time": 0.0000060278125,
+  "verify_time": 0.000004513978515625,
+  "peak_memory": 0,
+  "proof_size": 0.16015625,
+  "status": true,
+  "error_msg": "",
+  "max_cpu": 16,
+  "n": 1024
+}

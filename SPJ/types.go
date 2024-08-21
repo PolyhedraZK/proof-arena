@@ -1,12 +1,12 @@
 package SPJ
 
 type Config struct {
-	ProverPath   string
-	VerifierPath string
-	ProverArg    []string
-	VerifierArg  []string
-	CircuitFile  string
-	Requirements ProblemRequirement
+	ProverPath     string
+	VerifierPath   string
+	ProverArg      []string
+	VerifierArg    []string
+	Requirements   ProblemRequirement
+	JsonOutputPath string
 }
 
 type ProblemRequirement struct {
