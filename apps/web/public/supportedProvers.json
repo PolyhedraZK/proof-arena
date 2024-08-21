@@ -43,7 +43,13 @@
   },
   {
     "name": "Valida",
-    "inventor": "Lita Foundation",
+    "inventor": "Polygon & Lita",
+    "status": "Not started",
+    "type": "zkVM"
+  },
+  {
+    "name": "Nexus 2.0",
+    "inventor": "zkVM",
     "status": "Not started",
     "type": "zkVM"
   }
