@@ -3,7 +3,10 @@ package SPJ
 import (
 	"context"
 	"fmt"
+	"os/exec"
 	"runtime"
+	"strconv"
+	"strings"
 	"time"
 	"unsafe"
 
@@ -37,15 +40,23 @@ func (rm *ResourceMonitor) SetCPUAffinity(pid int, numCPU int) error {
 	return nil
 }
 
-func (rm *ResourceMonitor) UpdateMemoryUsage() error {
-	var rusage unix.Rusage
-	err := unix.Getrusage(unix.RUSAGE_SELF, &rusage)
+func (rm *ResourceMonitor) UpdateMemoryUsage(pid int) error {
+	cmd := exec.Command("ps", "-o", "rss=,pcpu=", "-p", strconv.Itoa(pid))
+	output, err := cmd.Output()
 	if err != nil {
-		return fmt.Errorf("failed to get resource usage: %w", err)
+		return fmt.Errorf("program unexpectedly terminated")
 	}
 
-	currentRSS := uint64(rusage.Maxrss) * 1024 // Maxrss is in kilobytes
+	fields := strings.Fields(string(output))
+	if len(fields) < 2 {
+		return fmt.Errorf("unexpected ps output format")
+	}
 
+	currentMemory, err := strconv.Atoi(fields[0])
+	if err != nil {
+		return fmt.Errorf("failed to parse memory usage: %v", err)
+	}
+	currentRSS := uint64(currentMemory) // Maxrss is in kilobytes
 	if currentRSS > rm.peakRSS {
 		rm.peakRSS = currentRSS
 	}
@@ -62,7 +73,7 @@ func (rm *ResourceMonitor) GetCurrentMemory() uint64 {
 	return rm.lastRSS
 }
 
-func (rm *ResourceMonitor) StartPeriodicUpdate(ctx context.Context, interval time.Duration) chan struct{} {
+func (rm *ResourceMonitor) StartPeriodicUpdate(ctx context.Context, interval time.Duration, pid int) chan struct{} {
 	done := make(chan struct{})
 	go func() {
 		ticker := time.NewTicker(interval)
@@ -70,7 +81,7 @@ func (rm *ResourceMonitor) StartPeriodicUpdate(ctx context.Context, interval tim
 		for {
 			select {
 			case <-ticker.C:
-				rm.UpdateMemoryUsage()
+				rm.UpdateMemoryUsage(pid)
 			case <-ctx.Done():
 				close(done)
 				return

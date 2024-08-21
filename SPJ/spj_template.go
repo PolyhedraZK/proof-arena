@@ -75,9 +75,6 @@ func (spj *SPJTemplate) Run() error {
 	ctx := context.Background()
 	defer spj.pipeManager.Close()
 
-	done := spj.resourceMonitor.StartPeriodicUpdate(ctx, time.Second)
-	defer close(done)
-
 	proof, err := spj.runProver(ctx)
 	if err != nil {
 		return fmt.Errorf("prover run failed: %w", err)
@@ -111,6 +108,8 @@ func (spj *SPJTemplate) runProver(ctx context.Context) (*ProofData, error) {
 	go io.Copy(os.Stdout, proverStdout)
 	go io.Copy(os.Stderr, proverStderr)
 
+	done := spj.resourceMonitor.StartPeriodicUpdate(ctx, time.Second, cmd.Process.Pid)
+	defer close(done)
 	// Start monitoring the prover process
 	processDone := make(chan error, 1)
 	go func() {

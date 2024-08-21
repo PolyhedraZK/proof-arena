@@ -59,7 +59,7 @@ func (rc *ResultCollector) SetTimes(times map[string]time.Duration) {
 }
 
 func (rc *ResultCollector) SetPeakMemory(memory uint64) {
-	rc.result.PeakMemory = float64(memory/(1024*1024)) / float64(rc.result.N) // Convert to MB
+	rc.result.PeakMemory = float64(memory) / float64(rc.result.N) // Convert to KB
 }
 
 func (rc *ResultCollector) SetProofSize(size int) {
