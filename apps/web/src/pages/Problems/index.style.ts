@@ -26,9 +26,5 @@ export const useProverStyles = createStyles(({ responsive, isDarkMode }) => {
         '.sub-tit': {},
       },
     },
-    tabTitle: {
-      fontSize: 20,
-      fontWeight: 500,
-    },
   };
 });

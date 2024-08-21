@@ -1,7 +1,7 @@
 // apps/web/src/pages/Problems/index.tsx
 
-import { useRequest } from 'ahooks';
 import { Col, Row, Tabs } from 'antd';
+import { useRequest } from 'ahooks';
 import { Fragment, useState } from 'react';
 import { useNavigate } from 'react-router';
 
@@ -9,8 +9,8 @@ import Empty from '@/components/biz/problems/Empty';
 import { IProblems } from '@/services/problems/types';
 
 import { useProverStyles } from './index.style';
-import LoadingCard from './LoadingCard';
 import ProblemsListItem from './ProblemsListItem';
+import LoadingCard from './LoadingCard';
 
 const { TabPane } = Tabs;
 
@@ -19,20 +19,16 @@ function ProversPage() {
   const navigate = useNavigate();
   const [activeTrack, setActiveTrack] = useState('zk-prover');
 
-  const { data: problemData, loading } = useRequest(() =>
-    fetch('/problemData.json').then(response => {
+  const { data: problemData, loading } = useRequest(() => fetch('/problemData.json')
+    .then(response => {
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       return response.json();
-    })
-  );
+    }))
 
-  const problemsListData: IProblems[] =
-    problemData?.filter(item => !item.draft && item.problem_id > 0) || [];
-  const zkProverProblems = problemsListData.filter(
-    item => item.track !== 'zkVM'
-  );
+  const problemsListData: IProblems[] = problemData?.filter(item => !item.draft && item.problem_id > 0) || [];
+  const zkProverProblems = problemsListData.filter(item => item.track !== 'zkVM');
   const zkVMProblems = problemsListData.filter(item => item.track === 'zkVM');
 
   const renderProblems = (problems: IProblems[]) => (
@@ -48,7 +44,7 @@ function ProversPage() {
             lg={{ flex: '33.33%' }}
           >
             <ProblemsListItem
-              onClick={() => navigate(`/problems/${problem_id}`)}
+              onClick={() => navigate(`/problemsDetail/${problem_id}`)}
               info={item}
             />
           </Col>
@@ -60,38 +56,24 @@ function ProversPage() {
   return (
     <div className={`main-container ${styles.proversWrapper}`}>
       <Tabs activeKey={activeTrack} onChange={setActiveTrack}>
-        <TabPane
-          tab={<span className={styles.tabTitle}>ZK Prover Track</span>}
-          key="zk-prover"
-        >
+        <TabPane tab="ZK Prover Track" key="zk-prover">
           <div className="my-provers">
             {loading ? (
               <LoadingCard num={8} />
             ) : (
               <Fragment>
-                {zkProverProblems.length > 0 ? (
-                  renderProblems(zkProverProblems)
-                ) : (
-                  <Empty />
-                )}
+                {zkProverProblems.length > 0 ? renderProblems(zkProverProblems) : <Empty />}
               </Fragment>
             )}
           </div>
         </TabPane>
-        <TabPane
-          tab={<span className={styles.tabTitle}>zkVM Track</span>}
-          key="zkvm"
-        >
+        <TabPane tab="zkVM Track" key="zkvm">
           <div className="my-provers">
             {loading ? (
               <LoadingCard num={8} />
             ) : (
               <Fragment>
-                {zkVMProblems.length > 0 ? (
-                  renderProblems(zkVMProblems)
-                ) : (
-                  <Empty />
-                )}
+                {zkVMProblems.length > 0 ? renderProblems(zkVMProblems) : <Empty />}
               </Fragment>
             )}
           </div>

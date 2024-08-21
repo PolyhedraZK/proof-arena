@@ -6,7 +6,7 @@
     "build:testing": "node apps/web/scripts/syncProvers.js && turbo build:testing",
     "dev": "turbo dev",
     "lint": "turbo lint",
-    "prettier": "turbo prettier",
+    "prettier": "prettier --log-level warn --write '**/*.{ts,tsx,js,jsx}'",
     "prepare": "husky",
     "sync-provers": "node apps/web/scripts/syncProvers.js"
   },
@@ -20,5 +20,11 @@
   "packageManager": "pnpm@8.15.6",
   "engines": {
     "node": ">=18"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "npm run prettier"
+    ],
+    "*.{json,less,md,yaml}": "prettier --ignore-unknown --write"
   }
 }

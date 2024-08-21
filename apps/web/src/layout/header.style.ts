@@ -3,7 +3,7 @@ import { createStyles } from 'antd-style';
 import { customThemeVariables } from '@/theme';
 import { hex2rgba } from '@/utils';
 
-export default createStyles(({ responsive, isDarkMode }) => {
+export default createStyles(({ responsive, isDarkMode, prefixCls }) => {
   const colors = isDarkMode ? customThemeVariables.dark : customThemeVariables.light;
 
   return {
@@ -45,6 +45,8 @@ export default createStyles(({ responsive, isDarkMode }) => {
       flex: 1,
       display: 'flex',
       alignItems: 'center',
+      marginLeft: 32,
+      justifyContent: 'flex-end',
       '.links': {
         flex: 1,
         display: 'flex',
@@ -69,6 +71,7 @@ export default createStyles(({ responsive, isDarkMode }) => {
     githubBtn: {
       width: 144,
       height: 44,
+      marginLeft: '80px',
       fontWeight: 500,
       cursor: 'pointer',
       [responsive.tablet]: {
@@ -77,11 +80,6 @@ export default createStyles(({ responsive, isDarkMode }) => {
       [responsive.laptop]: {
         marginLeft: '0px',
       },
-    },
-    btnBox: {
-      width: 203,
-      display: 'flex',
-      justifyContent: 'flex-end',
     },
     mdGithubBtn: {
       width: 140,
@@ -120,10 +118,6 @@ export default createStyles(({ responsive, isDarkMode }) => {
       borderBottom: '1px solid #f0f0f0',
       background: '#fff',
     },
-    checkMarkIcon: {
-      position: 'absolute',
-      right: 26,
-    },
     logo: {
       width: 162,
       height: 'auto',
@@ -138,9 +132,9 @@ export default createStyles(({ responsive, isDarkMode }) => {
     menuList: { padding: '0px 16px' },
 
     antMenuStyle: {
-      justifyContent: 'center',
+      width: '100%',
+      justifyContent: 'right',
       border: 'none',
-      width: '150px',
       flex: 1,
       '.proof-menu-item': {
         height: 88,
@@ -152,8 +146,8 @@ export default createStyles(({ responsive, isDarkMode }) => {
           lineHeight: '72px',
         },
       },
-      '.proof-menu-item-selected': {
-        color: '#2B332D',
+      '.proof-menu-item-selected':{
+        color: '#2B332D'
       },
       '.proof-menu-submenu-title': {
         height: 88,

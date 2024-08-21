@@ -31,5 +31,5 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         </SWRConfig>
       </StyleProvider>
     </ThemeProvider>
-  </React.StrictMode>
+  </React.StrictMode>,
 );

@@ -11,6 +11,7 @@ node_modules
 dist
 dist-ssr
 *.local
+pre-commit
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
@@ -40,4 +41,3 @@ maliciousProver
 !maliciousProver/
 /.turbo
 .env
-/results.sarif

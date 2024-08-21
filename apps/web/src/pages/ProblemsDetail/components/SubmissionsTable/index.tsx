@@ -1,10 +1,8 @@
-import { ConfigProvider, Pagination, Table } from 'antd';
-import { useState } from 'react';
-
-import BaseEmpty from '@/components/base/BaseEmpty.tsx';
-import { IPSubmissionsTableItem } from '@/services/problems/types.ts';
-
+import { Table, ConfigProvider, Pagination } from 'antd';
 import { useStyles } from './index.style.ts';
+import { IPSubmissionsTableItem } from '@/services/problems/types.ts';
+import { useState } from 'react';
+import BaseEmpty from '@/components/base/BaseEmpty.tsx';
 const SubmissionsTable = ({
   dataSource,
 }: {
@@ -92,7 +90,7 @@ const SubmissionsTable = ({
       title: createTableHead('Instance Number'),
       dataIndex: 'n',
       key: 'n',
-    },
+    }
   ];
 
   return (
@@ -114,14 +112,7 @@ const SubmissionsTable = ({
           <Table
             size="middle"
             pagination={false}
-            locale={{
-              emptyText: (
-                <BaseEmpty
-                  style={{ margin: '76px auto 126px auto' }}
-                  description={'No Submissions'}
-                />
-              ),
-            }}
+            locale={{ emptyText: <BaseEmpty style={{margin: '76px auto 126px auto'}} description={'No Submissions'} /> }}
             rowKey={'id'}
             className={styles.tableStyle}
             bordered={false}
@@ -144,7 +135,7 @@ const SubmissionsTable = ({
             pageSize={pageSize}
             total={dataSource?.length}
           />
-        ) : null}
+        ):null}
       </ConfigProvider>
     </>
   );

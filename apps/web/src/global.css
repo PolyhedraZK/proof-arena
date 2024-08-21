@@ -34,7 +34,10 @@ body {
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
 }
-
+pre{
+  overflow: hidden;
+  overflow-x: auto;
+}
 @keyframes spin {
   to {
     transform: rotate(360deg);
