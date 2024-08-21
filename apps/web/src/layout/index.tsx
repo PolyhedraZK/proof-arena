@@ -1,12 +1,9 @@
 import { Layout } from 'antd';
-import React from 'react';
 import { Outlet } from 'react-router';
 
-import Loading from '@/components/base/Loading';
-
-import Footer from './Footer';
 import Header from './Header';
 import useStyles from './layout.style';
+import Footer from './Footer';
 
 function ProofLayout() {
   const { styles } = useStyles();
@@ -15,9 +12,7 @@ function ProofLayout() {
     <div className={styles.layout}>
       <Layout className={styles.layoutMain}>
         <Header />
-        <React.Suspense fallback={<Loading />}>
-          <Outlet />
-        </React.Suspense>
+        <Outlet />
       </Layout>
       <Footer />
     </div>

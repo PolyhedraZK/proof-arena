@@ -1,5 +1,5 @@
-import { createStyles } from 'antd-style';
 import { ReactNode } from 'react';
+import { createStyles } from 'antd-style';
 import { CSSProperties } from 'react';
 
 type ICustomType = {

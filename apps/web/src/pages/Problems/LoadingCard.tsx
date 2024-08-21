@@ -1,5 +1,4 @@
 import { Col, Row, Skeleton } from 'antd';
-
 import ProblemsListItem from './ProblemsListItem';
 
 function numberToLengthArray(num: number): number[] {

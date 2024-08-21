@@ -13,10 +13,7 @@
       "outputs": ["dist/**"]
     },
     "lint": {
-      "outputs": []
-    },
-    "prettier": {
-      "outputs": []
+      "dependsOn": ["^lint"]
     },
     "dev": {
       "cache": false,

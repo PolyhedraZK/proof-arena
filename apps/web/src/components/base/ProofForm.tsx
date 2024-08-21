@@ -141,7 +141,7 @@ const useProofFormStyles = createStyles(
         },
       },
     };
-  }
+  },
 );
 
 const ProofForm = memo(
@@ -235,7 +235,7 @@ const ProofForm = memo(
         </Form.Item>
       </Form>
     );
-  }
+  },
 );
 
 export default ProofForm;

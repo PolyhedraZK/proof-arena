@@ -1,10 +1,20 @@
+import React from 'react';
+import { Table } from 'antd';
+import { createStyles } from 'antd-style';
 import { useRequest } from 'ahooks';
-import { ConfigProvider, Pagination, Table } from 'antd';
-import React, { useState } from 'react';
 
-import BaseEmpty from '@/components/base/BaseEmpty';
-
-import { useStyles } from './index.style.ts';
+const useStyles = createStyles(({ token }) => ({
+  container: {
+    maxWidth: '1200px',
+    margin: '0 auto',
+    padding: '40px 20px',
+  },
+  title: {
+    fontSize: '24px',
+    fontWeight: 'bold',
+    marginBottom: '20px',
+  },
+}));
 
 interface ProverInfo {
   name: string;
@@ -14,10 +24,9 @@ interface ProverInfo {
 }
 
 const SupportedProversPage: React.FC = () => {
-  const pageSize = 8;
   const { styles } = useStyles();
-  const [page, setPage] = useState(1);
-  const { data: provers, loading } = useRequest<ProverInfo[]>(() =>
+
+  const { data: provers, loading } = useRequest<ProverInfo[]>(() => 
     fetch('/supportedProvers.json').then(res => res.json())
   );
 
@@ -46,59 +55,13 @@ const SupportedProversPage: React.FC = () => {
 
   return (
     <div className={styles.container}>
-      <div className={styles.titleContainer}>Supported Provers</div>
-      <div className={styles.backBox}>
-        <ConfigProvider
-          theme={{
-            components: {
-              Table: {
-                headerBg: 'rgba(43, 51, 45, 0.03)',
-                headerSplitColor: 'none',
-                cellPaddingBlockMD: 20,
-                cellPaddingInlineMD: 12,
-                colorText: '#2B332D',
-              },
-            },
-          }}
-        >
-          <div className={styles.tableBox}>
-            <Table
-              size="middle"
-              loading={loading}
-              pagination={false}
-              scroll={{ x: 600 }}
-              locale={{
-                emptyText: (
-                  <BaseEmpty
-                    style={{ margin: '76px auto 126px auto' }}
-                    description={'No Data'}
-                  />
-                ),
-              }}
-              rowKey={'name'}
-              className={styles.tableStyle}
-              bordered={false}
-              columns={columns}
-              dataSource={
-                provers?.slice(page * pageSize - pageSize, page * pageSize) ||
-                []
-              }
-            />
-          </div>
-          {provers?.length && provers?.length > 8 ? (
-            <Pagination
-              onChange={(page: number) => {
-                setPage(page);
-              }}
-              showSizeChanger={false}
-              className={styles.paginationStyle}
-              defaultCurrent={1}
-              pageSize={pageSize}
-              total={provers?.length}
-            />
-          ) : null}
-        </ConfigProvider>
-      </div>
+      <h1 className={styles.title}>Supported Provers</h1>
+      <Table 
+        dataSource={provers} 
+        columns={columns} 
+        loading={loading}
+        rowKey="name"
+      />
     </div>
   );
 };

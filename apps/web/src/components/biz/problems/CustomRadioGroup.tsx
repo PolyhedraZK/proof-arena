@@ -107,7 +107,7 @@ const CustomRadioGroup = memo(
         })}
       </Radio.Group>
     );
-  }
+  },
 );
 
 export default CustomRadioGroup;

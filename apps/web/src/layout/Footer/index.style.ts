@@ -13,6 +13,7 @@ export default createStyles(({ responsive, isDarkMode }) => {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
+      height: 'auto',
       padding: '28px 0',
       maxWidth: 1200,
       margin: '0 auto',
@@ -25,11 +26,13 @@ export default createStyles(({ responsive, isDarkMode }) => {
       },
     },
     logo: {
-      width: 230,
+      width: 203,
+      height: 'auto',
     },
     copyright: {
       flex: 1,
       textAlign: 'center',
+      // marginLeft: -62,
       color: 'rgba(0,0,0,.5)',
       [responsive.mobile]: {
         marginLeft: 0,
@@ -42,14 +45,12 @@ export default createStyles(({ responsive, isDarkMode }) => {
       display: 'flex',
       justifyContent: 'end',
       alignItems: 'center',
-      gap: 24,
       [responsive.mobile]: {
         justifyContent: 'center',
       },
     },
     footerItemBox: {
       width: 230,
-      height: 38,
       [responsive.mobile]: {
         width: '100%',
         textAlign: 'center',

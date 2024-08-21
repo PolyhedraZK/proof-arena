@@ -1,18 +1,18 @@
-import LeftOutlined from '@ant-design/icons/LeftOutlined';
-import RightOutlined from '@ant-design/icons/RightOutlined';
-import { Button } from 'antd';
-import { useResponsive } from 'antd-style';
-import clsx from 'clsx';
 import {
-  ClassAttributes,
   CSSProperties,
+  ClassAttributes,
   Fragment,
   HTMLProps,
   useEffect,
   useState,
 } from 'react';
+import { Button } from 'antd';
+import LeftOutlined from '@ant-design/icons/LeftOutlined';
+import RightOutlined from '@ant-design/icons/RightOutlined';
+import clsx from 'clsx';
 
 import useStyles from './pagination.style';
+import { useResponsive } from 'antd-style';
 
 interface IPaginationProps {
   style?: CSSProperties;

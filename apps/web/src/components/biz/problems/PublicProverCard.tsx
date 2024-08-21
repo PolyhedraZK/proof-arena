@@ -60,7 +60,7 @@ const PublicProverCard = memo(
         </Flex>
       </div>
     );
-  }
+  },
 );
 
 export default PublicProverCard;
