@@ -106,65 +106,101 @@ func (spj *SPJTemplate) runProver(ctx context.Context) (*ProofData, error) {
 		return nil, fmt.Errorf("failed to start prover: %w", err)
 	}
 
+	// Start monitoring the prover process
+	processDone := make(chan error, 1)
+	go func() {
+		processDone <- cmd.Wait()
+	}()
+
 	if err := spj.resourceMonitor.SetCPUAffinity(cmd.Process.Pid, spj.config.Requirements.CPULimit); err != nil {
 		spj.logger.Log(fmt.Sprintf("Warning: Failed to set CPU affinity: %v", err))
 	} else {
 		spj.logger.Log(fmt.Sprintf("Successfully set CPU affinity to %d cores", spj.config.Requirements.CPULimit))
 	}
+	setupDone := make(chan error, 1)
+	go func() {
+		setupDone <- spj.setup(proverStdin)
+	}()
 
-	if err := spj.setup(proverStdin); err != nil {
-		return nil, fmt.Errorf("setup failed: %w", err)
+	select {
+	case err := <-setupDone:
+		if err != nil {
+			return nil, fmt.Errorf("setup failed: %w", err)
+		}
+		spj.timer.Stop("setup")
+	case err := <-processDone:
+		return nil, fmt.Errorf("prover execution failed: %w", err)
 	}
-	spj.timer.Stop("setup")
 
 	spj.timer.Start("proof")
 	spj.timer.Start("witness")
+	proofDone := make(chan *ProofData, 1)
+	proofError := make(chan error, 1)
+	go func() {
+		testData := spj.implementation.GenerateTestData(spj.resultCollector.result.N)
 
-	testData := spj.implementation.GenerateTestData(spj.resultCollector.result.N)
+		if err := spj.pipeManager.SendToProver(testData); err != nil {
+			proofError <- err
+			return
+		}
 
-	if err := spj.pipeManager.SendToProver(testData); err != nil {
-		return nil, err
-	}
+		results, err := spj.pipeManager.ReadFromProver()
+		if err != nil {
+			proofError <- err
+			return
+		}
 
-	results, err := spj.pipeManager.ReadFromProver()
-	if err != nil {
-		return nil, err
-	}
+		if !spj.implementation.VerifyResults(testData, results) {
+			proofError <- fmt.Errorf("results verification failed")
+			return
+		}
 
-	if !spj.implementation.VerifyResults(testData, results) {
-		return nil, fmt.Errorf("results verification failed")
-	}
+		if err := spj.pipeManager.WaitForProverMessage("witness generated"); err != nil {
+			proofError <- err
+			return
+		}
+		spj.timer.Stop("witness")
 
-	if err := spj.pipeManager.WaitForProverMessage("witness generated"); err != nil {
-		return nil, err
-	}
-	spj.timer.Stop("witness")
-
-	proofByte, err := spj.pipeManager.ReadFromProver()
-	if err != nil {
-		return nil, err
-	}
-	vkByte, err := spj.pipeManager.ReadFromProver()
-	if err != nil {
-		return nil, err
-	}
-	pubWitnessByte, err := spj.pipeManager.ReadFromProver()
-	if err != nil {
-		return nil, err
+		proofByte, err := spj.pipeManager.ReadFromProver()
+		if err != nil {
+			proofError <- err
+			return
+		}
+		vkByte, err := spj.pipeManager.ReadFromProver()
+		if err != nil {
+			proofError <- err
+			return
+		}
+		pubWitnessByte, err := spj.pipeManager.ReadFromProver()
+		if err != nil {
+			proofError <- err
+			return
+		}
+		proofData := &ProofData{
+			Proof:      proofByte,
+			VK:         vkByte,
+			PubWitness: pubWitnessByte,
+		}
+		proofDone <- proofData
+	}()
+	var proofData *ProofData
+	select {
+	case proofData = <-proofDone:
+		spj.timer.Stop("proof")
+	case err := <-proofError:
+		return nil, fmt.Errorf("proof generation failed: %w", err)
+	case err := <-processDone:
+		return nil, fmt.Errorf("prover execution failed: %w", err)
 	}
 	spj.timer.Stop("proof")
 
-	spj.resultCollector.SetProofSize(len(proofByte))
+	spj.resultCollector.SetProofSize(len(proofData.Proof))
 
 	if err := cmd.Wait(); err != nil {
 		return nil, fmt.Errorf("prover execution failed: %w", err)
 	}
 
-	return &ProofData{
-		Proof:      proofByte,
-		VK:         vkByte,
-		PubWitness: pubWitnessByte,
-	}, nil
+	return proofData, nil
 }
 
 func (spj *SPJTemplate) runVerifier(ctx context.Context, proof *ProofData) error {
@@ -184,46 +220,62 @@ func (spj *SPJTemplate) runVerifier(ctx context.Context, proof *ProofData) error
 		return fmt.Errorf("failed to get verifier stdout: %w", err)
 	}
 
+	processDone := make(chan error, 1)
+	go func() {
+		processDone <- cmd.Wait()
+	}()
+
 	if err := cmd.Start(); err != nil {
 		return fmt.Errorf("failed to start verifier: %w", err)
 	}
 
 	spj.timer.Start("verify")
+	proofVerifyDone := make(chan bool, 1)
+	proofVerifyError := make(chan error, 1)
+	go func() {
+		if err := spj.pipeManager.SendVerifierPipeNames(verifierStdin); err != nil {
+			proofVerifyError <- fmt.Errorf("failed to send verifier pipe names: %w", err)
+		}
 
-	if err := spj.pipeManager.SendVerifierPipeNames(verifierStdin); err != nil {
-		return fmt.Errorf("failed to send verifier pipe names: %w", err)
+		if err := spj.pipeManager.SendToVerifier(proof.Proof); err != nil {
+			proofVerifyError <- fmt.Errorf("failed to send proof data to verifier: %w", err)
+		}
+		if err := spj.pipeManager.SendToVerifier(proof.VK); err != nil {
+			proofVerifyError <- fmt.Errorf("failed to send vk to verifier: %w", err)
+		}
+		if err := spj.pipeManager.SendToVerifier(proof.PubWitness); err != nil {
+			proofVerifyError <- fmt.Errorf("failed to send public witness to verifier: %w", err)
+		}
+
+		result, err := spj.pipeManager.ReadFromVerifier()
+		if err != nil {
+			proofVerifyError <- fmt.Errorf("failed to read verification result: %w", err)
+		}
+		if len(result) != 1 {
+			proofVerifyError <- fmt.Errorf("unexpected verification result format: %v", result)
+		}
+
+		switch result[0] {
+		case 0xff:
+			spj.logger.Log("Verification successful")
+		case 0x00:
+			proofVerifyError <- fmt.Errorf("verification failed")
+		default:
+			proofVerifyError <- fmt.Errorf("unexpected verification result: %v", result[0])
+		}
+		proofVerifyDone <- true
+	}()
+
+	select {
+	case err := <-proofVerifyError:
+		return fmt.Errorf("proof verification failed: %w", err)
+	case <-proofVerifyDone:
+		spj.timer.Stop("verify")
+	case err := <-processDone:
+		return fmt.Errorf("verifier execution failed: %w", err)
 	}
 
-	if err := spj.pipeManager.SendToVerifier(proof.Proof); err != nil {
-		return fmt.Errorf("failed to send proof data to verifier: %w", err)
-	}
-	if err := spj.pipeManager.SendToVerifier(proof.VK); err != nil {
-		return fmt.Errorf("failed to send vk to verifier: %w", err)
-	}
-	if err := spj.pipeManager.SendToVerifier(proof.PubWitness); err != nil {
-		return fmt.Errorf("failed to send public witness to verifier: %w", err)
-	}
-
-	result, err := spj.pipeManager.ReadFromVerifier()
-	if err != nil {
-		return fmt.Errorf("failed to read verification result: %w", err)
-	}
-	spj.timer.Stop("verify")
-
-	if len(result) != 1 {
-		return fmt.Errorf("unexpected verification result format: %v", result)
-	}
-
-	switch result[0] {
-	case 0xff:
-		spj.logger.Log("Verification successful")
-	case 0x00:
-		return fmt.Errorf("verification failed")
-	default:
-		return fmt.Errorf("unexpected verification result: %v", result[0])
-	}
-
-	return cmd.Wait()
+	return nil
 }
 
 func (spj *SPJTemplate) setup(proverStdin io.Writer) error {

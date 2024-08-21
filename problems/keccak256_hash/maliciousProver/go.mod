@@ -8,9 +8,9 @@ require (
 	golang.org/x/crypto v0.17.0
 )
 
-require github.com/PolyhedraZK/proof-arena/problems/IPCUtils v0.0.0
+require github.com/PolyhedraZK/proof-arena/SPJ/IPCUtils v0.0.0
 
-replace github.com/PolyhedraZK/proof-arena/problems/IPCUtils => ../../IPCUtils
+replace github.com/PolyhedraZK/proof-arena/SPJ/IPCUtils => ../../../SPJ/IPCUtils
 
 require (
 	github.com/bits-and-blooms/bitset v1.8.0 // indirect

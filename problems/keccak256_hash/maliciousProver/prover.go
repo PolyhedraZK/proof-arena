@@ -9,7 +9,7 @@ import (
 	"math/rand"
 	"os"
 
-	ipc "github.com/PolyhedraZK/proof-arena/problems/IPCUtils"
+	ipc "github.com/PolyhedraZK/proof-arena/SPJ/IPCUtils"
 	"github.com/consensys/gnark-crypto/ecc"
 	"github.com/consensys/gnark/backend/groth16"
 	"github.com/consensys/gnark/backend/witness"
