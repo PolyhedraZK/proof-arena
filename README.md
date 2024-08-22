@@ -63,7 +63,7 @@ We are currently developing an automatic submission system. Until it is availabl
 | Number | Proof system name | Inventor | Integration status | Type |
 | --- | --- | --- | --- | --- |
 | 1 | Expander | Polyhedra Network | In Progress | ZK Circuit Prover |
-| 3 | Gnark | Consensys | Tested on problem 1 | ZK Circuit Prover |
+| 3 | Gnark | Consensys | Tested on problem 2 | ZK Circuit Prover |
 | 4 | Plonky3 | Polygon | In Progress | ZK Circuit Prover |
 | 5 | Stwo | Starkware | In Progress | ZK Circuit Prover |
 | 6 | Risc0 | Risc0 | Not started | zkVM |
@@ -71,7 +71,7 @@ We are currently developing an automatic submission system. Until it is availabl
 | 8 | Boojum (Replica of Plonky2) | zkSync | Not started | ZK Circuit Prover |
 | 9 | Valida | Lita Foundation & Polygon | Not started | zkVM |
 | 10 | Nexus 2.0 | Nexus | Not started | zkVM |
-
+| 11 | Halo2 | PSE | Tested on problem 2 | ZK Circuit Prover |
 ### Thanks
 
 We thank Google Cloud for their support in developing this platform and Lianmin Zheng for inspiring us and giving us valuable suggestions.

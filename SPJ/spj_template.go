@@ -196,7 +196,11 @@ func (spj *SPJTemplate) runProver(ctx context.Context) (*ProofData, error) {
 	case err := <-proofError:
 		return nil, fmt.Errorf("proof generation failed: %w", err)
 	case err := <-processDone:
-		return nil, fmt.Errorf("prover execution failed: %w", err)
+		if err != nil {
+			return nil, fmt.Errorf("prover execution failed: %w", err)
+		} else {
+			proofData = <-proofDone
+		}
 	}
 	spj.timer.Stop("proof")
 
