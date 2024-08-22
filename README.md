@@ -69,7 +69,8 @@ We are currently developing an automatic submission system. Until it is availabl
 | 6 | Risc0 | Risc0 | Not started | zkVM |
 | 7 | SP1 | Succinct | Not started | zkVM |
 | 8 | Boojum (Replica of Plonky2) | zkSync | Not started | ZK Circuit Prover |
-| 9 | Valida | Lita Foundation | Not started | zkVM |
+| 9 | Valida | Lita Foundation & Polygon | Not started | zkVM |
+| 10 | Nexus 2.0 | Nexus | Not started | zkVM |
 
 ### Thanks
 
