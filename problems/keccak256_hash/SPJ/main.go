@@ -21,11 +21,11 @@ func (k *KeccakSPJ) GenerateTestData(n uint64) []byte {
 }
 
 func (k *KeccakSPJ) VerifyResults(testData, results []byte) bool {
+	fmt.Sprintf("result" + string(results))
 	n := uint64(len(testData) / 64)
 	if uint64(len(results)) != n*32 {
 		return false
 	}
-
 	for i := uint64(0); i < n; i++ {
 		input := testData[i*64 : (i+1)*64]
 		expectedOutput := results[i*32 : (i+1)*32]

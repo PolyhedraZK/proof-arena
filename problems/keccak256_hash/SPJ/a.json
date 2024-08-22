@@ -1,0 +1,16 @@
+{
+  "problem_id": 2,
+  "prover_name": "Halo2 Keccak Prover",
+  "proof_system": "Halo2",
+  "algorithm": "Keccak",
+  "setup_time": 0.000006385139705882353,
+  "witness_generation_time": 0.0000018360147058823531,
+  "proof_generation_time": 0.0000023673823529411763,
+  "verify_time": 0.0000033253529411764707,
+  "peak_memory": 0,
+  "proof_size": 315.05882352941177,
+  "status": true,
+  "error_msg": "",
+  "max_cpu": 16,
+  "n": 136
+}

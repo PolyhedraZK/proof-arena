@@ -166,22 +166,35 @@ func (spj *SPJTemplate) runProver(ctx context.Context) (*ProofData, error) {
 			return
 		}
 		spj.timer.Stop("witness")
+		spj.logger.Log("witness received")
 
 		proofByte, err := spj.pipeManager.ReadFromProver()
 		if err != nil {
 			proofError <- err
 			return
 		}
+		spj.logger.Log("proof received")
+		spj.logger.Log(fmt.Sprintf("proof size: %d", len(proofByte)))
+		spj.logger.Log(fmt.Sprintf("first 32 bytes of witness: %v", proofByte[:32]))
+
 		vkByte, err := spj.pipeManager.ReadFromProver()
 		if err != nil {
 			proofError <- err
 			return
 		}
+		spj.logger.Log("vk received")
+		spj.logger.Log(fmt.Sprintf("vk size: %d", len(vkByte)))
+		spj.logger.Log(fmt.Sprintf("first 32 bytes of witness: %v", vkByte[:32]))
+
 		pubWitnessByte, err := spj.pipeManager.ReadFromProver()
 		if err != nil {
 			proofError <- err
 			return
 		}
+		spj.logger.Log("public witness received")
+		spj.logger.Log(fmt.Sprintf("public witness size: %d", len(pubWitnessByte)))
+		spj.logger.Log(fmt.Sprintf("first 32 bytes of witness: %v", pubWitnessByte[:32]))
+
 		proofData := &ProofData{
 			Proof:      proofByte,
 			VK:         vkByte,
@@ -199,6 +212,7 @@ func (spj *SPJTemplate) runProver(ctx context.Context) (*ProofData, error) {
 		return nil, fmt.Errorf("prover execution failed: %w", err)
 	}
 	spj.timer.Stop("proof")
+	spj.logger.Log("proof done")
 
 	spj.resultCollector.SetProofSize(len(proofData.Proof))
 
@@ -255,6 +269,7 @@ func (spj *SPJTemplate) runVerifier(ctx context.Context, proof *ProofData) error
 		}
 
 		result, err := spj.pipeManager.ReadFromVerifier()
+		spj.logger.Log(fmt.Sprintf("Verification result: %v, len(result): %d", result[0], len(result)))
 		if err != nil {
 			proofVerifyError <- fmt.Errorf("failed to read verification result: %w", err)
 		}
@@ -270,6 +285,7 @@ func (spj *SPJTemplate) runVerifier(ctx context.Context, proof *ProofData) error
 		default:
 			proofVerifyError <- fmt.Errorf("unexpected verification result: %v", result[0])
 		}
+
 		proofVerifyDone <- true
 	}()
 
