@@ -175,7 +175,7 @@ func (spj *SPJTemplate) runProver(ctx context.Context) (*ProofData, error) {
 		}
 		spj.logger.Log("proof received")
 		spj.logger.Log(fmt.Sprintf("proof size: %d", len(proofByte)))
-		spj.logger.Log(fmt.Sprintf("first 32 bytes of witness: %v", proofByte[:32]))
+		spj.logger.Log(fmt.Sprintf("first 32 bytes of proof: %v", proofByte[:32]))
 
 		vkByte, err := spj.pipeManager.ReadFromProver()
 		if err != nil {
@@ -184,7 +184,7 @@ func (spj *SPJTemplate) runProver(ctx context.Context) (*ProofData, error) {
 		}
 		spj.logger.Log("vk received")
 		spj.logger.Log(fmt.Sprintf("vk size: %d", len(vkByte)))
-		spj.logger.Log(fmt.Sprintf("first 32 bytes of witness: %v", vkByte[:32]))
+		spj.logger.Log(fmt.Sprintf("first 32 bytes of vk: %v", vkByte[:32]))
 
 		pubWitnessByte, err := spj.pipeManager.ReadFromProver()
 		if err != nil {
