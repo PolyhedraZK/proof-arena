@@ -49,7 +49,6 @@ const SubmissionsTable = ({
       width: 180,
       dataIndex: 'witness_generation_time',
       key: 'witness_generation_time',
-      render: num => transferToNumber(num),
     },
     {
       title: (

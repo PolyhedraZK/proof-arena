@@ -62,6 +62,7 @@ const ProblemsDetail = () => {
           return response.json();
         })
         .then(data => {
+          data?.sort((a, b) => a.prover_name.localeCompare(b.prover_name));
           setDataSource(data || []);
         })
         .catch(error => console.log('no submission data'));
