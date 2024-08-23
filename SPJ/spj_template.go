@@ -2,6 +2,7 @@ package SPJ
 
 import (
 	"context"
+	"encoding/binary"
 	"flag"
 	"fmt"
 	"io"
@@ -235,6 +236,13 @@ func (spj *SPJTemplate) runVerifier(ctx context.Context, proof *ProofData) error
 		return fmt.Errorf("failed to start verifier: %w", err)
 	}
 
+	// limit to 1 CPU core
+	if err := spj.resourceMonitor.SetCPUAffinity(cmd.Process.Pid, 1); err != nil {
+		spj.logger.Log(fmt.Sprintf("Warning: Failed to set CPU affinity: %v", err))
+	} else {
+		spj.logger.Log(fmt.Sprintf("Successfully set CPU affinity to 1 core"))
+	}
+
 	processDone := make(chan error, 1)
 	go func() {
 		processDone <- cmd.Wait()
@@ -244,6 +252,7 @@ func (spj *SPJTemplate) runVerifier(ctx context.Context, proof *ProofData) error
 	go io.Copy(os.Stderr, verifierStderr)
 
 	spj.timer.Start("verify")
+
 	proofVerifyDone := make(chan bool, 1)
 	proofVerifyError := make(chan error, 1)
 	go func() {
@@ -268,6 +277,12 @@ func (spj *SPJTemplate) runVerifier(ctx context.Context, proof *ProofData) error
 		if len(result) != 1 {
 			proofVerifyError <- fmt.Errorf("unexpected verification result format: %v", result)
 		}
+		numRepeatsBytes, err := spj.pipeManager.ReadFromProver()
+		if len(numRepeatsBytes) != 8 {
+			proofVerifyError <- fmt.Errorf("unexpected numRepeats format: %v", numRepeatsBytes)
+		}
+		numRepeats := binary.LittleEndian.Uint64(numRepeatsBytes)
+		spj.resultCollector.result.VerifierNumRepeats = int(numRepeats)
 
 		switch result[0] {
 		case 0xff:

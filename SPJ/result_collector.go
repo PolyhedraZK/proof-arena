@@ -23,6 +23,7 @@ type BenchmarkResult struct {
 	MaxCPU                int               `json:"max_cpu"`
 	AdditionalMetrics     map[string]string `json:"additional_metrics,omitempty"`
 	N                     uint64            `json:"n,omitempty"`
+	VerifierNumRepeats    int               `json:"verifier_num_repeats,omitempty"`
 }
 
 type ResultCollector struct {
@@ -55,7 +56,7 @@ func (rc *ResultCollector) SetTimes(times map[string]time.Duration) {
 	rc.result.SetupTime = times["setup"].Seconds() / float64(rc.result.N)
 	rc.result.WitnessGenerationTime = times["witness"].Seconds() / float64(rc.result.N)
 	rc.result.ProofGenerationTime = times["proof"].Seconds() / float64(rc.result.N)
-	rc.result.VerifyTime = times["verify"].Seconds() / float64(rc.result.N)
+	rc.result.VerifyTime = times["verify"].Seconds() / float64(rc.result.N) / float64(rc.result.VerifierNumRepeats)
 }
 
 func (rc *ResultCollector) SetPeakMemory(memory uint64) {
