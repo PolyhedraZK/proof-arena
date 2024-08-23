@@ -213,10 +213,6 @@ func (spj *SPJTemplate) runProver(ctx context.Context) (*ProofData, error) {
 
 	spj.resultCollector.SetProofSize(len(proofData.Proof))
 
-	if err := cmd.Wait(); err != nil {
-		return nil, fmt.Errorf("prover execution failed: %w", err)
-	}
-
 	return proofData, nil
 }
 
