@@ -242,6 +242,7 @@ func verify(inputPipe *os.File, outputPipe *os.File) error {
 		ipc.Write_byte_array(outputPipe, []byte{0xff})
 		repeatByte := make([]byte, 8)
 		binary.LittleEndian.PutUint64(repeatByte, uint64(numRepeats))
+		ipc.Write_byte_array(outputPipe, repeatByte)
 	}
 	fmt.Fprintf(os.Stderr, "Done\n")
 	return nil
