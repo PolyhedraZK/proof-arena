@@ -115,6 +115,8 @@ func (spj *SPJTemplate) runProver(ctx context.Context) (*ProofData, error) {
 	// Start monitoring the prover process
 	processDone := make(chan error, 1)
 	go func() {
+		// wait for 1 second to make sure the process is started
+		time.Sleep(time.Second)
 		processDone <- cmd.Wait()
 	}()
 
