@@ -52,5 +52,5 @@ jobs:
         git diff --quiet && git diff --staged --quiet || (git commit -m "Auto-commit: Update spj_output after script execution" && git push)
 
     - name: Skip execution message
-      if: !steps.extract_path.outputs.SCRIPT_PATH
+      if: "!steps.extract_path.outputs.SCRIPT_PATH"
       run: echo "No script specified in commit message. Skipping execution and commit."
