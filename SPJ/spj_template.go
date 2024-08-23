@@ -306,7 +306,6 @@ func (spj *SPJTemplate) runVerifier(ctx context.Context, proof *ProofData) error
 			return fmt.Errorf("verification failed: %w", err)
 		}
 	}
-
 	return nil
 }
 
