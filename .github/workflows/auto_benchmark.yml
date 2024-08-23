@@ -19,10 +19,11 @@ jobs:
       id: extract_path
       run: |
         COMMIT_MSG=$(git log --format=%B -n 1 ${{ github.sha }})
-        SCRIPT_PATH=$(echo "$COMMIT_MSG" | grep -oP '(?<=\[script:).*?(?=\])')
+        SCRIPT_PATH=$(echo "$COMMIT_MSG" | grep -oP '(?<=\[script:).*?(?=\])' || true)
         if [ -n "$SCRIPT_PATH" ]; then
           echo "SCRIPT_PATH=$SCRIPT_PATH" >> $GITHUB_OUTPUT
           echo "EXTRACTION_SUCCESS=true" >> $GITHUB_OUTPUT
+          echo "Script path found: $SCRIPT_PATH"
         else
           echo "No script path found in commit message. Workflow will terminate gracefully."
           echo "EXTRACTION_SUCCESS=false" >> $GITHUB_OUTPUT
