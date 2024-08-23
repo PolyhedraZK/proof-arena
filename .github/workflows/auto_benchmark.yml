@@ -1,0 +1,126 @@
+name: Execute Script and Create Pull Request
+
+on:
+  push:
+    branches:
+      - main  # or any branch you want to trigger this workflow
+
+jobs:
+  execute-script-and-create-pr:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+        token: ${{ secrets.PAT }}
+
+    - name: Extract script path from commit message
+      id: extract_path
+      run: |
+        COMMIT_MSG=$(git log --format=%B -n 1 ${{ github.sha }})
+        SCRIPT_PATH=$(echo "$COMMIT_MSG" | grep -oP '(?<=\[script:).*?(?=\])')
+        if [ -n "$SCRIPT_PATH" ]; then
+          echo "SCRIPT_PATH=$SCRIPT_PATH" >> $GITHUB_OUTPUT
+          echo "EXTRACTION_SUCCESS=true" >> $GITHUB_OUTPUT
+        else
+          echo "No script path found in commit message. Workflow will terminate gracefully."
+          echo "EXTRACTION_SUCCESS=false" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Exit workflow if no script path found
+      if: steps.extract_path.outputs.EXTRACTION_SUCCESS != 'true'
+      run: |
+        echo "No script path found. Exiting workflow successfully."
+        exit 0
+
+    - name: Validate and execute script
+      if: steps.extract_path.outputs.EXTRACTION_SUCCESS == 'true'
+      run: |
+        SCRIPT_PATH="${{ steps.extract_path.outputs.SCRIPT_PATH }}"
+        if [[ -f "$SCRIPT_PATH" ]]; then
+          if [[ "$SCRIPT_PATH" == *.sh ]]; then
+            chmod +x "$SCRIPT_PATH"
+            ./"$SCRIPT_PATH"
+          elif [[ "$SCRIPT_PATH" == *.py ]]; then
+            python "$SCRIPT_PATH"
+          else
+            echo "Unsupported script type. Only .sh and .py files are allowed."
+            exit 1
+          fi
+        else
+          echo "Script not found in the repository: $SCRIPT_PATH"
+          exit 1
+        fi
+
+    - name: Check for changes
+      if: steps.extract_path.outputs.EXTRACTION_SUCCESS == 'true'
+      id: check_changes
+      run: |
+        if git diff --exit-code --quiet spj_output/; then
+          echo "No changes detected in spj_output/"
+        else
+          echo "CHANGES_EXIST=true" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Create Pull Request
+      if: steps.check_changes.outputs.CHANGES_EXIST == 'true'
+      env:
+        PAT: ${{ secrets.PAT }}
+      run: |
+        # Create a new branch
+        BRANCH_NAME="auto-update-$(date +%Y%m%d-%H%M%S)"
+        git checkout -b $BRANCH_NAME
+
+        # Commit changes
+        git config user.name github-actions
+        git config user.email github-actions@github.com
+        git add spj_output/
+        git commit -m "Auto-update: Changes in spj_output after script execution"
+
+        # Push the branch to the remote repository
+        git push origin $BRANCH_NAME
+
+        # Prepare PR title and body
+        PR_TITLE="Auto-update: Changes in spj_output"
+        PR_BODY="This pull request was automatically created by the CI workflow. It contains updates to the spj_output/ directory after script execution.
+
+        Please review the changes and merge if appropriate."
+
+        # Create a pull request using GitHub API
+        PR_RESPONSE=$(curl -X POST \
+          -H "Authorization: token $PAT" \
+          -H "Accept: application/vnd.github.v3+json" \
+          https://api.github.com/repos/$GITHUB_REPOSITORY/pulls \
+          -d @- << EOF
+        {
+          "title": "$PR_TITLE",
+          "body": "$PR_BODY",
+          "head": "$BRANCH_NAME",
+          "base": "main"
+        }
+        EOF
+        )
+
+        PR_URL=$(echo $PR_RESPONSE | jq -r .html_url)
+        if [ "$PR_URL" != "null" ]; then
+          echo "Pull request created: $PR_URL"
+        else
+          echo "Failed to create pull request. API response:"
+          echo "$PR_RESPONSE" | jq .
+          exit 1
+        fi
+
+    - name: Workflow summary
+      if: always()
+      run: |
+        if [ "${{ steps.extract_path.outputs.EXTRACTION_SUCCESS }}" == "true" ]; then
+          echo "Script path was successfully extracted and executed."
+          if [ "${{ steps.check_changes.outputs.CHANGES_EXIST }}" == "true" ]; then
+            echo "Changes were detected in spj_output/ and a pull request was created."
+          else
+            echo "No changes were detected in spj_output/. No pull request was created."
+          fi
+        else
+          echo "No script path was found in the commit message. Workflow terminated gracefully."
+        fi

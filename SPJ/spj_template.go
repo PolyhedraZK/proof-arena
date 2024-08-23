@@ -115,6 +115,8 @@ func (spj *SPJTemplate) runProver(ctx context.Context) (*ProofData, error) {
 	// Start monitoring the prover process
 	processDone := make(chan error, 1)
 	go func() {
+		// wait for 1 second to make sure the process is started
+		time.Sleep(time.Second)
 		processDone <- cmd.Wait()
 	}()
 
@@ -191,20 +193,25 @@ func (spj *SPJTemplate) runProver(ctx context.Context) (*ProofData, error) {
 	}()
 	var proofData *ProofData
 	select {
-	case proofData = <-proofDone:
-		spj.timer.Stop("proof")
 	case err := <-proofError:
 		return nil, fmt.Errorf("proof generation failed: %w", err)
 	case err := <-processDone:
-		return nil, fmt.Errorf("prover execution failed: %w", err)
+		// try to get proofData for 10 second, interval 1 millisecond
+		for i := 0; i < 10000; i++ {
+			select {
+			case proofData = <-proofDone:
+				spj.timer.Stop("proof")
+				break
+			default:
+				time.Sleep(time.Millisecond)
+			}
+		}
+		if proofData == nil {
+			return nil, fmt.Errorf("prover execution failed: %w", err)
+		}
 	}
-	spj.timer.Stop("proof")
 
 	spj.resultCollector.SetProofSize(len(proofData.Proof))
-
-	if err := cmd.Wait(); err != nil {
-		return nil, fmt.Errorf("prover execution failed: %w", err)
-	}
 
 	return proofData, nil
 }
@@ -276,12 +283,25 @@ func (spj *SPJTemplate) runVerifier(ctx context.Context, proof *ProofData) error
 	select {
 	case err := <-proofVerifyError:
 		return fmt.Errorf("proof verification failed: %w", err)
-	case <-proofVerifyDone:
-		spj.timer.Stop("verify")
 	case err := <-processDone:
-		return fmt.Errorf("verifier execution failed: %w", err)
+		verificationResult := false
+		for i := 0; i < 10000; i++ {
+			select {
+			case result := <-proofVerifyDone:
+				if !result {
+					return fmt.Errorf("verification failed")
+				}
+				verificationResult = true
+				spj.timer.Stop("verify")
+				break
+			default:
+				time.Sleep(time.Millisecond)
+			}
+		}
+		if !verificationResult {
+			return fmt.Errorf("verification failed: %w", err)
+		}
 	}
-
 	return nil
 }
 
