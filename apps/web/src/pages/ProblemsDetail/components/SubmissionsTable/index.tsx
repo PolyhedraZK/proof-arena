@@ -3,6 +3,7 @@ import { useState } from 'react';
 
 import BaseEmpty from '@/components/base/BaseEmpty.tsx';
 import { IPSubmissionsTableItem } from '@/services/problems/types.ts';
+import transferToNumber from '@/utils/transferToNumber.ts';
 
 import { useStyles } from './index.style.ts';
 const SubmissionsTable = ({
@@ -17,11 +18,6 @@ const SubmissionsTable = ({
     <div className={styles.titleSpanStyle}>{title}</div>
   );
   const columns = [
-    {
-      title: createTableHead('Task ID'),
-      dataIndex: 'id',
-      render: (_: any, __: any, index: number) => index + 1,
-    },
     {
       title: createTableHead('Prover Name'),
       dataIndex: 'prover_name',
@@ -53,6 +49,7 @@ const SubmissionsTable = ({
       width: 180,
       dataIndex: 'witness_generation_time',
       key: 'witness_generation_time',
+      render: num => transferToNumber(num),
     },
     {
       title: (
@@ -122,7 +119,7 @@ const SubmissionsTable = ({
                 />
               ),
             }}
-            rowKey={'id'}
+            rowKey={'prover_name'}
             className={styles.tableStyle}
             bordered={false}
             scroll={{ x: 1700 }}
