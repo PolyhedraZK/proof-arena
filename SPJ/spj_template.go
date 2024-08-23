@@ -193,18 +193,23 @@ func (spj *SPJTemplate) runProver(ctx context.Context) (*ProofData, error) {
 	}()
 	var proofData *ProofData
 	select {
-	case proofData = <-proofDone:
-		spj.timer.Stop("proof")
 	case err := <-proofError:
 		return nil, fmt.Errorf("proof generation failed: %w", err)
 	case err := <-processDone:
-		if err != nil {
+		// try to get proofData for 10 second, interval 1 millisecond
+		for i := 0; i < 10000; i++ {
+			select {
+			case proofData = <-proofDone:
+				spj.timer.Stop("proof")
+				break
+			default:
+				time.Sleep(time.Millisecond)
+			}
+		}
+		if proofData == nil {
 			return nil, fmt.Errorf("prover execution failed: %w", err)
-		} else {
-			proofData = <-proofDone
 		}
 	}
-	spj.timer.Stop("proof")
 
 	spj.resultCollector.SetProofSize(len(proofData.Proof))
 
@@ -282,10 +287,24 @@ func (spj *SPJTemplate) runVerifier(ctx context.Context, proof *ProofData) error
 	select {
 	case err := <-proofVerifyError:
 		return fmt.Errorf("proof verification failed: %w", err)
-	case <-proofVerifyDone:
-		spj.timer.Stop("verify")
 	case err := <-processDone:
-		return fmt.Errorf("verifier execution failed: %w", err)
+		verificationResult := false
+		for i := 0; i < 10000; i++ {
+			select {
+			case result := <-proofVerifyDone:
+				if !result {
+					return fmt.Errorf("verification failed")
+				}
+				verificationResult = true
+				spj.timer.Stop("verify")
+				break
+			default:
+				time.Sleep(time.Millisecond)
+			}
+		}
+		if !verificationResult {
+			return fmt.Errorf("verification failed: %w", err)
+		}
 	}
 
 	return nil
