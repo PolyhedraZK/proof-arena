@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"encoding/binary"
 	"flag"
 	"fmt"
 	"hash"
@@ -226,14 +227,21 @@ func verify(inputPipe *os.File, outputPipe *os.File) error {
 	if _, err := publicWitness.ReadFrom(bytes.NewReader(publicWitnessBytes)); err != nil {
 		return err
 	}
-
-	err = groth16.Verify(proof, vk, publicWitness)
+	numRepeats := 10000
+	for i := 0; i < numRepeats; i++ {
+		err = groth16.Verify(proof, vk, publicWitness)
+	}
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 		ipc.Write_byte_array(outputPipe, []byte{0})
+		repeatByte := make([]byte, 8)
+		binary.LittleEndian.PutUint64(repeatByte, uint64(numRepeats))
+		ipc.Write_byte_array(outputPipe, repeatByte)
 	} else {
 		fmt.Fprintf(os.Stderr, "Proof verified\n")
 		ipc.Write_byte_array(outputPipe, []byte{0xff})
+		repeatByte := make([]byte, 8)
+		binary.LittleEndian.PutUint64(repeatByte, uint64(numRepeats))
 	}
 	fmt.Fprintf(os.Stderr, "Done\n")
 	return nil
