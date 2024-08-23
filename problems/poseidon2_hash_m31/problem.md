@@ -164,16 +164,27 @@ You can do arbitary one-time precomputing (including setup/compile your circuit,
       ```
 
 11. **Verify the Proof, and send back result**
+    In the verifier's response, you should output the verification result. And because verifier usually runs fast, we require you to repeatively run your verifier multiple times, so you need to additionally output a 64-bit unsigned integer to show your number of repeats.
+
     - Verifier Sample:
 
     ```golang
-    err = groth16.Verify(proof, vk, publicWitness)
+    numRepeats := 10000
+    for i := 0; i < numRepeats; i++ {
+        err = groth16.Verify(proof, vk, publicWitness)
+    }
     if err != nil {
         fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-        ipc.Write_byte_array(outputPipe, []byte{0}) // 0 means proof is invalid
+        ipc.Write_byte_array(outputPipe, []byte{0})
+        repeatByte := make([]byte, 8)
+        binary.LittleEndian.PutUint64(repeatByte, uint64(numRepeats))
+        ipc.Write_byte_array(outputPipe, repeatByte)
     } else {
         fmt.Fprintf(os.Stderr, "Proof verified\n")
-        ipc.Write_byte_array(outputPipe, []byte{0xff}) // 0xff means proof is valid
+        ipc.Write_byte_array(outputPipe, []byte{0xff})
+        repeatByte := make([]byte, 8)
+        binary.LittleEndian.PutUint64(repeatByte, uint64(numRepeats))
+        ipc.Write_byte_array(outputPipe, repeatByte)
     }
     fmt.Fprintf(os.Stderr, "Done\n")
     return nil
