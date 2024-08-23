@@ -2,8 +2,6 @@ name: Conditional Script Execution and Commit
 
 on:
   push:
-    branches:
-      - main  # 或者您想要触发此workflow的任何分支
 
 jobs:
   execute-script-and-commit:
@@ -54,14 +52,28 @@ jobs:
           exit 1
         fi
 
-    - name: Commit changes in spj_output
+    - name: Create Pull Request
       if: steps.extract_path.outputs.SCRIPT_PATH
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        git config --local user.email "github-actions[bot]@users.noreply.github.com"
-        git config --local user.name "github-actions[bot]"
-        git add spj_output/
-        git diff --quiet && git diff --staged --quiet || (git commit -m "Auto-commit: Update spj_output after script execution" && git push)
+        # Create a new branch
+        BRANCH_NAME="auto-update-$(date +%Y%m%d-%H%M%S)"
+        git checkout -b $BRANCH_NAME
 
+        # Commit changes
+        git config user.name github-actions
+        git config user.email github-actions@github.com
+        git add spj_output/
+        git commit -m "Auto-update: Changes in spj_output after script execution" || echo "No changes to commit"
+
+        # Push the branch to the remote repository
+        git push origin $BRANCH_NAME
+
+        # Create a pull request
+        PR_URL=$(gh pr create --base main --head $BRANCH_NAME --title "Auto-update: Changes in spj_output" --body "This pull request was automatically created by the CI workflow. It contains updates to the spj_output/ directory after script execution.")
+        echo "Pull request created: $PR_URL"
+        
     - name: Skip execution message
       if: "!steps.extract_path.outputs.SCRIPT_PATH"
       run: echo "No script specified in commit message. Skipping execution and commit."
