@@ -52,33 +52,9 @@ jobs:
           echo "Script not found in the repository: $SCRIPT_PATH"
           exit 1
         fi
-    - name: Check for changes and parse JSON
-      id: check_changes
-      run: |
-        if git diff --exit-code --quiet spj_output/; then
-          echo "No changes detected in spj_output/"
-        else
-          echo "CHANGES_EXIST=true" >> $GITHUB_OUTPUT
-          JSON_FILE=$(find spj_output/ -name "*.json" -type f -print -quit)
-          if [ -n "$JSON_FILE" ]; then
-            PROBLEM_ID=$(jq -r .problem_id "$JSON_FILE")
-            PROVER_NAME=$(jq -r .prover_name "$JSON_FILE")
-            PROOF_SYSTEM=$(jq -r .proof_system "$JSON_FILE")
-            ALGORITHM=$(jq -r .algorithm "$JSON_FILE")
-            STATUS=$(jq -r .status "$JSON_FILE")
-            echo "PROBLEM_ID=$PROBLEM_ID" >> $GITHUB_OUTPUT
-            echo "PROVER_NAME=$PROVER_NAME" >> $GITHUB_OUTPUT
-            echo "PROOF_SYSTEM=$PROOF_SYSTEM" >> $GITHUB_OUTPUT
-            echo "ALGORITHM=$ALGORITHM" >> $GITHUB_OUTPUT
-            echo "STATUS=$STATUS" >> $GITHUB_OUTPUT
-          else
-            echo "No JSON file found in spj_output/"
-          fi
-        fi
     - name: Create Pull Request
-      if: steps.check_changes.outputs.CHANGES_EXIST == 'true'
       env:
-        PAT: ${{ secrets.PAT }}
+        GITHUB_TOKEN: ${{ secrets.PAT }}
       run: |
         # Create a new branch
         BRANCH_NAME="auto-update-$(date +%Y%m%d-%H%M%S)"
@@ -88,48 +64,16 @@ jobs:
         git config user.name github-actions
         git config user.email github-actions@github.com
         git add spj_output/
-        git commit -m "Auto-update: Changes in spj_output after script execution"
+        git commit -m "Auto-update: New submission results"
 
         # Push the branch to the remote repository
         git push origin $BRANCH_NAME
 
-        # Prepare PR title and body
-        PR_TITLE="[Problem ${{ steps.check_changes.outputs.PROBLEM_ID }}] Update for ${{ steps.check_changes.outputs.PROVER_NAME }}"
-        PR_BODY="This pull request was automatically created by the CI workflow. It contains updates to the spj_output/ directory after script execution.
+        # Create a pull request using GitHub CLI
+        PR_URL=$(gh pr create --base main --head $BRANCH_NAME --title "Auto-update: New code submission" --body "This pull request was automatically created by the CI workflow. It contains updates to the spj_output/ directory after script execution.")
+        echo "Pull request created: $PR_URL"
 
-        Updates:
-        - Problem ID: ${{ steps.check_changes.outputs.PROBLEM_ID }}
-        - Prover Name: ${{ steps.check_changes.outputs.PROVER_NAME }}
-        - Proof System: ${{ steps.check_changes.outputs.PROOF_SYSTEM }}
-        - Algorithm: ${{ steps.check_changes.outputs.ALGORITHM }}
-        - Status: ${{ steps.check_changes.outputs.STATUS }}
-
-        Please review the changes and merge if appropriate."
-
-        # Create a pull request using GitHub API
-        PR_RESPONSE=$(curl -X POST \
-          -H "Authorization: token $PAT" \
-          -H "Accept: application/vnd.github.v3+json" \
-          https://api.github.com/repos/$GITHUB_REPOSITORY/pulls \
-          -d @- << EOF
-        {
-          "title": "$PR_TITLE",
-          "body": "$PR_BODY",
-          "head": "$BRANCH_NAME",
-          "base": "main"
-        }
-        EOF
-        )
-
-        PR_URL=$(echo $PR_RESPONSE | jq -r .html_url)
-        if [ "$PR_URL" != "null" ]; then
-          echo "Pull request created: $PR_URL"
-        else
-          echo "Failed to create pull request. API response:"
-          echo "$PR_RESPONSE" | jq .
-          exit 1
-        fi
-  
+        
     - name: Skip execution message
       if: "!steps.extract_path.outputs.SCRIPT_PATH"
       run: echo "No script specified in commit message. Skipping execution and commit."
