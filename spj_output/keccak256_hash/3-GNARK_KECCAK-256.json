@@ -1,0 +1,16 @@
+{
+  "problem_id": 2,
+  "prover_name": "GNARK KECCAK-256",
+  "proof_system": "GNARK",
+  "algorithm": "Groth16",
+  "setup_time": 6.673663035,
+  "witness_generation_time": 0.000132265,
+  "proof_generation_time": 0.21085753525,
+  "verify_time": 0.00215693725,
+  "peak_memory": 233382,
+  "proof_size": 49,
+  "status": true,
+  "error_msg": "",
+  "max_cpu": 64,
+  "n": 4
+}
