@@ -72,6 +72,7 @@ We are currently developing an automatic submission system. Until it is availabl
 | 9 | Valida | Lita Foundation & Polygon | Not started | zkVM |
 | 10 | Nexus 2.0 | Nexus | Not started | zkVM |
 | 11 | Halo2 | PSE | Tested on problem 2 | ZK Circuit Prover |
+
 ### Thanks
 
 We thank Google Cloud for their support in developing this platform and Lianmin Zheng for inspiring us and giving us valuable suggestions.

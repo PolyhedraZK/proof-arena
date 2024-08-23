@@ -12,15 +12,19 @@ interface ProverInfo {
   inventor: string;
   type: string;
 }
+interface requestType {
+  data?: ProverInfo[];
+  loading: boolean;
+}
 
 const SupportedProversPage: React.FC = () => {
   const pageSize = 8;
   const { styles } = useStyles();
   const [page, setPage] = useState(1);
-  const { data: provers, loading } = useRequest<ProverInfo[]>(() =>
+  const { data: provers, loading }: requestType = useRequest(() =>
     fetch('/supportedProvers.json').then(res => res.json())
   );
-
+  const provers_sort = provers?.sort((a, b) => a.name.localeCompare(b.name));
   const columns = [
     {
       title: 'Prover Name',
@@ -80,12 +84,14 @@ const SupportedProversPage: React.FC = () => {
               bordered={false}
               columns={columns}
               dataSource={
-                provers?.slice(page * pageSize - pageSize, page * pageSize) ||
-                []
+                provers_sort?.slice(
+                  page * pageSize - pageSize,
+                  page * pageSize
+                ) || []
               }
             />
           </div>
-          {provers?.length && provers?.length > 8 ? (
+          {provers_sort?.length && provers_sort?.length > 8 ? (
             <Pagination
               onChange={(page: number) => {
                 setPage(page);
@@ -94,7 +100,7 @@ const SupportedProversPage: React.FC = () => {
               className={styles.paginationStyle}
               defaultCurrent={1}
               pageSize={pageSize}
-              total={provers?.length}
+              total={provers_sort?.length}
             />
           ) : null}
         </ConfigProvider>
