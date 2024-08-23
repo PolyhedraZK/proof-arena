@@ -67,16 +67,16 @@ Your prover program must read bytes from stdin and print bytes to stdout. We wil
    spjToProverPipeName := ipc.Read_string(os.Stdin)
    spjToProverPipe, err := os.OpenFile(spjToProverPipeName, os.O_RDONLY, os.ModeNamedPipe)
    if err != nil {
-   	fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-   	os.Exit(1)
+       fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+       os.Exit(1)
    }
    defer spjToProverPipe.Close()
 
    ProverToSPJPipeName := ipc.Read_string(os.Stdin)
    ProverToSPJPipe, err := os.OpenFile(ProverToSPJPipeName, os.O_WRONLY, os.ModeNamedPipe)
    if err != nil {
-   	fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-   	os.Exit(1)
+       fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+       os.Exit(1)
    }
    ```
 
@@ -179,7 +179,7 @@ You can do arbitary one-time precomputing (including setup/compile your circuit,
    ```golang
    proof, err := groth16.Prove(cs, pk, witness)
    if err != nil {
-   	return err
+       return err
    }
 
    return sendProofData(proof, vk, witness, outputPipe)
@@ -216,6 +216,8 @@ You can do arbitary one-time precomputing (including setup/compile your circuit,
       ```
 
 11. **Verify the Proof, and send back result**
+    In the verifier's response, you should output the verification result. And because verifier usually runs fast, we require you to repeatively run your verifier multiple times, so you need to additionally output a 64-bit unsigned integer to show your number of repeats.
+
     - Verifier Sample:
 
     ```golang
@@ -225,12 +227,16 @@ You can do arbitary one-time precomputing (including setup/compile your circuit,
     }
     if err != nil {
         fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-        ipc.Write_byte_array(outputPipe, []byte{0}) // 0 means proof is invalid
-        ipc.Write_byte_array(outputPipe, binary.LittleEndian.PutUint64(uint64(0)))
+        ipc.Write_byte_array(outputPipe, []byte{0})
+        repeatByte := make([]byte, 8)
+        binary.LittleEndian.PutUint64(repeatByte, uint64(numRepeats))
+        ipc.Write_byte_array(outputPipe, repeatByte)
     } else {
         fmt.Fprintf(os.Stderr, "Proof verified\n")
-        ipc.Write_byte_array(outputPipe, []byte{0xff}) // 0xff means proof is valid
-        ipc.Write_byte_array(outputPipe, binary.LittleEndian.PutUint64(uint64(numRepeats)))
+        ipc.Write_byte_array(outputPipe, []byte{0xff})
+        repeatByte := make([]byte, 8)
+        binary.LittleEndian.PutUint64(repeatByte, uint64(numRepeats))
+        ipc.Write_byte_array(outputPipe, repeatByte)
     }
     fmt.Fprintf(os.Stderr, "Done\n")
     return nil

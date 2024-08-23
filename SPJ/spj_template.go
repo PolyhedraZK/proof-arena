@@ -277,7 +277,7 @@ func (spj *SPJTemplate) runVerifier(ctx context.Context, proof *ProofData) error
 		if len(result) != 1 {
 			proofVerifyError <- fmt.Errorf("unexpected verification result format: %v", result)
 		}
-		numRepeatsBytes, err := spj.pipeManager.ReadFromProver()
+		numRepeatsBytes, err := spj.pipeManager.ReadFromVerifier()
 		if len(numRepeatsBytes) != 8 {
 			proofVerifyError <- fmt.Errorf("unexpected numRepeats format: %v", numRepeatsBytes)
 		}
@@ -307,6 +307,7 @@ func (spj *SPJTemplate) runVerifier(ctx context.Context, proof *ProofData) error
 					return fmt.Errorf("verification failed")
 				}
 				verificationResult = true
+				fmt.Println("Verification done")
 				spj.timer.Stop("verify")
 				break
 			default:
