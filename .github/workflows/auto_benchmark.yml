@@ -8,6 +8,7 @@ jobs:
     runs-on: arena-cpu-judger
     permissions:
       contents: write  # 给予写入权限
+      pull-requests: write
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
@@ -53,9 +54,8 @@ jobs:
         fi
 
     - name: Create Pull Request
-      if: steps.extract_path.outputs.SCRIPT_PATH
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.PAT }}
       run: |
         # Create a new branch
         BRANCH_NAME="auto-update-$(date +%Y%m%d-%H%M%S)"
@@ -65,14 +65,15 @@ jobs:
         git config user.name github-actions
         git config user.email github-actions@github.com
         git add spj_output/
-        git commit -m "Auto-update: Changes in spj_output after script execution" || echo "No changes to commit"
+        git commit -m "Auto-update: Changes in spj_output after script execution"
 
         # Push the branch to the remote repository
         git push origin $BRANCH_NAME
 
-        # Create a pull request
+        # Create a pull request using GitHub CLI
         PR_URL=$(gh pr create --base main --head $BRANCH_NAME --title "Auto-update: Changes in spj_output" --body "This pull request was automatically created by the CI workflow. It contains updates to the spj_output/ directory after script execution.")
         echo "Pull request created: $PR_URL"
+
         
     - name: Skip execution message
       if: "!steps.extract_path.outputs.SCRIPT_PATH"
