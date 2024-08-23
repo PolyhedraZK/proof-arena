@@ -1,5 +1,7 @@
 #!/bin/bash
 
+go mod -C problems/keccak256_hash/expectedProver tidy
+go mod -C problems/keccak256_hash/SPJ tidy
 go build -C problems/keccak256_hash/expectedProver
 go build -C problems/keccak256_hash/SPJ
 
