@@ -16,14 +16,25 @@ jobs:
       with:
         fetch-depth: 0  # 获取完整的git历史
         token: ${{ secrets.GITHUB_TOKEN }}  # 使用GitHub Token
-
+    
     - name: Extract script path from commit message
       id: extract_path
       run: |
         COMMIT_MSG=$(git log --format=%B -n 1 ${{ github.sha }})
         SCRIPT_PATH=$(echo "$COMMIT_MSG" | grep -oP '(?<=\[script:).*?(?=\])')
         echo "SCRIPT_PATH=$SCRIPT_PATH" >> $GITHUB_OUTPUT
+    
+    - name: Set up Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: '1.20'  # You can specify your desired Go version here
 
+    - name: Set up Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable  # You can specify a version like '1.68.0' if needed
+        profile: minimal
+        override: true
     - name: Validate and execute script
       if: steps.extract_path.outputs.SCRIPT_PATH
       run: |
