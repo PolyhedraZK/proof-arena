@@ -1,0 +1,56 @@
+name: Conditional Script Execution and Commit
+
+on:
+  push:
+    branches:
+      - main  # 或者您想要触发此workflow的任何分支
+
+jobs:
+  execute-script-and-commit:
+    runs-on: arena-cpu-judger
+    permissions:
+      contents: write  # 给予写入权限
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0  # 获取完整的git历史
+        token: ${{ secrets.GITHUB_TOKEN }}  # 使用GitHub Token
+
+    - name: Extract script path from commit message
+      id: extract_path
+      run: |
+        COMMIT_MSG=$(git log --format=%B -n 1 ${{ github.sha }})
+        SCRIPT_PATH=$(echo "$COMMIT_MSG" | grep -oP '(?<=\[script:).*?(?=\])')
+        echo "SCRIPT_PATH=$SCRIPT_PATH" >> $GITHUB_OUTPUT
+
+    - name: Validate and execute script
+      if: steps.extract_path.outputs.SCRIPT_PATH
+      run: |
+        SCRIPT_PATH="${{ steps.extract_path.outputs.SCRIPT_PATH }}"
+        if [[ -f "$SCRIPT_PATH" ]]; then
+          if [[ "$SCRIPT_PATH" == *.sh ]]; then
+            chmod +x "$SCRIPT_PATH"
+            ./"$SCRIPT_PATH"
+          elif [[ "$SCRIPT_PATH" == *.py ]]; then
+            python "$SCRIPT_PATH"
+          else
+            echo "Unsupported script type. Only .sh and .py files are allowed."
+            exit 1
+          fi
+        else
+          echo "Script not found in the repository: $SCRIPT_PATH"
+          exit 1
+        fi
+
+    - name: Commit changes in spj_output
+      if: steps.extract_path.outputs.SCRIPT_PATH
+      run: |
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        git add spj_output/
+        git diff --quiet && git diff --staged --quiet || (git commit -m "Auto-commit: Update spj_output after script execution" && git push)
+
+    - name: Skip execution message
+      if: !steps.extract_path.outputs.SCRIPT_PATH
+      run: echo "No script specified in commit message. Skipping execution and commit."
