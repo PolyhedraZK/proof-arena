@@ -219,13 +219,18 @@ You can do arbitary one-time precomputing (including setup/compile your circuit,
     - Verifier Sample:
 
     ```golang
-    err = groth16.Verify(proof, vk, publicWitness)
+    numRepeats := 10000
+    for i := 0; i < numRepeats; i++ {
+        err = groth16.Verify(proof, vk, publicWitness)
+    }
     if err != nil {
         fmt.Fprintf(os.Stderr, "Error: %v\n", err)
         ipc.Write_byte_array(outputPipe, []byte{0}) // 0 means proof is invalid
+        ipc.Write_byte_array(outputPipe, binary.LittleEndian.PutUint64(uint64(0)))
     } else {
         fmt.Fprintf(os.Stderr, "Proof verified\n")
         ipc.Write_byte_array(outputPipe, []byte{0xff}) // 0xff means proof is valid
+        ipc.Write_byte_array(outputPipe, binary.LittleEndian.PutUint64(uint64(numRepeats)))
     }
     fmt.Fprintf(os.Stderr, "Done\n")
     return nil
