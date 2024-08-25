@@ -46,3 +46,6 @@ SPJ
 
 # rust target files
 target/
+
+# halo2 proof temp files
+*.data
