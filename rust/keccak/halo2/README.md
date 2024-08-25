@@ -1,5 +1,7 @@
 # Halo2 Keccak Circuit Documentation
 
+__Acknowledgement__: the circuit of this repo is developed by scroll https://github.com/scroll-tech/zkevm-circuits
+
 ## Overview
 
 This project implements a Keccak (SHA3) hash function circuit using the Halo2 zero-knowledge proof system. It includes components for circuit definition, proving, and verification.
