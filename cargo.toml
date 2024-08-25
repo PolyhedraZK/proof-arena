@@ -18,8 +18,6 @@ zkevm-circuits = { git = "https://github.com/scroll-tech/zkevm-circuits", branch
 [patch.crates-io]
 ethers-core = { git = "https://github.com/scroll-tech/ethers-rs.git", branch = "v2.0.7" }
 ethers-providers = { git = "https://github.com/scroll-tech/ethers-rs.git", branch = "v2.0.7" }
-ethers = { git = "https://github.com/scroll-tech/ethers-rs.git", branch = "v2.0.7" }
-# ethers-etherscan = { git = "https://github.com/scroll-tech/ethers-rs.git", branch = "v2.0.7" }
 ethers-signers  = { git = "https://github.com/scroll-tech/ethers-rs.git", branch = "v2.0.7" }
 gobuild = { git = "https://github.com/scroll-tech/gobuild.git" }
 halo2curves = { git = "https://github.com/scroll-tech/halo2curves", branch = "v0.1.0" }

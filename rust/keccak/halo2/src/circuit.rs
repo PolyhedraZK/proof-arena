@@ -12,13 +12,15 @@ use crate::{
     LOG_DEGREE, MAX_NUM_HASHES, NUM_ROUNDS,
 };
 
+/// Represents the Keccak circuit for hashing multiple inputs
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct KeccakCircuit {
-    preimages: Vec<[u8; 64]>,
-    digests: Vec<[u8; 32]>,
+    preimages: Vec<[u8; 64]>, // Input data to be hashed
+    digests: Vec<[u8; 32]>,   // Resulting hash digests
 }
 
 impl KeccakCircuit {
+    /// Creates a new KeccakCircuit instance with the given preimages
     pub fn new(preimages: Vec<[u8; 64]>) -> Self {
         let digests = preimages
             .iter()
@@ -33,6 +35,7 @@ impl KeccakCircuit {
         Self { preimages, digests }
     }
 
+    /// Creates a mock circuit for testing purposes
     pub fn mock_for_test() -> Self {
         let preimages = (0..MAX_NUM_HASHES)
             .map(|i| [i as u8; 64])
@@ -40,13 +43,12 @@ impl KeccakCircuit {
         Self::new(preimages)
     }
 
-    /// The number of keccak_f's that can be done in this circuit
+    /// Returns the capacity (number of Keccak-f operations) of this circuit
     pub fn capacity(&self) -> Option<usize> {
         Self::capacity_for_row(LOG_DEGREE)
     }
 
-    /// The number of keccak_f's that can be done for
-    /// a particular row number depending on current Keccak params
+    /// Calculates the capacity for a given number of rows
     pub fn capacity_for_row(num_rows: usize) -> Option<usize> {
         if num_rows > 0 {
             // Subtract two for unusable rows
@@ -56,6 +58,7 @@ impl KeccakCircuit {
         }
     }
 
+    /// Writes the circuit data to the given writer
     pub fn write<W: std::io::Write>(&self, w: &mut W) -> Result<(), std::io::Error> {
         assert_eq!(
             self.preimages.len(),
@@ -74,7 +77,6 @@ impl KeccakCircuit {
 
 impl Circuit<Fr> for KeccakCircuit {
     type Config = (KeccakBenchConfig, Challenges);
-
     type FloorPlanner = SimpleFloorPlanner;
 
     fn without_witnesses(&self) -> Self {

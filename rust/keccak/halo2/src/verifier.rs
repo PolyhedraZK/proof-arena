@@ -4,16 +4,17 @@ use std::{
 };
 
 use ark_std::{end_timer, start_timer};
+use halo2_keccak_circuit::circuit::KeccakCircuit;
 use halo2_proofs::{
     plonk::VerifyingKey,
     poly::{commitment::Params, kzg::commitment::ParamsKZG},
     SerdeFormat,
 };
 use halo2curves::bn256::{Bn256, G1Affine};
-use halo2_keccak_circuit::circuit::KeccakCircuit;
 use snark_verifier_sdk::{verify_snark_gwc, Snark};
 
 fn main() -> std::io::Result<()> {
+    // Initialize logging
     let mut log_file = File::create("verifier.log")?;
     let srs_file_path = "srs_bn256.data";
     let vk_file_path = "keccak_vk.data";
@@ -33,17 +34,20 @@ fn main() -> std::io::Result<()> {
     let spj_to_verifier_pipe = &args[1];
     let verifier_to_spj_pipe = &args[2];
 
+    // Log pipe names
     log_file.write_all(format!("SPJ to Verifier pipe: {}\n", spj_to_verifier_pipe).as_bytes())?;
     log_file.write_all(format!("Verifier to SPJ pipe: {}\n", verifier_to_spj_pipe).as_bytes())?;
 
+    // Open pipes
     let mut spj_to_verifier_pipe = std::io::BufReader::new(File::open(spj_to_verifier_pipe)?);
     let mut verifier_to_spj_pipe = File::create(verifier_to_spj_pipe)?;
 
     log_file.write_all(b"setups done\n")?;
 
-    // repeating verification for 10k times so that the armotized SRS time becomes negligible
+    // Set number of verification repetitions
     let repeat = 1000u64;
 
+    // Read proof, vk, and witnesses from SPJ
     let proof_bytes = read_blob(&mut spj_to_verifier_pipe)?;
     log_file
         .write_all(format!("proof extracted from pipe, size {}\n", proof_bytes.len()).as_bytes())?;
@@ -56,7 +60,7 @@ fn main() -> std::io::Result<()> {
         format!("witnesses extracted from pipe, size {}\n", witnesses.len()).as_bytes(),
     )?;
 
-    // SRS
+    // Load SRS
     let srs = {
         let timer = start_timer!(|| "read srs");
         let mut srs_file = std::fs::File::open(srs_file_path)?;
@@ -66,7 +70,7 @@ fn main() -> std::io::Result<()> {
         srs
     };
 
-    // vk
+    // Load verification key
     let vk = {
         let timer = start_timer!(|| "read verification key");
         let mut vk_file = std::fs::File::open(vk_file_path)?;
@@ -79,8 +83,7 @@ fn main() -> std::io::Result<()> {
         vk
     };
 
-    // snark
-    // this is a hack to use the verify_snark_gwc without sending the whole snark, just the proof
+    // Construct SNARK
     let snark = {
         let timer = start_timer!(|| "read snark");
         let snark_file = std::fs::File::open(snark_file_path)?;
@@ -91,17 +94,18 @@ fn main() -> std::io::Result<()> {
         snark
     };
 
+    // Verify SNARK
     let res = (0..repeat)
         .map(|_| {
             let timer = start_timer!(|| "verification time");
             let res = verify_snark_gwc::<KeccakCircuit>(&srs, snark.clone(), &vk);
-            // let res = true;
             end_timer!(timer);
             res
         })
         .all(|x| x);
     log_file.write_all(format!("verification: {} \n", res).as_bytes())?;
 
+    // Send verification result to SPJ
     let res = match res {
         true => 255u8,
         false => 0,
@@ -112,6 +116,7 @@ fn main() -> std::io::Result<()> {
     Ok(())
 }
 
+/// Reads a blob of data from the given reader
 fn read_blob<R: Read>(reader: &mut R) -> std::io::Result<Vec<u8>> {
     let mut len_buf = [0u8; 8];
     reader.read_exact(&mut len_buf)?;
@@ -122,6 +127,7 @@ fn read_blob<R: Read>(reader: &mut R) -> std::io::Result<Vec<u8>> {
     Ok(buf)
 }
 
+/// Writes a byte array to the given writer
 fn write_byte_array<W: Write>(writer: &mut W, arr: &[u8]) -> std::io::Result<()> {
     let len = arr.len() as u64;
     writer.write_all(&len.to_le_bytes())?;

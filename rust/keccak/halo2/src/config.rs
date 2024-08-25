@@ -8,16 +8,20 @@ use zkevm_circuits::{
 
 use crate::NUM_ROWS_PER_ROUND;
 
+/// Configuration for the Keccak benchmark circuit
 #[derive(Clone, Debug)]
 pub struct KeccakBenchConfig {
     pub(crate) keccak_circuit_config: KeccakCircuitConfig<Fr>,
 }
 
 impl KeccakBenchConfig {
+    /// Configures the KeccakBenchConfig with the given constraint system and challenges
     pub(crate) fn configure(meta: &mut ConstraintSystem<Fr>, challenges: Challenges) -> Self {
-        // hash configuration
+        // Create challenge expressions
         let challenges_exprs = challenges.exprs(meta);
+        // Construct the Keccak table
         let keccak_table = KeccakTable::construct(meta);
+        // Create arguments for the Keccak circuit configuration
         let keccak_circuit_config_args = KeccakCircuitConfigArgs {
             keccak_table: keccak_table.clone(),
             challenges: challenges_exprs,
@@ -29,8 +33,7 @@ impl KeccakBenchConfig {
     }
 }
 
-/// Obtain the rows required for 1 iteration of f-box's inner round
-/// function (consisting of 5 phases) within Keccak circuit
+/// Returns the number of rows required for one iteration of the f-box's inner round function
 pub fn get_num_rows_per_round() -> usize {
     NUM_ROWS_PER_ROUND
 }

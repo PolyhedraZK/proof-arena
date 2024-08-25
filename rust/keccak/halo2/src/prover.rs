@@ -5,19 +5,21 @@ use std::{
 };
 
 use ark_std::{end_timer, start_timer, test_rng};
+use halo2_keccak_circuit::{circuit::KeccakCircuit, LOG_DEGREE, MAX_NUM_HASHES};
 use halo2_proofs::{
     poly::{commitment::Params, kzg::commitment::ParamsKZG},
     SerdeFormat,
 };
 use halo2curves::bn256::Bn256;
-use halo2_keccak_circuit::{circuit::KeccakCircuit, LOG_DEGREE, MAX_NUM_HASHES};
 use snark_verifier_sdk::{gen_pk, gen_proof_gwc, gen_snark_gwc};
 use tiny_keccak::Hasher;
 
 fn main() -> std::io::Result<()> {
+    // Initialize logging
     let mut log_file = File::create("prover.log")?;
     log_file.write_all(b"start \n")?;
 
+    // Define file paths
     let srs_file_path = "srs_bn256.data";
     let snark_file_path = "keccak_snark.data";
     let pk_file_path = "keccak_pk.data";
@@ -37,9 +39,11 @@ fn main() -> std::io::Result<()> {
     let spj_to_prover_pipe = &args[1];
     let prover_to_spj_pipe = &args[2];
 
+    // Log pipe names
     writeln!(log_file, "SPJ to Prover pipe: {}", spj_to_prover_pipe)?;
     writeln!(log_file, "Prover to SPJ pipe: {}", prover_to_spj_pipe)?;
 
+    // Open pipes
     let mut spj_to_prover_pipe = std::io::BufReader::new(File::open(spj_to_prover_pipe)?);
     let mut prover_to_spj_pipe = File::create(prover_to_spj_pipe)?;
 
@@ -48,7 +52,7 @@ fn main() -> std::io::Result<()> {
     // Send prover info to SPJ
     write_string(&mut prover_to_spj_pipe, "Halo2 Keccak Prover")?;
     write_string(&mut prover_to_spj_pipe, "Keccak")?;
-    write_string(&mut prover_to_spj_pipe, "Halo2")?;
+    write_string(&mut prover_to_spj_pipe, "Plonk")?;
 
     // Send N to SPJ (assuming MAX_NUM_HASHES is the N value)
     write_u64(&mut prover_to_spj_pipe, MAX_NUM_HASHES as u64)?;
@@ -56,11 +60,15 @@ fn main() -> std::io::Result<()> {
     // Read witness from SPJ
     let buf = read_blob(&mut spj_to_prover_pipe)?;
 
+    // Log witness information
     log_file.write_all(format!("buf_len: {:?}\n", buf.len()).as_bytes())?;
     log_file.write_all(format!("buf: {:?}\n", buf[..32].as_ref()).as_bytes())?;
 
+    // Parse witness and compute digests
     let (witness, digests) = parse_prover_in(&buf);
     log_file.write_all(b"witness extracted from pipe\n")?;
+
+    // Send digests back to SPJ
     write_byte_array(
         &mut prover_to_spj_pipe,
         digests
@@ -72,18 +80,19 @@ fn main() -> std::io::Result<()> {
     )?;
     log_file.write_all(b"sending results back to spj\n")?;
 
-    // SRS
+    // Load or generate SRS
     let srs = {
         let srs_exist = Path::new(srs_file_path).exists();
         if srs_exist {
+            // Read existing SRS
             let timer = start_timer!(|| "read srs");
-
             let mut srs_file = std::fs::File::open(srs_file_path)?;
             let srs = ParamsKZG::<Bn256>::read(&mut srs_file)?;
             end_timer!(timer);
             log_file.write_all(b"srs loaded\n")?;
             srs
         } else {
+            // Generate new SRS
             let timer = start_timer!(|| "setup srs");
             let mut rng = test_rng();
             let srs = ParamsKZG::<Bn256>::setup(LOG_DEGREE as u32, &mut rng);
@@ -98,7 +107,7 @@ fn main() -> std::io::Result<()> {
         }
     };
 
-    // Circuit
+    // Create mock circuit
     let mock_circuit = {
         let timer = start_timer!(|| "setup mock circuit");
         let circuit = KeccakCircuit::mock_for_test();
@@ -107,10 +116,11 @@ fn main() -> std::io::Result<()> {
     };
     log_file.write_all(b"mock circuit generated\n")?;
 
-    // Proving key
+    // Generate or load proving key
     let pk = gen_pk(&srs, &mock_circuit, Some(Path::new(pk_file_path)));
     log_file.write_all(b"pk generated or loaded\n")?;
 
+    // Generate mock SNARK if it doesn't exist
     {
         let snark_exist = Path::new(snark_file_path).exists();
         if !snark_exist {
@@ -131,7 +141,7 @@ fn main() -> std::io::Result<()> {
         }
     }
 
-    // verifying key
+    // Get verification key and write it to file
     let vk = pk.get_vk();
     let mut vk_bytes = vec![];
     vk.write(&mut vk_bytes, SerdeFormat::RawBytesUnchecked)?;
@@ -144,7 +154,7 @@ fn main() -> std::io::Result<()> {
     write_string(&mut prover_to_spj_pipe, "witness generated")?;
     log_file.write_all(b"sending `witness generated` to SPJ\n")?;
 
-    // prove
+    // Generate proof
     let proof = {
         let timer = start_timer!(|| "prove");
         let real_circuit = KeccakCircuit::new(witness.clone());
@@ -159,25 +169,17 @@ fn main() -> std::io::Result<()> {
         proof
     };
 
-    // legacy code used for debugging purpuse
-    //
-    // let mut proof = vec![0u8; 42848];
-    // rng.fill_bytes(&mut proof);
-    //
-    // let mut vk_bytes = vec![0u8; 1160];
-    // rng.fill_bytes(&mut vk_bytes);
-
     // Send proof to SPJ
     log_file.write_all(format!("sending proof to SPJ, size: {}\n", proof.len()).as_bytes())?;
     log_file.write_all(format!("first 32 of proof: {:?}\n", proof[..32].as_ref()).as_bytes())?;
     write_byte_array(&mut prover_to_spj_pipe, &proof)?;
 
-    // Send VK to SPJ (assuming you have access to VK)
+    // Send VK to SPJ
     log_file.write_all(format!("sending VK to SPJ, size: {}\n", vk_bytes.len()).as_bytes())?;
     log_file.write_all(format!("first 32 of VK: {:?}\n", vk_bytes[..32].as_ref()).as_bytes())?;
     write_byte_array(&mut prover_to_spj_pipe, &vk_bytes)?;
 
-    // Send public witness to SPJ (assuming you have access to public witness)
+    // Send public witness to SPJ
     log_file.write_all(
         format!(
             "sending public witnesses to SPJ, size: {}\n",
@@ -200,6 +202,7 @@ fn main() -> std::io::Result<()> {
     Ok(())
 }
 
+/// Parses the input blob into preimages and computes their Keccak digests
 fn parse_prover_in(prover_blob: &[u8]) -> (Vec<[u8; 64]>, Vec<[u8; 32]>) {
     let preimages = prover_blob
         .chunks(64)
@@ -223,6 +226,8 @@ fn parse_prover_in(prover_blob: &[u8]) -> (Vec<[u8; 64]>, Vec<[u8; 32]>) {
 }
 
 // Helper functions for SPJ communication
+
+/// Writes a string to the given writer
 fn write_string<W: Write>(writer: &mut W, s: &str) -> std::io::Result<()> {
     let len = s.len() as u64;
     writer.write_all(&len.to_le_bytes())?;
@@ -231,12 +236,14 @@ fn write_string<W: Write>(writer: &mut W, s: &str) -> std::io::Result<()> {
     Ok(())
 }
 
+/// Writes a u64 to the given writer
 fn write_u64<W: Write>(writer: &mut W, n: u64) -> std::io::Result<()> {
     writer.write_all(&n.to_le_bytes())?;
     writer.flush()?;
     Ok(())
 }
 
+/// Writes a byte array to the given writer
 fn write_byte_array<W: Write>(writer: &mut W, arr: &[u8]) -> std::io::Result<()> {
     let len = arr.len() as u64;
     writer.write_all(&len.to_le_bytes())?;
@@ -245,6 +252,7 @@ fn write_byte_array<W: Write>(writer: &mut W, arr: &[u8]) -> std::io::Result<()>
     Ok(())
 }
 
+/// Reads a blob of data from the given reader
 fn read_blob<R: Read>(reader: &mut R) -> std::io::Result<Vec<u8>> {
     let mut len_buf = [0u8; 8];
     reader.read_exact(&mut len_buf)?;
