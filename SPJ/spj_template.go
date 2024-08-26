@@ -100,7 +100,7 @@ func (spj *SPJTemplate) runProver(ctx context.Context) (*ProofData, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to get prover pipe names: %w", err)
 	}
-	spj.config.ProverArg = append(spj.config.ProverArg, "-toprover", spjToProver, "-tospj", proverToSPJ)
+	spj.config.ProverArg = append(spj.config.ProverArg, "-toMe", spjToProver, "-toSPJ", proverToSPJ)
 	fmt.Println(spj.config.ProverArg)
 	cmd := exec.CommandContext(ctx, spj.config.ProverPath, spj.config.ProverArg...)
 	fmt.Println(cmd.String())
@@ -226,7 +226,7 @@ func (spj *SPJTemplate) runVerifier(ctx context.Context, proof *ProofData) error
 	pipeNames, err := spj.pipeManager.GetVerifierPipeNames()
 	spjToVerifier, verifierToSPJ := pipeNames[0], pipeNames[1]
 
-	spj.config.VerifierArg = append(spj.config.VerifierArg, "-toprover", spjToVerifier, "-tospj", verifierToSPJ)
+	spj.config.VerifierArg = append(spj.config.VerifierArg, "-toMe", spjToVerifier, "-toSPJ", verifierToSPJ)
 
 	cmd := exec.CommandContext(ctx, spj.config.VerifierPath, spj.config.VerifierArg...)
 	if err != nil {
