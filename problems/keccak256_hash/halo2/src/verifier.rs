@@ -4,7 +4,7 @@ use std::{
 };
 
 use ark_std::{end_timer, start_timer};
-use halo2_keccak_circuit::circuit::KeccakCircuit;
+use halo2_keccak_circuit::{circuit::KeccakCircuit, LOG_DEGREE};
 use halo2_proofs::{
     plonk::VerifyingKey,
     poly::{commitment::Params, kzg::commitment::ParamsKZG},
@@ -15,24 +15,33 @@ use snark_verifier_sdk::{verify_snark_gwc, Snark};
 
 fn main() -> std::io::Result<()> {
     // Initialize logging
-    let mut log_file = File::create("verifier.log")?;
-    let srs_file_path = "srs_bn256.data";
-    let vk_file_path = "keccak_vk.data";
-    let snark_file_path = "keccak_snark.data";
+    let mut log_file = File::create("target/verifier.log")?;
+
+    let srs_file_path = format!("target/srs_bn256_{}.data", LOG_DEGREE);
+    let vk_file_path = "target/keccak_vk.data";
+    let snark_file_path = "target/keccak_snark.data";
 
     log_file.write_all(b"start\n")?;
 
     // Get pipe names from command-line arguments
     let args: Vec<String> = std::env::args().collect();
-    if args.len() < 3 {
-        return Err(std::io::Error::new(
-            std::io::ErrorKind::InvalidInput,
-            "Not enough arguments. Usage: verifier <spj_to_verifier_pipe> <verifier_to_spj_pipe>",
-        ));
+    let mut spj_to_verifier_pipe = String::new();
+    let mut verifier_to_spj_pipe = String::new();
+
+    for i in 1..args.len() {
+        if args[i] == "-toMe" && i + 1 < args.len() {
+            spj_to_verifier_pipe = args[i + 1].clone();
+        } else if args[i] == "-toSPJ" && i + 1 < args.len() {
+            verifier_to_spj_pipe = args[i + 1].clone();
+        }
     }
 
-    let spj_to_verifier_pipe = &args[1];
-    let verifier_to_spj_pipe = &args[2];
+    if spj_to_verifier_pipe.is_empty() || verifier_to_spj_pipe.is_empty() {
+        return Err(std::io::Error::new(
+            std::io::ErrorKind::InvalidInput,
+            "Pipe names not provided. Usage: verifier ... -toMe <spj_to_verifier_pipe> -toSPJ <verifier_to_spj_pipe>",
+        ));
+    }
 
     // Log pipe names
     log_file.write_all(format!("SPJ to Verifier pipe: {}\n", spj_to_verifier_pipe).as_bytes())?;
@@ -45,7 +54,7 @@ fn main() -> std::io::Result<()> {
     log_file.write_all(b"setups done\n")?;
 
     // Set number of verification repetitions
-    let repeat = 1000u64;
+    let repeat = 10000u64;
 
     // Read proof, vk, and witnesses from SPJ
     let proof_bytes = read_blob(&mut spj_to_verifier_pipe)?;

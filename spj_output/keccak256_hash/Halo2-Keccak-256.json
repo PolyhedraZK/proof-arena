@@ -3,15 +3,15 @@
   "prover_name": "Halo2 Keccak Prover",
   "proof_system": "Plonk",
   "algorithm": "Keccak",
-  "setup_time": 0.000005163470588235294,
-  "witness_generation_time": 0.06352240377941176,
-  "proof_generation_time": 1.7795360181323527,
-  "verify_time": 0.00042405982231617643,
-  "peak_memory": 108995.79411764706,
+  "setup_time": 0.0000054541691176470585,
+  "witness_generation_time": 0.3321012360955882,
+  "proof_generation_time": 2.047294446220588,
+  "verify_time": 0.0003662583526661765,
+  "peak_memory": 108496.5,
   "proof_size": 315.05882352941177,
   "status": true,
   "error_msg": "",
   "max_cpu": 16,
   "n": 136,
-  "verifier_num_repeats": 1000
+  "verifier_num_repeats": 10000
 }

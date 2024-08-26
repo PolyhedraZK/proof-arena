@@ -16,28 +16,36 @@ use tiny_keccak::Hasher;
 
 fn main() -> std::io::Result<()> {
     // Initialize logging
-    let mut log_file = File::create("prover.log")?;
+    let mut log_file = File::create("target/prover.log")?;
     log_file.write_all(b"start \n")?;
 
     // Define file paths
-    let srs_file_path = "srs_bn256.data";
-    let snark_file_path = "keccak_snark.data";
-    let pk_file_path = "keccak_pk.data";
-    let vk_file_path = "keccak_vk.data";
+    let srs_file_path = format!("target/srs_bn256_{}.data", LOG_DEGREE);
+    let snark_file_path = "target/keccak_snark.data";
+    let pk_file_path = "target/keccak_pk.data";
+    let vk_file_path = "target/keccak_vk.data";
 
     let mut rng = test_rng();
 
     // Get pipe names from command-line arguments
     let args: Vec<String> = std::env::args().collect();
-    if args.len() < 3 {
-        return Err(std::io::Error::new(
-            std::io::ErrorKind::InvalidInput,
-            "Not enough arguments. Usage: prover <spj_to_prover_pipe> <prover_to_spj_pipe>",
-        ));
+    let mut spj_to_prover_pipe = String::new();
+    let mut prover_to_spj_pipe = String::new();
+
+    for i in 1..args.len() {
+        if args[i] == "-toMe" && i + 1 < args.len() {
+            spj_to_prover_pipe = args[i + 1].clone();
+        } else if args[i] == "-toSPJ" && i + 1 < args.len() {
+            prover_to_spj_pipe = args[i + 1].clone();
+        }
     }
 
-    let spj_to_prover_pipe = &args[1];
-    let prover_to_spj_pipe = &args[2];
+    if spj_to_prover_pipe.is_empty() || prover_to_spj_pipe.is_empty() {
+        return Err(std::io::Error::new(
+            std::io::ErrorKind::InvalidInput,
+            "Pipe names not provided. Usage: prover ... -toMe <spj_to_prover_pipe> -toSPJ <prover_to_spj_pipe>",
+        ));
+    }
 
     // Log pipe names
     writeln!(log_file, "SPJ to Prover pipe: {}", spj_to_prover_pipe)?;
@@ -48,7 +56,7 @@ fn main() -> std::io::Result<()> {
     let mut prover_to_spj_pipe = File::create(prover_to_spj_pipe)?;
 
     log_file.write_all(b"pipes setup done \n")?;
-    
+
     // Send prover info to SPJ
     write_string(&mut prover_to_spj_pipe, "Halo2 Keccak Prover")?;
     write_string(&mut prover_to_spj_pipe, "Keccak")?;
@@ -82,7 +90,7 @@ fn main() -> std::io::Result<()> {
 
     // Load or generate SRS
     let srs = {
-        let srs_exist = Path::new(srs_file_path).exists();
+        let srs_exist = Path::new(srs_file_path.as_str()).exists();
         if srs_exist {
             // Read existing SRS
             let timer = start_timer!(|| "read srs");
