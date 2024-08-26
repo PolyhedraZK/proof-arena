@@ -2,7 +2,6 @@ package SPJ
 
 import (
 	"fmt"
-	"io"
 	"os"
 
 	ipc "github.com/PolyhedraZK/proof-arena/SPJ/IPCUtils"
@@ -35,18 +34,12 @@ func (pm *PipeManager) Close() {
 	}
 }
 
-func (pm *PipeManager) SendProverPipeNames(w io.Writer) error {
-	if err := ipc.Write_string(w, "/tmp/spj_to_prover"); err != nil {
-		return err
-	}
-	return ipc.Write_string(w, "/tmp/prover_to_spj")
+func (pm *PipeManager) GetProverPipeNames() ([]string, error) {
+	return []string{"/tmp/spj_to_prover", "/tmp/prover_to_spj"}, nil
 }
 
-func (pm *PipeManager) SendVerifierPipeNames(w io.Writer) error {
-	if err := ipc.Write_string(w, "/tmp/spj_to_verifier"); err != nil {
-		return err
-	}
-	return ipc.Write_string(w, "/tmp/verifier_to_spj")
+func (pm *PipeManager) GetVerifierPipeNames() ([]string, error) {
+	return []string{"/tmp/spj_to_verifier", "/tmp/verifier_to_spj"}, nil
 }
 
 func (pm *PipeManager) ReadStringFromProver() (string, error) {
