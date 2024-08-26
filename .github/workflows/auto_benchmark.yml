@@ -43,6 +43,7 @@ jobs:
         toolchain: stable  # You can specify a version like '1.68.0' if needed
         profile: minimal
         override: true
+        
     - name: Validate and execute script
       if: steps.extract_path.outputs.EXTRACTION_SUCCESS == 'true'
       run: |
