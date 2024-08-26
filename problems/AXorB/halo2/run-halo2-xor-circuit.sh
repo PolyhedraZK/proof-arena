@@ -6,18 +6,20 @@ set -x  # Enable command echoing for debugging
 rm -f /tmp/spj_to_prover /tmp/prover_to_spj /tmp/spj_to_verifier /tmp/verifier_to_spj 
 
 # build rust binaries
-cargo build --release -p halo2_keccak_circuit
+cargo build --release -p halo2_xor_circuit
 
 # build go SPJ
-go mod -C problems/keccak256_hash/expectedProver tidy
-go mod -C problems/keccak256_hash/SPJ tidy
-go build -C problems/keccak256_hash/expectedProver
-go build -C problems/keccak256_hash/SPJ
+go mod -C problems/AXorB/expectedProver tidy
+go mod -C problems/AXorB/SPJ tidy
+go build -C problems/AXorB/expectedProver
+go build -C problems/AXorB/SPJ
+
+
 
 # Run the SPJ
-problems/keccak256_hash/SPJ/SPJ -cpu 16 -largestN 136 \
+problems/AXorB/SPJ/SPJ -cpu 16 -largestN 136 \
   -memory 32768 -time 1200 \
-  -json spj_output/keccak256_hash/Halo2-Keccak-256.json \
+  -json spj_output/AXorB/Halo2-Xor-256.json \
   -prover "target/release/prover" \
   -verifier "target/release/verifier"
 

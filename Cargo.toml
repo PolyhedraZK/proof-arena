@@ -1,6 +1,9 @@
 
 [workspace]
-members = [ "problems/keccak256_hash/halo2" ]
+members = [ 
+    "problems/keccak256_hash/halo2",
+    "problems/AXorB/halo2",
+    ]
 
 [workspace.dependencies]
 ark-std = "0.4.0"
