@@ -25,8 +25,8 @@ Your prover program must read bytes from stdin and print bytes to stdout. We wil
    ```golang
    // open a named pipe to avoid blocking on stdin
    // read pipe name from stdin
-    toprover := flag.String("toprover", "", "pipe to prover")
-    tospj := flag.String("tospj", "", "pipe to SPJ")
+    toprover := flag.String("toMe", "", "pipe to prover")
+    tospj := flag.String("toSPJ", "", "pipe to SPJ")
     flag.Parse()
 
     spjToProverPipeName := *toprover
@@ -159,8 +159,8 @@ You can do arbitary one-time precomputing (including setup/compile your circuit,
    ```golang
    // open a named pipe to avoid blocking on stdin
    // read pipe name from stdin
-    toprover := flag.String("toprover", "", "pipe to prover") // note: the name is still -toprover, but it's actually to verifier.
-    tospj := flag.String("tospj", "", "pipe to SPJ")
+    toprover := flag.String("toMe", "", "pipe to prover") // note: the name is still -toprover, but it's actually to verifier.
+    tospj := flag.String("toSPJ", "", "pipe to SPJ")
     flag.Parse()
 
     spjToVerifierPipeName := *toprover

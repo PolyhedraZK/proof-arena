@@ -252,8 +252,8 @@ func verify(inputPipe *os.File, outputPipe *os.File) error {
 
 func main() {
 	mode := flag.String("mode", "prove", "prove or verify")
-	toprover := flag.String("toprover", "", "pipe to prover")
-	tospj := flag.String("tospj", "", "pipe to SPJ")
+	toprover := flag.String("toMe", "", "pipe to prover")
+	tospj := flag.String("toSPJ", "", "pipe to SPJ")
 	flag.Parse()
 
 	// open a named pipe to avoid blocking on stdin
