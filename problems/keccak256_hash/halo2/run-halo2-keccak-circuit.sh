@@ -9,10 +9,11 @@ rm -f /tmp/spj_to_prover /tmp/prover_to_spj /tmp/spj_to_verifier /tmp/verifier_t
 cargo build --release -p halo2_keccak_circuit
 
 # build go SPJ
+go mod -C problems/keccak256_hash/SPJ tidy
 go build -C problems/keccak256_hash/SPJ
 
 # Run the SPJ
-problems/keccak256_hash/SPJ/SPJ -cpu 16 -largestN 136 \
+problems/keccak256_hash/SPJ/SPJ -cpu 64 -largestN 136 \
   -memory 32768 -time 1200 \
   -json spj_output/keccak256_hash/Halo2-Keccak-256.json \
   -prover "target/release/prover" \
