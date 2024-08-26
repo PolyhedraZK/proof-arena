@@ -1,0 +1,30 @@
+[package]
+name = "halo2_keccak_circuit"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+ark-std.workspace = true
+env_logger.workspace = true
+halo2_proofs.workspace = true
+halo2curves.workspace = true
+itertools.workspace = true
+log.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+snark-verifier-sdk.workspace = true
+tiny-keccak.workspace = true
+zkevm-circuits.workspace = true
+
+
+[features]
+default = [ ]
+# default = [ "ark-std/print-trace" ]
+
+[[bin]]
+name = "prover"
+path = "src/prover.rs"
+
+[[bin]]
+name = "verifier"
+path = "src/verifier.rs"

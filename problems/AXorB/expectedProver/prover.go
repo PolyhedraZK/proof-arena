@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"encoding/binary"
 	"flag"
 	"fmt"
 	"io"
@@ -157,14 +158,22 @@ func verify(inputPipe *os.File, outputPipe *os.File) error {
 	if _, err := publicWitness.ReadFrom(bytes.NewReader(publicWitnessBytes)); err != nil {
 		return err
 	}
-
-	err = groth16.Verify(proof, vk, publicWitness)
+	numRepeats := 10000
+	for i := 0; i < numRepeats; i++ {
+		err = groth16.Verify(proof, vk, publicWitness)
+	}
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 		ipc.Write_byte_array(outputPipe, []byte{0})
+		repeatByte := make([]byte, 8)
+		binary.LittleEndian.PutUint64(repeatByte, uint64(numRepeats))
+		ipc.Write_byte_array(outputPipe, repeatByte)
 	} else {
 		fmt.Fprintf(os.Stderr, "Proof verified\n")
 		ipc.Write_byte_array(outputPipe, []byte{0xff})
+		repeatByte := make([]byte, 8)
+		binary.LittleEndian.PutUint64(repeatByte, uint64(numRepeats))
+		ipc.Write_byte_array(outputPipe, repeatByte)
 	}
 	fmt.Fprintf(os.Stderr, "Done\n")
 	return nil
@@ -172,14 +181,13 @@ func verify(inputPipe *os.File, outputPipe *os.File) error {
 
 func main() {
 	mode := flag.String("mode", "prove", "prove or verify")
+	toprover := flag.String("toMe", "", "pipe name to prover")
+	tospj := flag.String("toSPJ", "", "pipe name to SPJ")
 	flag.Parse()
 
 	// open a named pipe to avoid blocking on stdin
 	// read pipe name from stdin
-	spjToProverPipeName, err := ipc.Read_string(os.Stdin)
-	if err != nil {
-		return
-	}
+	spjToProverPipeName := *toprover
 	spjToProverPipe, err := os.OpenFile(spjToProverPipeName, os.O_RDONLY, os.ModeNamedPipe)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
@@ -187,10 +195,7 @@ func main() {
 	}
 	defer spjToProverPipe.Close()
 
-	ProverToSPJPipeName, err := ipc.Read_string(os.Stdin)
-	if err != nil {
-		return
-	}
+	ProverToSPJPipeName := *tospj
 	ProverToSPJPipe, err := os.OpenFile(ProverToSPJPipeName, os.O_WRONLY, os.ModeNamedPipe)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %v\n", err)

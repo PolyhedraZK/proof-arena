@@ -252,14 +252,13 @@ func verify(inputPipe *os.File, outputPipe *os.File) error {
 
 func main() {
 	mode := flag.String("mode", "prove", "prove or verify")
+	toprover := flag.String("toMe", "", "pipe to prover")
+	tospj := flag.String("toSPJ", "", "pipe to SPJ")
 	flag.Parse()
 
 	// open a named pipe to avoid blocking on stdin
 	// read pipe name from stdin
-	spjToProverPipeName, err := ipc.Read_string(os.Stdin)
-	if err != nil {
-		return
-	}
+	spjToProverPipeName := *toprover
 	spjToProverPipe, err := os.OpenFile(spjToProverPipeName, os.O_RDONLY, os.ModeNamedPipe)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
@@ -267,10 +266,7 @@ func main() {
 	}
 	defer spjToProverPipe.Close()
 
-	ProverToSPJPipeName, err := ipc.Read_string(os.Stdin)
-	if err != nil {
-		return
-	}
+	ProverToSPJPipeName := *tospj
 	ProverToSPJPipe, err := os.OpenFile(ProverToSPJPipeName, os.O_WRONLY, os.ModeNamedPipe)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %v\n", err)

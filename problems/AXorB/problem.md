@@ -64,20 +64,24 @@ Your prover program must read bytes from stdin and print bytes to stdout. We wil
    ```golang
    // open a named pipe to avoid blocking on stdin
    // read pipe name from stdin
-   spjToProverPipeName := ipc.Read_string(os.Stdin)
-   spjToProverPipe, err := os.OpenFile(spjToProverPipeName, os.O_RDONLY, os.ModeNamedPipe)
-   if err != nil {
-       fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-       os.Exit(1)
-   }
-   defer spjToProverPipe.Close()
+    toprover := flag.String("toMe", "", "pipe to prover")
+    tospj := flag.String("toSPJ", "", "pipe to SPJ")
+    flag.Parse()
 
-   ProverToSPJPipeName := ipc.Read_string(os.Stdin)
-   ProverToSPJPipe, err := os.OpenFile(ProverToSPJPipeName, os.O_WRONLY, os.ModeNamedPipe)
-   if err != nil {
-       fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-       os.Exit(1)
-   }
+    spjToProverPipeName := *toprover
+    spjToProverPipe, err := os.OpenFile(spjToProverPipeName, os.O_RDONLY, os.ModeNamedPipe)
+    if err != nil {
+        fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+        os.Exit(1)
+    }
+    defer spjToProverPipe.Close()
+
+    ProverToSPJPipeName := *tospj
+    ProverToSPJPipe, err := os.OpenFile(ProverToSPJPipeName, os.O_WRONLY, os.ModeNamedPipe)
+    if err != nil {
+        fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+        os.Exit(1)
+    }
    ```
 
 2. **Output your prover name, proof system name, and algorithm name:**
@@ -189,22 +193,28 @@ You can do arbitary one-time precomputing (including setup/compile your circuit,
 
     - Verifier Sample:
 
-    ```golang
-    // open a named pipe to avoid blocking on stdin
-    spjToVerifierPipeName := ipc.Read_string(os.Stdin)
+   ```golang
+   // open a named pipe to avoid blocking on stdin
+   // read pipe name from stdin
+    toprover := flag.String("toMe", "", "pipe to prover") // note: the name is still -toprover, but it's actually to verifier.
+    tospj := flag.String("toSPJ", "", "pipe to SPJ")
+    flag.Parse()
+
+    spjToVerifierPipeName := *toprover
     spjToVerifierPipe, err := os.OpenFile(spjToVerifierPipeName, os.O_RDONLY, os.ModeNamedPipe)
     if err != nil {
         fmt.Fprintf(os.Stderr, "Error: %v\n", err)
         os.Exit(1)
     }
+    defer spjToProverPipe.Close()
 
-    VerifierToSPJPipeName := ipc.Read_string(os.Stdin)
+    VerifierToSPJPipeName := *tospj
     VerifierToSPJPipe, err := os.OpenFile(VerifierToSPJPipeName, os.O_WRONLY, os.ModeNamedPipe)
     if err != nil {
         fmt.Fprintf(os.Stderr, "Error: %v\n", err)
         os.Exit(1)
     }
-    ```
+   ```
 
 10. **SPJ sends the proof, verification key, and public input to the verifier.**
     - Verifier Sample:
