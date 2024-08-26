@@ -2,8 +2,6 @@ name: Execute Script and Create Pull Request
 
 on:
   push:
-    branches:
-      - main  # or any branch you want to trigger this workflow
 
 jobs:
   execute-script-and-create-pr:
