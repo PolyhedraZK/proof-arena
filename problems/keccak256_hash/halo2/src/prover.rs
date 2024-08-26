@@ -59,8 +59,8 @@ fn main() -> std::io::Result<()> {
 
     // Send prover info to SPJ
     write_string(&mut prover_to_spj_pipe, "Halo2 Keccak Prover")?;
-    write_string(&mut prover_to_spj_pipe, "Keccak")?;
     write_string(&mut prover_to_spj_pipe, "Plonk")?;
+    write_string(&mut prover_to_spj_pipe, "Halo2")?;
 
     // Send N to SPJ (assuming MAX_NUM_HASHES is the N value)
     write_u64(&mut prover_to_spj_pipe, MAX_NUM_HASHES as u64)?;

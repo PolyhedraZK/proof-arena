@@ -54,7 +54,7 @@ fn main() -> std::io::Result<()> {
     log_file.write_all(b"setups done\n")?;
 
     // Set number of verification repetitions
-    let repeat = 10000u64;
+    let repeat = 1000u64;
 
     // Read proof, vk, and witnesses from SPJ
     let proof_bytes = read_blob(&mut spj_to_verifier_pipe)?;
