@@ -15,17 +15,17 @@ mkfifo /tmp/spj_to_prover /tmp/spj_to_verifier
 ls -l /tmp/spj_to_prover /tmp/spj_to_verifier 
 
 # build rust binaries
-cd ../../ && cargo build --release && cd -
+cargo build --release
 
 # build go SPJ
-cd ../../problems/keccak256_hash/SPJ && go build && cd -
+go build -C problems/keccak256_hash/SPJ
 
 # Run the SPJ
-../../problems/keccak256_hash/SPJ/SPJ -cpu 16 -largestN 136 \
-  -json ../../spj_output/keccak256_hash/Halo2-Keccak-256.json \
-  -prover "../../target/release/prover /tmp/spj_to_prover /tmp/prover_to_spj" \
+problems/keccak256_hash/SPJ/SPJ -cpu 16 -largestN 136 \
+  -json .spj_output/keccak256_hash/Halo2-Keccak-256.json \
+  -prover "target/release/prover /tmp/spj_to_prover /tmp/prover_to_spj" \
   -memory 32768 -time 1200 \
-  -verifier "../../target/release/verifier /tmp/spj_to_verifier /tmp/verifier_to_spj"
+  -verifier "target/release/verifier /tmp/spj_to_verifier /tmp/verifier_to_spj"
 
 # Capture the exit status
 exit_status=$?

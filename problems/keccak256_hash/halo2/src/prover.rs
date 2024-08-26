@@ -48,7 +48,7 @@ fn main() -> std::io::Result<()> {
     let mut prover_to_spj_pipe = File::create(prover_to_spj_pipe)?;
 
     log_file.write_all(b"pipes setup done \n")?;
-
+    
     // Send prover info to SPJ
     write_string(&mut prover_to_spj_pipe, "Halo2 Keccak Prover")?;
     write_string(&mut prover_to_spj_pipe, "Keccak")?;
