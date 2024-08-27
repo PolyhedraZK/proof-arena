@@ -17,7 +17,7 @@ go build -C problems/AXorB/expectedProver
 go build -C problems/AXorB/SPJ
 
 # Run the SPJ
-problems/AXorB/SPJ/SPJ -cpu 16 -largestN 10919 \
+problems/AXorB/SPJ/SPJ -cpu 64 -largestN 10919 \
   -memory 32768 -time 1200 \
   -json spj_output/AXorB/Halo2-Xor-256.json \
   -prover "problems/AXorB/halo2/target/release/prover" \
