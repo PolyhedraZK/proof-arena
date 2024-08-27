@@ -15,14 +15,14 @@ use snark_verifier_sdk::{gen_pk, gen_proof_gwc, gen_snark_gwc};
 
 fn main() -> std::io::Result<()> {
     // Initialize logging
-    let mut log_file = File::create("target/prover.log")?;
+    let mut log_file = File::create("/tmp/prover.log")?;
     log_file.write_all(b"start \n")?;
 
     // Define file paths
-    let srs_file_path = format!("target/srs_bn256_{}.data", LOG_DEGREE);
-    let snark_file_path = "target/xor_snark.data";
-    let pk_file_path = "target/xor_pk.data";
-    let vk_file_path = "target/xor_vk.data";
+    let srs_file_path = format!("/tmp/srs_bn256_{}.data", LOG_DEGREE);
+    let snark_file_path = "/tmp/xor_snark.data";
+    let pk_file_path = "/tmp/xor_pk.data";
+    let vk_file_path = "/tmp/xor_vk.data";
 
     let mut rng = test_rng();
 
