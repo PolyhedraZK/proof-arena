@@ -16,14 +16,14 @@ use tiny_keccak::Hasher;
 
 fn main() -> std::io::Result<()> {
     // Initialize logging
-    let mut log_file = File::create("target/prover.log")?;
+    let mut log_file = File::create("/tmp/prover.log")?;
     log_file.write_all(b"start \n")?;
 
     // Define file paths
-    let srs_file_path = format!("target/srs_bn256_{}.data", LOG_DEGREE);
-    let snark_file_path = "target/keccak_snark.data";
-    let pk_file_path = "target/keccak_pk.data";
-    let vk_file_path = "target/keccak_vk.data";
+    let srs_file_path = format!("/tmp/srs_bn256_{}.data", LOG_DEGREE);
+    let snark_file_path = "/tmp/keccak_snark.data";
+    let pk_file_path = "/tmp/keccak_pk.data";
+    let vk_file_path = "/tmp/keccak_vk.data";
 
     let mut rng = test_rng();
 

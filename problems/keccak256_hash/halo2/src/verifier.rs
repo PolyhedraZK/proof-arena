@@ -15,11 +15,11 @@ use snark_verifier_sdk::{verify_snark_gwc, Snark};
 
 fn main() -> std::io::Result<()> {
     // Initialize logging
-    let mut log_file = File::create("target/verifier.log")?;
+    let mut log_file = File::create("/tmp/verifier.log")?;
 
-    let srs_file_path = format!("target/srs_bn256_{}.data", LOG_DEGREE);
-    let vk_file_path = "target/keccak_vk.data";
-    let snark_file_path = "target/keccak_snark.data";
+    let srs_file_path = format!("/tmp/srs_bn256_{}.data", LOG_DEGREE);
+    let vk_file_path = "/tmp/keccak_vk.data";
+    let snark_file_path = "/tmp/keccak_snark.data";
 
     log_file.write_all(b"start\n")?;
 
