@@ -1,0 +1,43 @@
+[package]
+name = "halo2_xor_circuit"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+ark-std = "0.4.0"
+env_logger = "0.10"
+halo2_proofs = { git = "https://github.com/scroll-tech/halo2.git", branch = "v1.1" }
+halo2curves = { git = "https://github.com/scroll-tech/halo2curves", branch = "v0.1.0" }
+itertools = "0.13.0"
+log = "0.4"
+serde = "1.0"
+serde_json = "1.0"
+snark-verifier-sdk = { git = "https://github.com/scroll-tech/snark-verifier", branch = "develop", default-features = false, features = ["loader_halo2", "loader_evm", "halo2-pse"] }
+
+
+[patch.crates-io]
+halo2curves = { git = "https://github.com/scroll-tech/halo2curves", branch = "v0.1.0" }
+
+[patch."https://github.com/privacy-scaling-explorations/halo2.git"]
+halo2_proofs = { git = "https://github.com/scroll-tech/halo2.git", branch = "v1.1" }
+[patch."https://github.com/privacy-scaling-explorations/poseidon.git"]
+poseidon = { git = "https://github.com/scroll-tech/poseidon.git", branch = "main" }
+
+[patch."https://github.com/privacy-scaling-explorations/bls12_381"]
+bls12_381 = { git = "https://github.com/scroll-tech/bls12_381", branch = "feat/impl_scalar_field" }
+
+
+
+[features]
+default = [ ]
+# default = [ "ark-std/print-trace" ]
+
+[[bin]]
+name = "prover"
+path = "src/prover.rs"
+
+[[bin]]
+name = "verifier"
+path = "src/verifier.rs"
