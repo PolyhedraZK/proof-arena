@@ -1,0 +1,17 @@
+{
+  "problem_id": 2,
+  "prover_name": "pcbin-plonky3-keccak",
+  "proof_system": "Plonky3",
+  "algorithm": "STARK",
+  "setup_time": 0.000001480974358974359,
+  "witness_generation_time": 0.0000012094065934065935,
+  "proof_generation_time": 0.0066052054051282056,
+  "verify_time": 0.00019411943493333333,
+  "peak_memory": 6.329670329670329,
+  "proof_size": 1396.3919413919414,
+  "status": true,
+  "error_msg": "",
+  "max_cpu": 64,
+  "n": 1365,
+  "verifier_num_repeats": 1000
+}
