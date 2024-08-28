@@ -64,10 +64,12 @@ jobs:
       if: steps.extract_path.outputs.EXTRACTION_SUCCESS == 'true'
       id: check_changes
       run: |
-        if git diff --exit-code --quiet spj_output/; then
-          echo "No changes detected in spj_output/"
+        if git status --porcelain spj_output/ | grep -q '^??'; then
+            echo "CHANGES_EXIST=true" >> $GITHUB_OUTPUT
+        elif git diff --exit-code --quiet spj_output/; then
+            echo "No changes detected in spj_output/"
         else
-          echo "CHANGES_EXIST=true" >> $GITHUB_OUTPUT
+            echo "CHANGES_EXIST=true" >> $GITHUB_OUTPUT
         fi
 
     - name: Create Pull Request
