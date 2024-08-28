@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # execute me at the [proof-area] directory
+# modified for plonky3
 
 set -x  # Enable command echoing for debugging
 
