@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# execute me at the [proof-area] directory, trigger CI manually via including [script:problems/keccak256_hash/plonky3-pcbin-bs8test/run.sh]
+# execute me at the [proof-area] directory, trigger CI manually via including [script:problems/keccak256_hash/plonky3-pcbin/run.sh]
 
 set -x  # Enable command echoing for debugging
 
