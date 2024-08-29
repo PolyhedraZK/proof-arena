@@ -95,14 +95,17 @@ func (spj *SPJTemplate) Run() error {
 
 func (spj *SPJTemplate) runProver(ctx context.Context) (*ProofData, error) {
 	spj.logger.Log("Running prover...")
-
-	cmd := exec.CommandContext(ctx, spj.config.ProverPath, spj.config.ProverArg...)
-	proverStdin, err := cmd.StdinPipe()
+	pipeNames, err := spj.pipeManager.GetProverPipeNames()
+	spjToProver, proverToSPJ := pipeNames[0], pipeNames[1]
 	if err != nil {
-		return nil, fmt.Errorf("failed to get prover stdin: %w", err)
+		return nil, fmt.Errorf("failed to get prover pipe names: %w", err)
 	}
-	proverStdout, err := cmd.StdoutPipe()
-	proverStderr, err := cmd.StderrPipe()
+	spj.config.ProverArg = append(spj.config.ProverArg, "-toMe", spjToProver, "-toSPJ", proverToSPJ)
+	fmt.Println(spj.config.ProverArg)
+	cmd := exec.CommandContext(ctx, spj.config.ProverPath, spj.config.ProverArg...)
+	fmt.Println(cmd.String())
+	proverStdout, _ := cmd.StdoutPipe()
+	proverStderr, _ := cmd.StderrPipe()
 
 	spj.timer.Start("setup")
 	if err := cmd.Start(); err != nil {
@@ -128,7 +131,7 @@ func (spj *SPJTemplate) runProver(ctx context.Context) (*ProofData, error) {
 	}
 	setupDone := make(chan error, 1)
 	go func() {
-		setupDone <- spj.setup(proverStdin)
+		setupDone <- spj.setup()
 	}()
 
 	select {
@@ -220,8 +223,12 @@ func (spj *SPJTemplate) runProver(ctx context.Context) (*ProofData, error) {
 func (spj *SPJTemplate) runVerifier(ctx context.Context, proof *ProofData) error {
 	spj.logger.Log("Running verifier...")
 
+	pipeNames, err := spj.pipeManager.GetVerifierPipeNames()
+	spjToVerifier, verifierToSPJ := pipeNames[0], pipeNames[1]
+
+	spj.config.VerifierArg = append(spj.config.VerifierArg, "-toMe", spjToVerifier, "-toSPJ", verifierToSPJ)
+
 	cmd := exec.CommandContext(ctx, spj.config.VerifierPath, spj.config.VerifierArg...)
-	verifierStdin, err := cmd.StdinPipe()
 	if err != nil {
 		return fmt.Errorf("failed to get verifier stdin: %w", err)
 	}
@@ -256,10 +263,6 @@ func (spj *SPJTemplate) runVerifier(ctx context.Context, proof *ProofData) error
 	proofVerifyDone := make(chan bool, 1)
 	proofVerifyError := make(chan error, 1)
 	go func() {
-		if err := spj.pipeManager.SendVerifierPipeNames(verifierStdin); err != nil {
-			proofVerifyError <- fmt.Errorf("failed to send verifier pipe names: %w", err)
-		}
-
 		if err := spj.pipeManager.SendToVerifier(proof.Proof); err != nil {
 			proofVerifyError <- fmt.Errorf("failed to send proof data to verifier: %w", err)
 		}
@@ -321,11 +324,7 @@ func (spj *SPJTemplate) runVerifier(ctx context.Context, proof *ProofData) error
 	return nil
 }
 
-func (spj *SPJTemplate) setup(proverStdin io.Writer) error {
-	if err := spj.pipeManager.SendProverPipeNames(proverStdin); err != nil {
-		return err
-	}
-
+func (spj *SPJTemplate) setup() error {
 	if err := spj.readProverInfo(); err != nil {
 		return err
 	}

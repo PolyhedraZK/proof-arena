@@ -2,12 +2,10 @@ name: Execute Script and Create Pull Request
 
 on:
   push:
-    branches:
-      - main  # or any branch you want to trigger this workflow
 
 jobs:
   execute-script-and-create-pr:
-    runs-on: ubuntu-latest
+    runs-on: arena-cpu-judger
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
@@ -34,7 +32,15 @@ jobs:
       run: |
         echo "No script path found. Exiting workflow successfully."
         exit 0
-
+    - name: Setup Go
+      if: steps.extract_path.outputs.EXTRACTION_SUCCESS == 'true'
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.23'  # You can specify your desired Go version here
+    - name: Setup Rust
+      if: steps.extract_path.outputs.EXTRACTION_SUCCESS == 'true'
+      uses: dtolnay/rust-toolchain@nightly
+    
     - name: Validate and execute script
       if: steps.extract_path.outputs.EXTRACTION_SUCCESS == 'true'
       run: |
@@ -58,10 +64,12 @@ jobs:
       if: steps.extract_path.outputs.EXTRACTION_SUCCESS == 'true'
       id: check_changes
       run: |
-        if git diff --exit-code --quiet spj_output/; then
-          echo "No changes detected in spj_output/"
+        if git status --porcelain spj_output/ | grep -q '^??'; then
+            echo "CHANGES_EXIST=true" >> $GITHUB_OUTPUT
+        elif git diff --exit-code --quiet spj_output/; then
+            echo "No changes detected in spj_output/"
         else
-          echo "CHANGES_EXIST=true" >> $GITHUB_OUTPUT
+            echo "CHANGES_EXIST=true" >> $GITHUB_OUTPUT
         fi
 
     - name: Create Pull Request

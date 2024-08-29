@@ -29,12 +29,12 @@ Perform an element-wise XOR (exclusive OR) between arrays `A` and `B`
 
 ### XOR Truth Table
 
-| A | B | A XOR B |
-|:-:|:-:|:-------:|
-| 0 | 0 |    0    |
-| 0 | 1 |    1    |
-| 1 | 0 |    1    |
-| 1 | 1 |    0    |
+|  A  |  B  | A XOR B |
+| :-: | :-: | :-----: |
+|  0  |  0  |    0    |
+|  0  |  1  |    1    |
+|  1  |  0  |    1    |
+|  1  |  1  |    0    |
 
 ### Example
 
@@ -64,20 +64,24 @@ Your prover program must read bytes from stdin and print bytes to stdout. We wil
    ```golang
    // open a named pipe to avoid blocking on stdin
    // read pipe name from stdin
-   spjToProverPipeName := ipc.Read_string(os.Stdin)
-   spjToProverPipe, err := os.OpenFile(spjToProverPipeName, os.O_RDONLY, os.ModeNamedPipe)
-   if err != nil {
-       fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-       os.Exit(1)
-   }
-   defer spjToProverPipe.Close()
+    toprover := flag.String("toMe", "", "pipe to prover")
+    tospj := flag.String("toSPJ", "", "pipe to SPJ")
+    flag.Parse()
 
-   ProverToSPJPipeName := ipc.Read_string(os.Stdin)
-   ProverToSPJPipe, err := os.OpenFile(ProverToSPJPipeName, os.O_WRONLY, os.ModeNamedPipe)
-   if err != nil {
-       fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-       os.Exit(1)
-   }
+    spjToProverPipeName := *toprover
+    spjToProverPipe, err := os.OpenFile(spjToProverPipeName, os.O_RDONLY, os.ModeNamedPipe)
+    if err != nil {
+        fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+        os.Exit(1)
+    }
+    defer spjToProverPipe.Close()
+
+    ProverToSPJPipeName := *tospj
+    ProverToSPJPipe, err := os.OpenFile(ProverToSPJPipeName, os.O_WRONLY, os.ModeNamedPipe)
+    if err != nil {
+        fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+        os.Exit(1)
+    }
    ```
 
 2. **Output your prover name, proof system name, and algorithm name:**
@@ -91,8 +95,7 @@ Your prover program must read bytes from stdin and print bytes to stdout. We wil
    ipc.Write_string(ProverToSPJPipe, "GNARK")
    ```
 
-3. **Prover make all precomputes in this step**
-You can do arbitary one-time precomputing (including setup/compile your circuit, prepare your proving key, etc.).
+3. **Prover make all precomputes in this step** You can do arbitary one-time precomputing (including setup/compile your circuit, prepare your proving key, etc.).
 
 4. **Output the Number of Keccak Instances:**
 
@@ -187,26 +190,33 @@ You can do arbitary one-time precomputing (including setup/compile your circuit,
 
 9. **SPJ starts your verifier by providing the pipe filepath that handles the input output communication.**
 
-    - Verifier Sample:
+   - Verifier Sample:
 
-    ```golang
-    // open a named pipe to avoid blocking on stdin
-    spjToVerifierPipeName := ipc.Read_string(os.Stdin)
+   ```golang
+   // open a named pipe to avoid blocking on stdin
+   // read pipe name from stdin
+    toprover := flag.String("toMe", "", "pipe to prover") // note: the name is still -toprover, but it's actually to verifier.
+    tospj := flag.String("toSPJ", "", "pipe to SPJ")
+    flag.Parse()
+
+    spjToVerifierPipeName := *toprover
     spjToVerifierPipe, err := os.OpenFile(spjToVerifierPipeName, os.O_RDONLY, os.ModeNamedPipe)
     if err != nil {
         fmt.Fprintf(os.Stderr, "Error: %v\n", err)
         os.Exit(1)
     }
+    defer spjToProverPipe.Close()
 
-    VerifierToSPJPipeName := ipc.Read_string(os.Stdin)
+    VerifierToSPJPipeName := *tospj
     VerifierToSPJPipe, err := os.OpenFile(VerifierToSPJPipeName, os.O_WRONLY, os.ModeNamedPipe)
     if err != nil {
         fmt.Fprintf(os.Stderr, "Error: %v\n", err)
         os.Exit(1)
     }
-    ```
+   ```
 
 10. **SPJ sends the proof, verification key, and public input to the verifier.**
+
     - Verifier Sample:
 
       ```golang
@@ -215,8 +225,7 @@ You can do arbitary one-time precomputing (including setup/compile your circuit,
       publicWitnessBytes := ipc.Read_byte_array(inputPipe)
       ```
 
-11. **Verify the Proof, and send back result**
-    In the verifier's response, you should output the verification result. And because verifier usually runs fast, we require you to repeatively run your verifier multiple times, so you need to additionally output a 64-bit unsigned integer to show your number of repeats.
+11. **Verify the Proof, and send back result** In the verifier's response, you should output the verification result. And because verifier usually runs fast, we require you to repeatively run your verifier multiple times, so you need to additionally output a 64-bit unsigned integer to show your number of repeats.
 
     - Verifier Sample:
 

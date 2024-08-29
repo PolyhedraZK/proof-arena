@@ -1,0 +1,17 @@
+{
+  "problem_id": 1,
+  "prover_name": "Halo2 Xor Prover",
+  "proof_system": "Halo2",
+  "algorithm": "Plonk",
+  "setup_time": 1.1080227127026283e-7,
+  "witness_generation_time": 0.000033951199926733217,
+  "proof_generation_time": 0.00009153039765546295,
+  "verify_time": 0.0000011041726070152945,
+  "peak_memory": 0,
+  "proof_size": 0.046890740910339776,
+  "status": true,
+  "error_msg": "",
+  "max_cpu": 64,
+  "n": 10919,
+  "verifier_num_repeats": 1000
+}

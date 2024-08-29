@@ -64,7 +64,7 @@ We are currently developing an automatic submission system. Until it is availabl
 | --- | --- | --- | --- | --- |
 | 1 | Expander | Polyhedra Network | In Progress | ZK Circuit Prover |
 | 3 | Gnark | Consensys | Tested on problem 2 | ZK Circuit Prover |
-| 4 | Plonky3 | Polygon | In Progress | ZK Circuit Prover |
+| 4 | Plonky3 | Polygon | Tested on problem 2 | ZK Circuit Prover |
 | 5 | Stwo | Starkware | In Progress | ZK Circuit Prover |
 | 6 | Risc0 | Risc0 | Not started | zkVM |
 | 7 | SP1 | Succinct | Not started | zkVM |
