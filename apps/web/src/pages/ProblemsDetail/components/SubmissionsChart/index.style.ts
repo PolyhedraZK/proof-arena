@@ -52,7 +52,11 @@ export const useStyles = createStyles(({ css, responsive }) => {
       top: '50%',
       transform: 'translateY(-50%)',
     },
-
+    changeBtnLog: {
+      height: 38,
+      fontSize: 14,
+      fontWeight: 400,
+    },
     segmentedStyle: css(`
     border: 1px solid rgba(43, 51, 45, 0.10);
     padding: 6px;
@@ -67,5 +71,14 @@ export const useStyles = createStyles(({ css, responsive }) => {
       border-radius: 100px;
     }
     `),
+    logSegmentedStyle: {
+      padding: 4,
+      fontSize: 14,
+    },
+    isLogSegmentedStyle: {
+      width: '100%',
+      display: 'flex',
+      justifyContent: 'center',
+    },
   };
 });
