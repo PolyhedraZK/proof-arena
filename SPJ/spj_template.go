@@ -114,7 +114,7 @@ func (spj *SPJTemplate) runProver(ctx context.Context) (*ProofData, error) {
 	go io.Copy(os.Stdout, proverStdout)
 	go io.Copy(os.Stderr, proverStderr)
 
-	done := spj.resourceMonitor.StartPeriodicUpdate(ctx, time.Second, cmd.Process.Pid)
+	done := spj.resourceMonitor.StartPeriodicUpdate(ctx, time.Millisecond, cmd.Process.Pid)
 	defer close(done)
 	// Start monitoring the prover process
 	processDone := make(chan error, 1)
