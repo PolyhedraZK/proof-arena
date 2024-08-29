@@ -16,12 +16,12 @@ go build -C problems/keccak256_hash/SPJ
 # Build Rust
 pushd $PWD && \
 cd problems/keccak256_hash/plonky3-pcbin/proof-cloud-bin-prover/plonky3-keccak-serve && \
-RUSTFLAGS="-Ctarget-cpu=native" cargo build --release && \
+RUSTFLAGS="-Ctarget-cpu=native" cargo build --release --features parallel && \
 popd
 
 pushd $PWD && \
 cd problems/keccak256_hash/plonky3-pcbin/proof-cloud-bin-prover/proof-arena-integration && \
-RUSTFLAGS="-Ctarget-cpu=native" cargo build --release && \
+RUSTFLAGS="-Ctarget-cpu=native" cargo build --release --features parallel && \
 popd
 
 cp problems/keccak256_hash/plonky3-pcbin/proof-cloud-bin-prover/plonky3-keccak-serve/target/release/plonky3-keccak-serve problems/keccak256_hash/plonky3-pcbin/plonky3-keccak-serve
