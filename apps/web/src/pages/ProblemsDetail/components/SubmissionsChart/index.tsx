@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 
 import CheckMark from '@/assets/icons/check-mark.svg?r';
 import FilterIcon from '@/assets/icons/filterIcon.svg?r';
+import BaseButton from '@/components/base/BaseButton.tsx';
 import BaseEmpty from '@/components/base/BaseEmpty.tsx';
 
 import { useStyles } from './index.style.ts';
@@ -13,7 +14,6 @@ import { useStyles } from './index.style.ts';
 type SubmissionsChartType = {
   chartData: any[];
 };
-
 const createUnit = (type: string) => {
   switch (type) {
     case 'setup_time':
@@ -56,11 +56,32 @@ const segmentedOptions = [
   },
 ];
 const SubmissionsChart = ({ chartData }: SubmissionsChartType) => {
-  const { styles } = useStyles();
+  const { styles, cx } = useStyles();
   const { mobile } = useResponsive();
   const [segmentedValue, setSegmentedValue] = useState<any>();
+  const [isLog, setIsLog] = useState<boolean | number>(false);
   const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
 
+  const logOptions = [
+    {
+      label: 'Linear Scale',
+      value: '0',
+    },
+    {
+      label: 'Log Scale',
+      value: '1',
+    },
+  ];
+  const superscripts = ['⁰', '¹', '²', '³', '⁴', '⁵', '⁶', '⁷', '⁸', '⁹'];
+  const toSuperscript10 = val => {
+    if (val < 0) {
+      return '⁻' + toSuperscript10(-val);
+    }
+    return (val + '')
+      .split('')
+      .map(t => superscripts[t])
+      .join('');
+  };
   const findChartName = (value: string) => {
     return segmentedOptions.find(item => item.value === value)?.label;
   };
@@ -98,9 +119,21 @@ const SubmissionsChart = ({ chartData }: SubmissionsChartType) => {
           : (value: string) => value,
       },
     },
-    yAxis: {
-      type: 'value',
-    },
+    yAxis: isLog
+      ? {
+          type: 'log',
+          startValue:
+            Math.min(...chartData.map(item => item[segmentedValue])) * 0.01,
+          axisLabel: {
+            formatter: (value: number) => {
+              const exponent = Math.log10(value);
+              return `10${toSuperscript10(exponent.toFixed(0))}`;
+            },
+          },
+        }
+      : {
+          type: 'value',
+        },
     series: [
       {
         data: chartData?.map(item => item[segmentedValue]),
@@ -150,7 +183,14 @@ const SubmissionsChart = ({ chartData }: SubmissionsChartType) => {
           >
             <div className={styles.boxSpace}>
               <span className={styles.title}>Metric analysis charts</span>
-
+              {!mobile && (
+                <BaseButton
+                  onClick={() => setIsLog(!isLog)}
+                  className={styles.changeBtnLog}
+                >
+                  {isLog ? 'Linear Scale' : 'Log Scale'}
+                </BaseButton>
+              )}
               {mobile ? (
                 <div>
                   <FilterIcon
@@ -197,6 +237,19 @@ const SubmissionsChart = ({ chartData }: SubmissionsChartType) => {
                 </div>
               ) : null}
             </div>
+            {mobile && (
+              <div className={styles.isLogSegmentedStyle}>
+                <Segmented<string>
+                  className={styles.segmentedStyle}
+                  options={logOptions}
+                  onChange={value => {
+                    console.log(value);
+                    setIsLog(Number(value));
+                  }}
+                  value={Number(isLog).toString()}
+                />
+              </div>
+            )}
             {!mobile && (
               <Segmented<string>
                 block
