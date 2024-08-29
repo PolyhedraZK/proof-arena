@@ -41,27 +41,34 @@ func (rm *ResourceMonitor) SetCPUAffinity(pid int, numCPU int) error {
 }
 
 func (rm *ResourceMonitor) UpdateMemoryUsage(pid int) error {
-	cmd := exec.Command("ps", "-o", "rss=,pcpu=", "-p", strconv.Itoa(pid))
+	cmd := exec.Command("ps", "-o", "rss=,pcpu=", "-p", strconv.Itoa(pid), "--ppid", strconv.Itoa(pid))
 	output, err := cmd.Output()
 	if err != nil {
-		return fmt.Errorf("program unexpectedly terminated")
+		return fmt.Errorf("failed to execute ps command: %v", err)
 	}
 
-	fields := strings.Fields(string(output))
-	if len(fields) < 2 {
-		return fmt.Errorf("unexpected ps output format")
+	lines := strings.Split(strings.TrimSpace(string(output)), "\n")
+	var totalRSS uint64
+
+	for _, line := range lines {
+		fields := strings.Fields(line)
+		if len(fields) < 2 {
+			return fmt.Errorf("unexpected ps output format")
+		}
+
+		currentMemory, err := strconv.ParseUint(fields[0], 10, 64)
+		if err != nil {
+			return fmt.Errorf("failed to parse memory usage: %v", err)
+		}
+
+		totalRSS += currentMemory
 	}
 
-	currentMemory, err := strconv.Atoi(fields[0])
-	if err != nil {
-		return fmt.Errorf("failed to parse memory usage: %v", err)
-	}
-	currentRSS := uint64(currentMemory) // Maxrss is in kilobytes
-	if currentRSS > rm.peakRSS {
-		rm.peakRSS = currentRSS
+	if totalRSS > rm.peakRSS {
+		rm.peakRSS = totalRSS
 	}
 
-	rm.lastRSS = currentRSS
+	rm.lastRSS = totalRSS
 	return nil
 }
 
