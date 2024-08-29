@@ -71,6 +71,10 @@ export const useStyles = createStyles(({ css, responsive }) => {
       border-radius: 100px;
     }
     `),
+    logSegmentedStyle: {
+      padding: 4,
+      fontSize: 14,
+    },
     isLogSegmentedStyle: {
       width: '100%',
       display: 'flex',

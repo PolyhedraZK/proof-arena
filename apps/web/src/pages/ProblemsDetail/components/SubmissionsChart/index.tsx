@@ -240,7 +240,10 @@ const SubmissionsChart = ({ chartData }: SubmissionsChartType) => {
             {mobile && (
               <div className={styles.isLogSegmentedStyle}>
                 <Segmented<string>
-                  className={styles.segmentedStyle}
+                  className={cx(
+                    styles.segmentedStyle,
+                    styles.logSegmentedStyle
+                  )}
                   options={logOptions}
                   onChange={value => {
                     console.log(value);
