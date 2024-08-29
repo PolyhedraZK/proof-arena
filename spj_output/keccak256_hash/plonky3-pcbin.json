@@ -3,15 +3,15 @@
   "prover_name": "pcbin-plonky3-keccak",
   "proof_system": "Plonky3",
   "algorithm": "STARK",
-  "setup_time": 0.0000014045054945054945,
-  "witness_generation_time": 0.0000011907765567765568,
-  "proof_generation_time": 0.00635320029010989,
-  "verify_time": 0.00016288449855238096,
-  "peak_memory": 7.384615384615385,
-  "proof_size": 1396.3252747252748,
+  "setup_time": 0.0000014902417582417582,
+  "witness_generation_time": 0.0000011997208791208792,
+  "proof_generation_time": 0.0007318861282051282,
+  "verify_time": 0.00016462211802197802,
+  "peak_memory": 0,
+  "proof_size": 1396.6446886446886,
   "status": true,
   "error_msg": "",
   "max_cpu": 64,
   "n": 1365,
-  "verifier_num_repeats": 1000
+  "verifier_num_repeats": 10
 }
