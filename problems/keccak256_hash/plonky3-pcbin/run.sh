@@ -13,6 +13,20 @@ go mod -C problems/keccak256_hash/SPJ tidy
 go build -C problems/keccak256_hash/expectedProver
 go build -C problems/keccak256_hash/SPJ
 
+# Build Rust
+pushd $PWD && \
+cd problems/keccak256_hash/plonky3-pcbin/proof-cloud-bin-prover/plonky3-keccak-serve && \
+RUSTFLAGS="-Ctarget-cpu=native" cargo build --release && \
+popd
+
+pushd $PWD && \
+cd problems/keccak256_hash/plonky3-pcbin/proof-cloud-bin-prover/proof-arena-integration && \
+RUSTFLAGS="-Ctarget-cpu=native" cargo build --release && \
+popd
+
+cp problems/keccak256_hash/plonky3-pcbin/proof-cloud-bin-prover/plonky3-keccak-serve/target/release/plonky3-keccak-serve problems/keccak256_hash/plonky3-pcbin/plonky3-keccak-serve
+cp problems/keccak256_hash/plonky3-pcbin/proof-cloud-bin-prover/proof-arena-integration/target/release/proof-arena-integration problems/keccak256_hash/plonky3-pcbin/proof-arena-integration
+
 # Run the SPJ
 problems/keccak256_hash/SPJ/SPJ -cpu 64 -largestN 1365 \
   -memory 32768 -time 1200 \

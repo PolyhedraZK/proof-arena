@@ -1,0 +1,3 @@
+[submodule "problems/keccak256_hash/plonky3-pcbin/proof-cloud-bin-prover"]
+	path = problems/keccak256_hash/plonky3-pcbin/proof-cloud-bin-prover
+	url = git@github.com:PolyhedraZK/proof-cloud-bin-prover.git
