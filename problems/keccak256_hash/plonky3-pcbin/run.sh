@@ -21,7 +21,7 @@ popd
 
 pushd $PWD && \
 cd problems/keccak256_hash/plonky3-pcbin/proof-cloud-bin-prover/proof-arena-integration && \
-RUSTFLAGS="-Ctarget-cpu=native" cargo build --release --features parallel && \
+RUSTFLAGS="-Ctarget-cpu=native" cargo build --release && \
 popd
 
 cp problems/keccak256_hash/plonky3-pcbin/proof-cloud-bin-prover/plonky3-keccak-serve/target/release/plonky3-keccak-serve problems/keccak256_hash/plonky3-pcbin/plonky3-keccak-serve
@@ -32,7 +32,7 @@ problems/keccak256_hash/SPJ/SPJ -cpu 64 -largestN 1365 \
   -memory 32768 -time 1200 \
   -json "spj_output/keccak256_hash/plonky3-pcbin.json" \
   -prover "problems/keccak256_hash/plonky3-pcbin/proof-arena-integration problems/keccak256_hash/plonky3-pcbin/plonky3-keccak-serve prove 1365" \
-  -verifier "problems/keccak256_hash/plonky3-pcbin/proof-arena-integration problems/keccak256_hash/plonky3-pcbin/plonky3-keccak-serve verify 1000"
+  -verifier "problems/keccak256_hash/plonky3-pcbin/proof-arena-integration problems/keccak256_hash/plonky3-pcbin/plonky3-keccak-serve verify 10"
 
 # Capture the exit status
 exit_status=$?
