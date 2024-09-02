@@ -43,7 +43,7 @@ func (k *PoseidonM31SPJ) VerifyResults(testData, results []byte) bool {
 }
 
 func (k *PoseidonM31SPJ) GetProblemID() int {
-	return 3
+	return 4
 }
 
 func main() {
