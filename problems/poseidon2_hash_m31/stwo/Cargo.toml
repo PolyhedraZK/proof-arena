@@ -1,0 +1,22 @@
+[package]
+name = "stwo-poseidon"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+ark-std = "0.4.0"
+bincode = "1.3.3"
+itertools = "0.13.0"
+num-traits = "0.2.17"
+serde = { version = "1.0", default-features = false }
+
+
+stwo-prover = { git = "https://github.com/starkware-libs/stwo" }
+
+[[bin]]
+name = "prover"
+path = "src/prover.rs"
+
+[[bin]]
+name = "verifier"
+path = "src/verifier.rs"

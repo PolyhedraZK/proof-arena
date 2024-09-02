@@ -1,0 +1,17 @@
+{
+  "problem_id": 3,
+  "prover_name": "Plonky3 Poseidon-m31 Prover",
+  "proof_system": "Plony3",
+  "algorithm": "Plonk",
+  "setup_time": 1.0262847900390625e-8,
+  "witness_generation_time": 4.2380322265625e-7,
+  "proof_generation_time": 0.00001525869465637207,
+  "verify_time": 3.789376397857666e-7,
+  "peak_memory": 2.02972412109375,
+  "proof_size": 10.10736083984375,
+  "status": true,
+  "error_msg": "",
+  "max_cpu": 64,
+  "n": 65536,
+  "verifier_num_repeats": 1000
+}
