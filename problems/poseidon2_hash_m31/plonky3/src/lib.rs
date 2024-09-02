@@ -97,9 +97,7 @@ pub fn prove_poseidon(
     trace: DenseMatrix<KoalaBear, Vec<KoalaBear>>,
 ) -> Proof<MyConfig> {
     let mut challenger = Challenger::new(perm.clone());
-    let proof = prove(config, air, &mut challenger, trace, &vec![]);
-
-    proof
+    prove(config, air, &mut challenger, trace, &vec![])
 }
 
 pub fn verify_poseidon(

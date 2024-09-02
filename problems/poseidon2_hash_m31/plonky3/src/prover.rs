@@ -26,9 +26,9 @@ fn main() -> std::io::Result<()> {
 
     for i in 1..args.len() {
         if args[i] == "-toMe" && i + 1 < args.len() {
-            spj_to_prover_pipe = args[i + 1].clone();
+            spj_to_prover_pipe.clone_from(&args[i + 1])
         } else if args[i] == "-toSPJ" && i + 1 < args.len() {
-            prover_to_spj_pipe = args[i + 1].clone();
+            prover_to_spj_pipe.clone_from(&args[i + 1])
         }
     }
 
