@@ -1584,21 +1584,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "halo2_xor_circuit"
-version = "0.1.0"
-dependencies = [
- "ark-std 0.4.0",
- "env_logger",
- "halo2_proofs",
- "halo2curves",
- "itertools 0.13.0",
- "log",
- "serde",
- "serde_json",
- "snark-verifier-sdk",
-]
-
-[[package]]
 name = "halo2curves"
 version = "0.1.0"
 source = "git+https://github.com/scroll-tech/halo2curves?branch=v0.1.0#a495a7b11ad13e5cd0cca7ca5d737b398cfaf1b7"
