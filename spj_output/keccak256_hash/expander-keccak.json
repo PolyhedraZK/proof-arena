@@ -1,0 +1,17 @@
+{
+  "problem_id": 2,
+  "prover_name": "expander-keccak",
+  "proof_system": "Expander",
+  "algorithm": "GKR",
+  "setup_time": 0.0015037275595703125,
+  "witness_generation_time": 0.000003509814208984375,
+  "proof_generation_time": 0.0018413055493164063,
+  "verify_time": 0.0016091340327148438,
+  "peak_memory": 2346.7353515625,
+  "proof_size": 9322.251953125,
+  "status": true,
+  "error_msg": "",
+  "max_cpu": 64,
+  "n": 4096,
+  "verifier_num_repeats": 8
+}
