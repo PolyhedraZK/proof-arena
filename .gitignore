@@ -43,6 +43,7 @@ maliciousProver
 /results.sarif
 SPJ
 !SPJ/
+circuit.txt
 
 # rust target files
 target/
