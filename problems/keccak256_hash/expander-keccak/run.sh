@@ -20,11 +20,13 @@ RUSTFLAGS="-C target-cpu=native" cargo build --release && \
 popd
 
 # Run the SPJ
-problems/keccak256_hash/SPJ/SPJ -cpu 1 -largestN 64 \
+# largestN = 8 * 8 * par_factor
+# par_factor is the arg after the mode arg
+problems/keccak256_hash/SPJ/SPJ -cpu 64 -largestN 4096 \
   -memory 32768 -time 1200 \
   -json "spj_output/keccak256_hash/expander-keccak.json" \
-  -prover "problems/keccak256_hash/expander-keccak/target/release/expander-keccak prove" \
-  -verifier "problems/keccak256_hash/expander-keccak/target/release/expander-keccak verify"
+  -prover "problems/keccak256_hash/expander-keccak/target/release/expander-keccak prove 64" \
+  -verifier "problems/keccak256_hash/expander-keccak/target/release/expander-keccak verify 64"
 
 # Capture the exit status
 exit_status=$?

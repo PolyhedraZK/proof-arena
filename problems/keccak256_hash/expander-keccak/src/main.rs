@@ -8,6 +8,7 @@ use internal::Serde;
 use std::{
     fs::File,
     io::{BufReader, Cursor, Read, Write},
+    thread,
 };
 use tiny_keccak::Hasher;
 
@@ -96,6 +97,7 @@ fn load_inputs<F: Field + FieldSerde>(bytes: &[u8]) -> Vec<F> {
 fn prove(
     in_pipe: &mut BufReader<File>,
     out_pipe: &mut File,
+    par_factor: usize,
 ) -> Result<(), Box<dyn std::error::Error>> {
     // STEP 1: SPJ sends you the pipe filepath that handles the input output communication
     // STEP 2: Output your prover name, proof system name, and algorithm name
@@ -110,78 +112,138 @@ fn prove(
         witness_solver,
         layered_circuit,
     } = compile_result;
-    let mut expander_circuit = layered_circuit
-        .export_to_expander::<expander_rs::GF2ExtConfigSha2>()
-        .flatten();
-    let config =
-        expander_rs::Config::<expander_rs::GF2ExtConfigSha2>::new(expander_rs::GKRScheme::Vanilla);
-    let mut prover = expander_rs::Prover::new(&config);
 
     let file = std::fs::File::create("circuit.txt").unwrap();
     let writer = std::io::BufWriter::new(file);
     layered_circuit.serialize_into(writer).unwrap();
 
-    // STEP 4: Output the Number of Keccak Instances
-    write_u64(out_pipe, 8 * N_HASHES as u64)?;
-    // STEP 5: Read Input Data
-    let input_bytes = read_blob(in_pipe)?;
-    // println!("Len of input_bytes: {:?}", input_bytes.len());
-    // STEP 6: Hash the Data
-    let mut all_output = vec![];
-    let mut assignments = vec![];
-    let mut assignment = Keccak256Circuit::<GF2>::default();
-    for (k, data) in input_bytes.chunks_exact(64).enumerate() {
-        let mut hash = tiny_keccak::Keccak::v256();
-        hash.update(&data);
-        let mut output = [0u8; 32];
-        hash.finalize(&mut output);
-        all_output.extend_from_slice(&output);
-        for i in 0..64 {
-            for j in 0..8 {
-                assignment.p[k % N_HASHES][i * 8 + j] = ((data[i] >> j) as u32 & 1).into();
-            }
-        }
-        for i in 0..32 {
-            for j in 0..8 {
-                assignment.out[k % N_HASHES][i * 8 + j] = ((output[i] >> j) as u32 & 1).into();
-            }
-        }
-        if k % N_HASHES == N_HASHES - 1 {
-            assignments.push(assignment);
-            assignment = Keccak256Circuit::<GF2>::default();
-        }
-    }
-    write_byte_array(out_pipe, &all_output)?;
-    // STEP 7: Output a String to Indicate Witness Generation Finished
-    let witness = witness_solver.solve_witnesses(&assignments).unwrap();
-    // currently we have to manually convert witness to expander simd format
-    assert_eq!(
-        witness.num_inputs_per_witness,
-        1 << expander_circuit.log_input_size()
-    );
-    // let res = layered_circuit.run(&witness);
-    expander_circuit.layers[0].input_vals = (0..witness.num_inputs_per_witness)
-        .map(|i| {
-            let mut t: u8 = 0;
-            for j in 0..8 {
-                t |= (witness.values[j * witness.num_inputs_per_witness + i].v as u8) << j;
-            }
-            arith::GF2x8 { v: t }
-        })
-        .collect();
-    expander_circuit.evaluate();
-    write_string(out_pipe, WITNESS_GENERATED_MSG)?;
-    // STEP 8: Output the Proof
-    prover.prepare_mem(&expander_circuit);
-    let (claimed_v, proof) = prover.prove(&mut expander_circuit);
-    let full_proof = dump_proof_and_claimed_v(&proof, &claimed_v);
+    let expander_circuit = layered_circuit
+        .export_to_expander::<expander_rs::GF2ExtConfigSha2>()
+        .flatten();
+    let config =
+        expander_rs::Config::<expander_rs::GF2ExtConfigSha2>::new(expander_rs::GKRScheme::Vanilla);
 
-    assert!(!full_proof.is_empty()); // sanity check
-    write_byte_array(out_pipe, &full_proof)?;
+    // prepare mem used later
+    let mut all_env = (0..par_factor)
+        .map(|_| {
+            let mut prover = expander_rs::Prover::new(&config);
+            let c = expander_circuit.clone();
+            prover.prepare_mem(&c);
+            (prover, c)
+        })
+        .collect::<Vec<_>>();
+
+    // STEP 4: Output the Number of Keccak Instances
+    write_u64(out_pipe, 8 * N_HASHES as u64 * par_factor as u64)?;
+
+    // STEP 5: Read Input Data
+    let all_input_bytes_flatten = read_blob(in_pipe)?;
+
+    // STEP 6: Hash the Data
+    let all_input_bytes = all_input_bytes_flatten
+        .chunks_exact(64 * 8 * N_HASHES)
+        .collect::<Vec<_>>();
+    let mut all_output = vec![vec![]; par_factor];
+    let mut all_assignments = vec![vec![]; par_factor];
+
+    thread::scope(|s| {
+        let handles = all_input_bytes
+            .iter()
+            .zip(all_output.iter_mut())
+            .zip(all_assignments.iter_mut())
+            .map(|((input_bytes, outputs), assignments)| {
+                s.spawn(|| {
+                    let mut assignment = Keccak256Circuit::<GF2>::default();
+                    for (k, data) in input_bytes.chunks_exact(64).enumerate() {
+                        let mut hash = tiny_keccak::Keccak::v256();
+                        hash.update(&data);
+                        let mut output = [0u8; 32];
+                        hash.finalize(&mut output);
+                        outputs.extend_from_slice(&output);
+                        for i in 0..64 {
+                            for j in 0..8 {
+                                assignment.p[k % N_HASHES][i * 8 + j] =
+                                    ((data[i] >> j) as u32 & 1).into();
+                            }
+                        }
+                        for i in 0..32 {
+                            for j in 0..8 {
+                                assignment.out[k % N_HASHES][i * 8 + j] =
+                                    ((output[i] >> j) as u32 & 1).into();
+                            }
+                        }
+                        if k % N_HASHES == N_HASHES - 1 {
+                            assignments.push(assignment);
+                            assignment = Keccak256Circuit::<GF2>::default();
+                        }
+                    }
+                })
+            });
+        handles.for_each(|h| h.join().unwrap());
+    });
+    write_byte_array(out_pipe, &all_output.concat())?;
+
+    // STEP 7: Output a String to Indicate Witness Generation Finished
+    let all_witness = all_assignments
+        .iter()
+        .map(|assignments| witness_solver.solve_witnesses(&assignments).unwrap())
+        .collect::<Vec<_>>();
+    write_string(out_pipe, WITNESS_GENERATED_MSG)?;
+
+    // STEP 8: Output the Proof
+    let mut all_proof = vec![vec![]; par_factor];
+    let mut all_pis = vec![vec![]; par_factor];
+    thread::scope(|s| {
+        let handles = all_env
+            .iter_mut()
+            .zip(all_witness.iter())
+            .zip(all_proof.iter_mut())
+            .zip(all_pis.iter_mut())
+            .map(|((((prover, c), witness), full_proof), pis)| {
+                s.spawn(move || {
+                    // currently we have to manually convert witness to expander simd format
+                    assert_eq!(witness.num_inputs_per_witness, 1 << c.log_input_size());
+                    c.layers[0].input_vals = (0..witness.num_inputs_per_witness)
+                        .map(|i| {
+                            let mut t: u8 = 0;
+                            for j in 0..8 {
+                                t |= (witness.values[j * witness.num_inputs_per_witness + i].v
+                                    as u8)
+                                    << j;
+                            }
+                            arith::GF2x8 { v: t }
+                        })
+                        .collect();
+                    *pis = dump_inputs(&c.layers[0].input_vals);
+                    c.evaluate();
+                    let (claimed_v, proof) = prover.prove(c);
+                    *full_proof = dump_proof_and_claimed_v(&proof, &claimed_v);
+                    assert!(!full_proof.is_empty()); // sanity check
+                })
+            });
+        handles.for_each(|h| h.join().unwrap());
+    });
+
+    let mut all_proof_serialized = vec![];
+    // first, serialize the len, then len of each proof, then the proof itself
+    all_proof_serialized.extend_from_slice(&(all_proof.len() as u64).to_le_bytes());
+    for proof in all_proof.iter() {
+        all_proof_serialized.extend_from_slice(&(proof.len() as u64).to_le_bytes());
+        all_proof_serialized.extend_from_slice(proof);
+    }
+    write_byte_array(out_pipe, &all_proof_serialized)?;
+
     let vk = vec![];
     write_byte_array(out_pipe, &vk)?;
-    let pis = dump_inputs(&expander_circuit.layers[0].input_vals);
-    write_byte_array(out_pipe, &pis)?;
+
+    let mut all_pis_serialized = vec![];
+    all_pis_serialized.extend_from_slice(&(all_pis.len() as u64).to_le_bytes());
+    for pis in all_pis.iter() {
+        all_pis_serialized.extend_from_slice(&(pis.len() as u64).to_le_bytes());
+        all_pis_serialized.extend_from_slice(pis);
+    }
+    write_byte_array(out_pipe, &all_pis_serialized)?;
+
     out_pipe.flush()?;
     Ok(())
 }
@@ -189,6 +251,7 @@ fn prove(
 fn verify(
     in_pipe: &mut BufReader<File>,
     out_pipe: &mut File,
+    par_factor: usize,
     verifier_repeat_num: u64,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let file = std::fs::File::open("circuit.txt").unwrap();
@@ -196,30 +259,67 @@ fn verify(
     let layered_circuit =
         expander_compiler::circuit::layered::Circuit::<GF2Config>::deserialize_from(reader)
             .unwrap();
-    let mut expander_circuit = layered_circuit
+    let expander_circuit = layered_circuit
         .export_to_expander::<expander_rs::GF2ExtConfigSha2>()
         .flatten();
     let config =
         expander_rs::Config::<expander_rs::GF2ExtConfigSha2>::new(expander_rs::GKRScheme::Vanilla);
-    let verifier = expander_rs::Verifier::new(&config);
 
     // STEP 9: SPJ starts your verifier by providing the pipe filepath that handles the input output communication
 
     // STEP 10: SPJ sends the proof, verification key, and public input to the verifier
-    let proof = read_blob(in_pipe)?;
+    let all_proof_serialized = read_blob(in_pipe)?;
     let _vk = read_blob(in_pipe)?;
-    let pis = read_blob(in_pipe)?;
-    // STEP 11: Verify the Proof, and send back result
-    let pis = load_inputs::<arith::GF2x8>(&pis);
-    let (proof, claimed_v) = load_proof_and_claimed_v(&proof);
-    expander_circuit.layers[0].input_vals = pis;
+    let all_pis_serialized = read_blob(in_pipe)?;
 
-    let mut result = false;
-    for _ in 0..verifier_repeat_num {
-        let mut c = expander_circuit.clone();
-        result = verifier.verify(&mut c, &claimed_v, &proof);
+    let mut all_full_proof = vec![];
+    let all_full_proof_len = u64::from_le_bytes(all_proof_serialized[..8].try_into().unwrap());
+    let mut cur = 8;
+    for _ in 0..all_full_proof_len {
+        let len = u64::from_le_bytes(all_proof_serialized[cur..cur + 8].try_into().unwrap());
+        all_full_proof.push(all_proof_serialized[cur + 8..cur + 8 + len as usize].to_vec());
+        cur += 8 + len as usize;
     }
-    write_byte_array(out_pipe, &[if result { 0xffu8 } else { 0x00u8 }])?;
+
+    let mut all_pis = vec![];
+    let all_pis_len = u64::from_le_bytes(all_pis_serialized[..8].try_into().unwrap());
+    cur = 8;
+    for _ in 0..all_pis_len {
+        let len = u64::from_le_bytes(all_pis_serialized[cur..cur + 8].try_into().unwrap());
+        all_pis.push(all_pis_serialized[cur + 8..cur + 8 + len as usize].to_vec());
+        cur += 8 + len as usize;
+    }
+
+    // STEP 11: Verify the Proof, and send back result
+
+    let mut all_circuit = vec![expander_circuit.clone(); par_factor];
+    let mut all_verifier = (0..par_factor)
+        .map(|_| expander_rs::Verifier::new(&config))
+        .collect::<Vec<_>>();
+
+    let mut final_result = true;
+    for _ in 0..verifier_repeat_num {
+        let mut all_result = vec![false; par_factor];
+        thread::scope(|s| {
+            let handles = all_full_proof
+                .iter()
+                .zip(all_pis.iter())
+                .zip(all_result.iter_mut())
+                .zip(all_circuit.iter_mut())
+                .zip(all_verifier.iter_mut())
+                .map(|((((full_proof, pis), result), c), v)| {
+                    s.spawn(move || {
+                        let (proof, claimed_v) = load_proof_and_claimed_v(full_proof);
+                        c.layers[0].input_vals = load_inputs(pis);
+                        *result = v.verify(c, &claimed_v, &proof)
+                    })
+                });
+            handles.for_each(|h| h.join().unwrap());
+        });
+        final_result &= all_result.into_iter().all(|x| x);
+    }
+
+    write_byte_array(out_pipe, &[if final_result { 0xffu8 } else { 0x00u8 }])?;
     write_byte_array(out_pipe, verifier_repeat_num.to_le_bytes().as_ref())?; // why not number this time?
 
     out_pipe.flush()?;
@@ -229,16 +329,17 @@ fn verify(
 fn main() -> std::io::Result<()> {
     // parse arg
     let args = std::env::args().collect::<Vec<String>>();
-    // Usage: ./expander-keccak <mode:prove/verify> -toMe <in_pipe> -toSPJ <out_pipe>;
+    // Usage: ./expander-keccak <mode:prove/verify> <par_factor> -toMe <in_pipe> -toSPJ <out_pipe>;
     let mode = &args[1];
-    let in_pipe_name = &args[3];
+    let par_factor: usize = args[2].parse().unwrap();
+    let in_pipe_name = &args[4];
     let mut in_pipe = std::io::BufReader::new(File::open(in_pipe_name)?);
-    let out_pipe_name = &args[5];
+    let out_pipe_name = &args[6];
     let mut out_pipe = File::create(out_pipe_name)?;
 
     match mode.as_str() {
-        "prove" => prove(&mut in_pipe, &mut out_pipe).unwrap(),
-        "verify" => verify(&mut in_pipe, &mut out_pipe, 128).unwrap(),
+        "prove" => prove(&mut in_pipe, &mut out_pipe, par_factor).unwrap(),
+        "verify" => verify(&mut in_pipe, &mut out_pipe, par_factor, 8).unwrap(),
         _ => panic!("Invalid mode: {}", mode),
     }
     Ok(())
