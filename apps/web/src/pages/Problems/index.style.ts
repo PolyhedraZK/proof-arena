@@ -11,7 +11,7 @@ export const useProverStyles = createStyles(({ responsive, isDarkMode }) => {
       [responsive.md]: {
         width: '100%',
         padding: '0 16px',
-        margin: '30px auto 0',
+        margin: '12px auto 0',
       },
       '.my-provers': {
         overflow: 'hidden',

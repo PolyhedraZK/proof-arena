@@ -17,6 +17,7 @@ export const links = [
   { to: '/how-to-contribute', label: 'How to Contribute' },
   { to: '/machine-spec', label: 'Machine Specification' },
   { to: '/supported-provers', label: 'Supported Provers' },
+  { to: '/how-to-interact-with-judge', label: 'How to interact with judge' },
 ];
 
 function NavBar() {

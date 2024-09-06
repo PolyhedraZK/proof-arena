@@ -50,7 +50,9 @@ const SupportedProversPage: React.FC = () => {
 
   return (
     <div className={styles.container}>
-      <div className={styles.titleContainer}>Supported Provers</div>
+      <div className={styles.titleContainer}>
+        Supported Provers <div className={styles.green} />
+      </div>
       <div className={styles.backBox}>
         <ConfigProvider
           theme={{

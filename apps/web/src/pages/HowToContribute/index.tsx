@@ -17,7 +17,7 @@ const useStyles = createStyles(({ isDarkMode, css, responsive }) => {
     },
     box: {
       margin: '0 auto',
-      marginTop: 60,
+      marginTop: 24,
       borderRadius: 8,
       background: colors.cardBgColor,
       maxWidth: 1200,

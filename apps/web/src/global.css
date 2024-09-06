@@ -11,7 +11,7 @@ body {
 }
 .main-container {
   width: 1200px;
-  margin: 50px auto 0;
+  margin: 28px auto 0;
 }
 
 @media screen and (max-width: 475px) {
