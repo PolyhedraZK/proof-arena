@@ -1,5 +1,3 @@
-# How to use SPJ
-
 ## Inter process communication (prover, verifier <-> SPJ)
 
 We use [named pipe](https://en.wikipedia.org/wiki/Named_pipe) for prover, verifier to interact with SPJ.
@@ -43,7 +41,6 @@ r.read(receivedByte) // this is a concept psudeo code, because I omitted error h
 ```
 
 We provided the golang library as standard way to communicate, you will need to implement your own handling functions if you are not using golang. Make sure your communication library does the same thing as our golang equivalent do.
-
 
 ## Sample SPJ usage
 
