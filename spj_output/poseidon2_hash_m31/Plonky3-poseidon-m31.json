@@ -1,5 +1,5 @@
 {
-  "problem_id": 4,
+  "problem_id": 3,
   "prover_name": "Plonky3 Poseidon-m31 Prover",
   "proof_system": "Plony3",
   "algorithm": "Plonk",
