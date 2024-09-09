@@ -302,23 +302,17 @@ fn verify(
     let mut final_result = true;
     for _ in 0..verifier_repeat_num {
         let mut all_result = vec![false; par_factor];
-        thread::scope(|s| {
-            let handles = all_full_proof
-                .iter()
-                .zip(all_pis.iter())
-                .zip(all_result.iter_mut())
-                .zip(all_circuit.iter_mut())
-                .zip(all_verifier.iter_mut())
-                .map(|((((full_proof, pis), result), c), v)| {
-                    s.spawn(move || {
-                        let (proof, claimed_v) = load_proof_and_claimed_v(full_proof);
-                        c.layers[0].input_vals = load_inputs(pis);
-                        *result = v.verify(c, &claimed_v, &proof)
-                    })
-                })
-                .collect::<Vec<_>>();
-            handles.into_iter().for_each(|h| h.join().unwrap());
-        });
+        all_full_proof
+            .iter()
+            .zip(all_pis.iter())
+            .zip(all_result.iter_mut())
+            .zip(all_circuit.iter_mut())
+            .zip(all_verifier.iter_mut())
+            .for_each(|((((full_proof, pis), result), c), v)| {
+                let (proof, claimed_v) = load_proof_and_claimed_v(full_proof);
+                c.layers[0].input_vals = load_inputs(pis);
+                *result = v.verify(c, &claimed_v, &proof)
+            });
         final_result &= all_result.into_iter().all(|x| x);
     }
 
