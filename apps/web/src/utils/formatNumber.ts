@@ -2,7 +2,7 @@ import BigNumber from 'bignumber.js';
 
 export function formatNumber(input) {
   const num = new BigNumber(input);
-  const strNum = num.toString();
+  const strNum = num.toFixed();
 
   // 正则表达式匹配以0.开头，后面跟着至少3个0，之后是非0数字
   const scientificNotationRegex = /^0\.0{3,}[1-9]/;
@@ -25,5 +25,5 @@ export function formatNumberToExponential(input) {
 // 全部转成原始格式
 export function formatNumberToString(input) {
   const num = new BigNumber(input);
-  return num.toString();
+  return num.toFixed();
 }
