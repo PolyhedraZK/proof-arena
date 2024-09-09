@@ -68,7 +68,7 @@ const SubmissionsChart = ({ chartData }: SubmissionsChartType) => {
   const { styles, cx } = useStyles();
   const { mobile } = useResponsive();
   const [segmentedValue, setSegmentedValue] = useState<any>();
-  const [isLog, setIsLog] = useState<boolean | number>(false); // 使用对数来展示
+  const [isLog, setIsLog] = useState<boolean | number>(true); // 使用对数来展示
   const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
 
   const logOptions = [

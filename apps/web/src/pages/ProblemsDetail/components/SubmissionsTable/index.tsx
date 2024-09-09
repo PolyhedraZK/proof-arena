@@ -35,7 +35,7 @@ const SubmissionsTable = ({
     },
     {
       title: createTableHead('Setup time（seconds）'),
-      width: 190,
+      width: 200,
       dataIndex: 'setup_time',
       key: 'setup_time',
       render: function (text) {
@@ -77,7 +77,7 @@ const SubmissionsTable = ({
           <div>time（seconds）</div>
         </div>
       ),
-      width: 180,
+      width: 200,
       dataIndex: 'verify_time',
       key: 'verify_time',
       render: function (text) {
