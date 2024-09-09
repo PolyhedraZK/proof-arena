@@ -1,0 +1,18 @@
+{
+  "problem_id": 4,
+  "prover_name": "STWO Poseidon-m31 Prover",
+  "proof_system": "STWO",
+  "algorithm": "STARK",
+  "setup_time": 0.00000105521484375,
+  "witness_generation_time": 5.44013671875e-7,
+  "proof_generation_time": 0.0009767579541015625,
+  "verify_time": 0.000014191262754882812,
+
+  "peak_memory": 0,
+  "proof_size": 540.02734375,
+  "status": true,
+  "error_msg": "",
+  "max_cpu": 1,
+  "n": 1024,
+  "verifier_num_repeats": 1000
+}
