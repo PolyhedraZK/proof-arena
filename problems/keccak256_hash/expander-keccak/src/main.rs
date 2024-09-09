@@ -178,8 +178,9 @@ fn prove(
                         }
                     }
                 })
-            });
-        handles.for_each(|h| h.join().unwrap());
+            })
+            .collect::<Vec<_>>();
+        handles.into_iter().for_each(|h| h.join().unwrap());
     });
     write_byte_array(out_pipe, &all_output.concat())?;
 
@@ -220,8 +221,9 @@ fn prove(
                     *full_proof = dump_proof_and_claimed_v(&proof, &claimed_v);
                     assert!(!full_proof.is_empty()); // sanity check
                 })
-            });
-        handles.for_each(|h| h.join().unwrap());
+            })
+            .collect::<Vec<_>>();
+        handles.into_iter().for_each(|h| h.join().unwrap());
     });
 
     let mut all_proof_serialized = vec![];
@@ -313,8 +315,9 @@ fn verify(
                         c.layers[0].input_vals = load_inputs(pis);
                         *result = v.verify(c, &claimed_v, &proof)
                     })
-                });
-            handles.for_each(|h| h.join().unwrap());
+                })
+                .collect::<Vec<_>>();
+            handles.into_iter().for_each(|h| h.join().unwrap());
         });
         final_result &= all_result.into_iter().all(|x| x);
     }
@@ -339,7 +342,7 @@ fn main() -> std::io::Result<()> {
 
     match mode.as_str() {
         "prove" => prove(&mut in_pipe, &mut out_pipe, par_factor).unwrap(),
-        "verify" => verify(&mut in_pipe, &mut out_pipe, par_factor, 8).unwrap(),
+        "verify" => verify(&mut in_pipe, &mut out_pipe, par_factor, 2).unwrap(),
         _ => panic!("Invalid mode: {}", mode),
     }
     Ok(())

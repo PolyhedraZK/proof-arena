@@ -20,7 +20,7 @@ RUSTFLAGS="-C target-cpu=native" cargo build --release && \
 popd
 
 # Run the SPJ
-# largestN = 8 * 8 * par_factor
+# largestN = par_factor * N_hashes * 8
 # par_factor is the arg after the mode arg
 problems/keccak256_hash/SPJ/SPJ -cpu 64 -largestN 4096 \
   -memory 32768 -time 1200 \
