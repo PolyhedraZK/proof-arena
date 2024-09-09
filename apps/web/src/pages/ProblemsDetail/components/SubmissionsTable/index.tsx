@@ -3,7 +3,7 @@ import { useState } from 'react';
 
 import BaseEmpty from '@/components/base/BaseEmpty.tsx';
 import { IPSubmissionsTableItem } from '@/services/problems/types.ts';
-import transferToNumber from '@/utils/transferToNumber.ts';
+import { formatNumber } from '@/utils/formatNumber';
 
 import { useStyles } from './index.style.ts';
 const SubmissionsTable = ({
@@ -38,6 +38,9 @@ const SubmissionsTable = ({
       width: 190,
       dataIndex: 'setup_time',
       key: 'setup_time',
+      render: function (text) {
+        return formatNumber(text);
+      },
     },
     {
       title: (
@@ -49,6 +52,9 @@ const SubmissionsTable = ({
       width: 180,
       dataIndex: 'witness_generation_time',
       key: 'witness_generation_time',
+      render: function (text) {
+        return formatNumber(text);
+      },
     },
     {
       title: (
@@ -60,6 +66,9 @@ const SubmissionsTable = ({
       width: 200,
       dataIndex: 'proof_generation_time',
       key: 'proof_generation_time',
+      render: function (text) {
+        return formatNumber(text);
+      },
     },
     {
       title: (
@@ -71,6 +80,9 @@ const SubmissionsTable = ({
       width: 180,
       dataIndex: 'verify_time',
       key: 'verify_time',
+      render: function (text) {
+        return formatNumber(text);
+      },
     },
     {
       title: createTableHead('Peak memory（KB）'),

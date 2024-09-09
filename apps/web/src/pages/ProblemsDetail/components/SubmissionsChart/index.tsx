@@ -8,6 +8,12 @@ import CheckMark from '@/assets/icons/check-mark.svg?r';
 import FilterIcon from '@/assets/icons/filterIcon.svg?r';
 import BaseButton from '@/components/base/BaseButton.tsx';
 import BaseEmpty from '@/components/base/BaseEmpty.tsx';
+import {
+  formatNumber,
+  formatNumberToExponential,
+  formatNumberToString,
+} from '@/utils/formatNumber.ts';
+import { toSuperscript10 } from '@/utils/superScript.ts';
 
 import { useStyles } from './index.style.ts';
 
@@ -55,11 +61,14 @@ const segmentedOptions = [
     value: 'proof_size',
   },
 ];
+const findChartName = (value: string) => {
+  return segmentedOptions.find(item => item.value === value)?.label;
+};
 const SubmissionsChart = ({ chartData }: SubmissionsChartType) => {
   const { styles, cx } = useStyles();
   const { mobile } = useResponsive();
   const [segmentedValue, setSegmentedValue] = useState<any>();
-  const [isLog, setIsLog] = useState<boolean | number>(false);
+  const [isLog, setIsLog] = useState<boolean | number>(false); // 使用对数来展示
   const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
 
   const logOptions = [
@@ -72,19 +81,7 @@ const SubmissionsChart = ({ chartData }: SubmissionsChartType) => {
       value: '1',
     },
   ];
-  const superscripts = ['⁰', '¹', '²', '³', '⁴', '⁵', '⁶', '⁷', '⁸', '⁹'];
-  const toSuperscript10 = val => {
-    if (val < 0) {
-      return '⁻' + toSuperscript10(-val);
-    }
-    return (val + '')
-      .split('')
-      .map(t => superscripts[t])
-      .join('');
-  };
-  const findChartName = (value: string) => {
-    return segmentedOptions.find(item => item.value === value)?.label;
-  };
+
   const options = {
     title: {
       subtext: `${findChartName(segmentedValue)}: ${createUnit(
@@ -150,6 +147,12 @@ const SubmissionsChart = ({ chartData }: SubmissionsChartType) => {
           label: {
             show: true,
             position: 'top',
+            formatter: params => {
+              if (isLog) {
+                return formatNumber(params.value);
+              }
+              return formatNumberToString(params.value);
+            },
           },
         },
       },

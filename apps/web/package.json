@@ -23,6 +23,7 @@
     "antd": "5.17.4",
     "antd-style": "^3.6.2",
     "axios": "^1.6.8",
+    "bignumber.js": "^9.1.2",
     "clsx": "^2.1.1",
     "copy-to-clipboard": "^3.3.3",
     "dayjs": "^1.11.10",
