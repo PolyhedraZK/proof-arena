@@ -88,14 +88,8 @@ fn main() -> std::io::Result<()> {
     };
     write_byte_array(&mut verifier_to_spj_pipe, &[res])?;
 
-    let total_proofs_verified = repeat * proofs.len() as u64;
-    write_byte_array(
-        &mut verifier_to_spj_pipe,
-        total_proofs_verified.to_le_bytes().as_ref(),
-    )?;
-    log_file.write_all(
-        format!("write to SPJ: verified {} proofs\n", total_proofs_verified).as_bytes(),
-    )?;
+    write_byte_array(&mut verifier_to_spj_pipe, repeat.to_le_bytes().as_ref())?;
+    log_file.write_all(format!("write to SPJ: repeated {} verifications\n", repeat).as_bytes())?;
     Ok(())
 }
 
