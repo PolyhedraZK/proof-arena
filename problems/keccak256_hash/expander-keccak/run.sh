@@ -22,11 +22,11 @@ popd
 # Run the SPJ
 # largestN = par_factor * N_hashes * 8
 # par_factor is the arg after the mode arg
-problems/keccak256_hash/SPJ/SPJ -cpu 16 -largestN 4096 \
+problems/keccak256_hash/SPJ/SPJ -cpu 64 -largestN 4096 \
   -memory 32768 -time 1200 \
   -json "spj_output/keccak256_hash/expander-keccak.json" \
-  -prover "problems/keccak256_hash/expander-keccak/target/release/expander-keccak prove 16 256" \
-  -verifier "problems/keccak256_hash/expander-keccak/target/release/expander-keccak verify 16 256"
+  -prover "problems/keccak256_hash/expander-keccak/target/release/expander-keccak prove 64 256" \
+  -verifier "problems/keccak256_hash/expander-keccak/target/release/expander-keccak verify 64 256"
 
 # Capture the exit status
 exit_status=$?
