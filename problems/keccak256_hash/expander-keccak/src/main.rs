@@ -3,6 +3,7 @@
 use arith::{Field, FieldSerde};
 use expander_compiler::frontend::*;
 use expander_keccak::*;
+use rayon::prelude::*;
 use expander_rs::Proof;
 use internal::Serde;
 use std::{
@@ -42,7 +43,7 @@ fn compute_keccak<C: Config>(api: &mut API<C>, p: &Vec<Variable>) -> Vec<Variabl
 impl Define<GF2Config> for Keccak256Circuit<Variable> {
     fn define(&self, api: &mut API<GF2Config>) {
         for i in 0..N_HASHES {
-            let out = api.memorized_simple_call(compute_keccak, &self.p[i].to_vec());
+            let out = compute_keccak(api, &self.p[i].to_vec());
             for j in 0..256 {
                 api.assert_is_equal(out[j].clone(), self.out[i][j].clone());
             }
@@ -98,6 +99,7 @@ fn prove(
     in_pipe: &mut BufReader<File>,
     out_pipe: &mut File,
     par_factor: usize,
+    repeat_factor: usize,
 ) -> Result<(), Box<dyn std::error::Error>> {
     // STEP 1: SPJ sends you the pipe filepath that handles the input output communication
     // STEP 2: Output your prover name, proof system name, and algorithm name
@@ -134,17 +136,19 @@ fn prove(
         .collect::<Vec<_>>();
 
     // STEP 4: Output the Number of Keccak Instances
-    write_u64(out_pipe, 8 * N_HASHES as u64 * par_factor as u64)?;
+    write_u64(out_pipe, 8 * N_HASHES as u64 * par_factor as u64 * repeat_factor as u64)?;
 
     // STEP 5: Read Input Data
+    println!("Start proving");
+    let start_time_orig = std::time::Instant::now();
     let all_input_bytes_flatten = read_blob(in_pipe)?;
 
     // STEP 6: Hash the Data
     let all_input_bytes = all_input_bytes_flatten
         .chunks_exact(64 * 8 * N_HASHES)
         .collect::<Vec<_>>();
-    let mut all_output = vec![vec![]; par_factor];
-    let mut all_assignments = vec![vec![]; par_factor];
+    let mut all_output = vec![vec![]; par_factor * repeat_factor];
+    let mut all_assignments = vec![vec![]; par_factor * repeat_factor];
 
     thread::scope(|s| {
         let handles = all_input_bytes
@@ -189,54 +193,72 @@ fn prove(
         .iter()
         .map(|assignments| witness_solver.solve_witnesses(&assignments).unwrap())
         .collect::<Vec<_>>();
+    // group witness by repeat factor witnesses per group
+    let all_witness_group = all_witness
+        .chunks(repeat_factor).collect::<Vec<_>>();
     write_string(out_pipe, WITNESS_GENERATED_MSG)?;
 
     // STEP 8: Output the Proof
+    println!("Time epoch 0 elapsed: {:?}", start_time_orig.elapsed());
+    println!("Start proving real");
     let mut all_proof = vec![vec![]; par_factor];
     let mut all_pis = vec![vec![]; par_factor];
     thread::scope(|s| {
         let handles = all_env
             .iter_mut()
-            .zip(all_witness.iter())
+            .zip(all_witness_group.iter())
             .zip(all_proof.iter_mut())
             .zip(all_pis.iter_mut())
             .map(|((((prover, c), witness), full_proof), pis)| {
                 s.spawn(move || {
                     // currently we have to manually convert witness to expander simd format
-                    assert_eq!(witness.num_inputs_per_witness, 1 << c.log_input_size());
-                    c.layers[0].input_vals = (0..witness.num_inputs_per_witness)
-                        .map(|i| {
-                            let mut t: u8 = 0;
-                            for j in 0..8 {
-                                t |= (witness.values[j * witness.num_inputs_per_witness + i].v
-                                    as u8)
-                                    << j;
-                            }
-                            arith::GF2x8 { v: t }
-                        })
-                        .collect();
-                    *pis = dump_inputs(&c.layers[0].input_vals);
-                    c.evaluate();
-                    let (claimed_v, proof) = prover.prove(c);
-                    *full_proof = dump_proof_and_claimed_v(&proof, &claimed_v);
+                    assert_eq!(witness[0].num_inputs_per_witness, 1 << c.log_input_size());
+                    for rep in 0..repeat_factor {
+                        c.layers[0].input_vals = (0..witness[rep].num_inputs_per_witness)
+                            .map(|i| {
+                                let mut t: u8 = 0;
+                                for j in 0..8 {
+                                    t |= (witness[rep].values[j * witness[rep].num_inputs_per_witness + i].v
+                                        as u8)
+                                        << j;
+                                }
+                                arith::GF2x8 { v: t }
+                            })
+                            .collect();
+                        *pis = dump_inputs(&c.layers[0].input_vals);
+                        c.evaluate();
+                        let (claimed_v, proof) = prover.prove(c);
+                        full_proof.append(&mut dump_proof_and_claimed_v(&proof, &claimed_v));
+                    }
                     assert!(!full_proof.is_empty()); // sanity check
                 })
             })
             .collect::<Vec<_>>();
         handles.into_iter().for_each(|h| h.join().unwrap());
     });
+    println!("Proving done");
+    println!("Time epoch 1 elapsed: {:?}", start_time_orig.elapsed());
 
-    let mut all_proof_serialized = vec![];
-    // first, serialize the len, then len of each proof, then the proof itself
-    all_proof_serialized.extend_from_slice(&(all_proof.len() as u64).to_le_bytes());
-    for proof in all_proof.iter() {
-        all_proof_serialized.extend_from_slice(&(proof.len() as u64).to_le_bytes());
-        all_proof_serialized.extend_from_slice(proof);
-    }
+    let proof_len = all_proof[0].len();
+    let total_len = 8 + all_proof.len() * (8 + proof_len);
+
+    let mut all_proof_serialized = vec![0u8; total_len];
+    // Write the lengths
+    all_proof_serialized[0..8].copy_from_slice(&(all_proof.len() as u64).to_le_bytes());
+
+    // Use par_chunks_mut instead of for_each_with
+    all_proof_serialized[8..].par_chunks_mut(proof_len + 8).enumerate().for_each(|(i, chunk)| {
+        chunk[0..8].copy_from_slice(&(proof_len as u64).to_le_bytes());
+        chunk[8..].copy_from_slice(&all_proof[i]);
+    });
+    println!("Time epoch 2 elapsed: {:?}", start_time_orig.elapsed());
     write_byte_array(out_pipe, &all_proof_serialized)?;
+    println!("Time epoch 2.1 elapsed: {:?}, pipe writes: {:?}", start_time_orig.elapsed(), all_proof_serialized.len());
 
     let vk = vec![];
+    println!("Time epoch 3 elapsed: {:?}", start_time_orig.elapsed());
     write_byte_array(out_pipe, &vk)?;
+    println!("Time epoch 3.1 elapsed: {:?}, pipe writes: {:?}", start_time_orig.elapsed(), vk.len());
 
     let mut all_pis_serialized = vec![];
     all_pis_serialized.extend_from_slice(&(all_pis.len() as u64).to_le_bytes());
@@ -244,9 +266,12 @@ fn prove(
         all_pis_serialized.extend_from_slice(&(pis.len() as u64).to_le_bytes());
         all_pis_serialized.extend_from_slice(pis);
     }
+    println!("Time epoch 4 elapsed: {:?}", start_time_orig.elapsed());
     write_byte_array(out_pipe, &all_pis_serialized)?;
+    println!("Time epoch 4.1 elapsed: {:?}, pipe writes: {:?}", start_time_orig.elapsed(), all_pis_serialized.len());
 
     out_pipe.flush()?;
+    println!("all done");
     Ok(())
 }
 
@@ -254,6 +279,7 @@ fn verify(
     in_pipe: &mut BufReader<File>,
     out_pipe: &mut File,
     par_factor: usize,
+    repeat_factor: usize,
     verifier_repeat_num: u64,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let file = std::fs::File::open("circuit.txt").unwrap();
@@ -309,9 +335,13 @@ fn verify(
             .zip(all_circuit.iter_mut())
             .zip(all_verifier.iter_mut())
             .for_each(|((((full_proof, pis), result), c), v)| {
-                let (proof, claimed_v) = load_proof_and_claimed_v(full_proof);
-                c.layers[0].input_vals = load_inputs(pis);
-                *result = v.verify(c, &claimed_v, &proof)
+                let proof_length = full_proof.len() / repeat_factor;
+                assert!(full_proof.len() % repeat_factor == 0);
+                for i in 0..repeat_factor {
+                    let (proof, claimed_v) = load_proof_and_claimed_v(full_proof[i * proof_length..(i + 1) * proof_length].as_ref());
+                    c.layers[0].input_vals = load_inputs(pis);
+                    *result = v.verify(c, &claimed_v, &proof)
+                }
             });
         final_result &= all_result.into_iter().all(|x| x);
     }
@@ -329,14 +359,15 @@ fn main() -> std::io::Result<()> {
     // Usage: ./expander-keccak <mode:prove/verify> <par_factor> -toMe <in_pipe> -toSPJ <out_pipe>;
     let mode = &args[1];
     let par_factor: usize = args[2].parse().unwrap();
-    let in_pipe_name = &args[4];
+    let repeat_factor: usize = args[3].parse().unwrap();
+    let in_pipe_name = &args[5];
     let mut in_pipe = std::io::BufReader::new(File::open(in_pipe_name)?);
-    let out_pipe_name = &args[6];
+    let out_pipe_name = &args[7];
     let mut out_pipe = File::create(out_pipe_name)?;
 
     match mode.as_str() {
-        "prove" => prove(&mut in_pipe, &mut out_pipe, par_factor).unwrap(),
-        "verify" => verify(&mut in_pipe, &mut out_pipe, par_factor, 2).unwrap(),
+        "prove" => prove(&mut in_pipe, &mut out_pipe, par_factor, repeat_factor).unwrap(),
+        "verify" => verify(&mut in_pipe, &mut out_pipe, par_factor, repeat_factor, 2).unwrap(),
         _ => panic!("Invalid mode: {}", mode),
     }
     Ok(())
@@ -365,7 +396,6 @@ fn write_byte_array<W: Write>(writer: &mut W, arr: &[u8]) -> std::io::Result<()>
     let len = arr.len() as u64;
     writer.write_all(&len.to_le_bytes())?;
     writer.write_all(arr)?;
-    writer.flush()?;
     Ok(())
 }
 
