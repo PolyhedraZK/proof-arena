@@ -47,7 +47,6 @@ circuit.txt
 
 # rust target files
 target/
-Cargo.lock
 
 # halo2 proof temp files
 *.data
