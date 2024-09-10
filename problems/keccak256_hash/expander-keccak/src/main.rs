@@ -239,6 +239,9 @@ fn prove(
     println!("Proving done");
     println!("Time epoch 1 elapsed: {:?}", start_time_orig.elapsed());
 
+    println!("all_proof.len(): {}", all_proof.len());
+    println!("all_proof[0].len(): {}", all_proof[0].len());
+
     let proof_len = all_proof[0].len();
     let total_len = 8 + all_proof.len() * (8 + proof_len);
 
