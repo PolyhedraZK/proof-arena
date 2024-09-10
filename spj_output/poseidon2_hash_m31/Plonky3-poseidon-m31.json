@@ -3,15 +3,15 @@
   "prover_name": "Plonky3 Poseidon-m31 Prover",
   "proof_system": "Plony3",
   "algorithm": "Plonk",
-  "setup_time": 1.0262847900390625e-8,
-  "witness_generation_time": 4.2380322265625e-7,
-  "proof_generation_time": 0.00001525869465637207,
-  "verify_time": 3.789376397857666e-7,
-  "peak_memory": 2.02972412109375,
-  "proof_size": 10.10736083984375,
+  "setup_time": 1.017622947692871e-9,
+  "witness_generation_time": 3.0613800859451293e-7,
+  "proof_generation_time": 0.0000010666776790618896,
+  "verify_time": 7.82895192362368e-9,
+  "peak_memory": 2.2835121154785156,
+  "proof_size": 10.107362747192383,
   "status": true,
   "error_msg": "",
   "max_cpu": 64,
-  "n": 65536,
-  "verifier_num_repeats": 1000
+  "n": 4194304,
+  "verifier_num_repeats": 6400
 }
