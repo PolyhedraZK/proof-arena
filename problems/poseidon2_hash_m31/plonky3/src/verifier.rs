@@ -47,12 +47,13 @@ fn main() -> std::io::Result<()> {
     log_file.write_all(b"setups done\n")?;
 
     // Set number of verification repetitions
-    let repeat = 1000u64;
+    let repeat = 100u64;
 
     // Read proof, vk, and witnesses from SPJ
     let proof_bytes = read_blob(&mut spj_to_verifier_pipe)?;
     log_file
         .write_all(format!("proof extracted from pipe, size {}\n", proof_bytes.len()).as_bytes())?;
+    let proofs = parse_proof(&proof_bytes);
 
     let vk_bytes = read_blob(&mut spj_to_verifier_pipe)?;
     log_file.write_all(format!("vk extracted from pipe, size {}\n", vk_bytes.len()).as_bytes())?;
@@ -66,12 +67,14 @@ fn main() -> std::io::Result<()> {
     let (perm, config, air) = setup();
 
     // Verify SNARK
-
     let res = (0..repeat)
         .map(|_| {
             let timer = start_timer!(|| "verification time");
-            let proof = bincode::deserialize::<Proof<MyConfig>>(proof_bytes.as_ref()).unwrap();
-            let res = verify_poseidon(&perm, &config, &air, proof);
+            let res = proofs.iter().all(|&proof_bytes| {
+                let proof = bincode::deserialize::<Proof<MyConfig>>(proof_bytes).unwrap();
+                verify_poseidon(&perm, &config, &air, proof)
+            });
+
             end_timer!(timer);
             res
         })
@@ -84,8 +87,15 @@ fn main() -> std::io::Result<()> {
         false => 0,
     };
     write_byte_array(&mut verifier_to_spj_pipe, &[res])?;
-    write_byte_array(&mut verifier_to_spj_pipe, repeat.to_le_bytes().as_ref())?;
-    log_file.write_all(format!("write to SPJ: repeating {} times\n", repeat).as_bytes())?;
+
+    let total_proofs_verified = repeat * proofs.len() as u64;
+    write_byte_array(
+        &mut verifier_to_spj_pipe,
+        total_proofs_verified.to_le_bytes().as_ref(),
+    )?;
+    log_file.write_all(
+        format!("write to SPJ: verified {} proofs\n", total_proofs_verified).as_bytes(),
+    )?;
     Ok(())
 }
 
@@ -107,4 +117,14 @@ fn write_byte_array<W: Write>(writer: &mut W, arr: &[u8]) -> std::io::Result<()>
     writer.write_all(arr)?;
     writer.flush()?;
     Ok(())
+}
+
+/// parse the proof
+fn parse_proof(buf: &[u8]) -> Vec<&[u8]> {
+    let num_proofs = usize::from_le_bytes(buf[..8].try_into().unwrap());
+    let total_len = buf.len() - 8;
+    let proof_len = total_len / num_proofs;
+    (0..num_proofs)
+        .map(|i| &buf[8 + i * proof_len..8 + (i + 1) * proof_len])
+        .collect()
 }
