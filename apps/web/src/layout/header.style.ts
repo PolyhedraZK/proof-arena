@@ -154,6 +154,7 @@ export default createStyles(({ responsive, isDarkMode }) => {
       },
       '.proof-menu-item-selected': {
         color: '#2B332D',
+        fontWeight: 500,
       },
       '.proof-menu-submenu-title': {
         height: 88,

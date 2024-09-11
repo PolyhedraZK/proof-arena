@@ -11,6 +11,9 @@ const MachineSpecPage = React.lazy(() => import('./pages/MachineSpec'));
 const SupportedProversPage = React.lazy(
   () => import('./pages/SupportedProvers')
 );
+const HowToInteractWithJudge = React.lazy(
+  () => import('./pages/HowToInteractWithJudge')
+);
 
 import '@/components/modal';
 
@@ -27,6 +30,10 @@ function App() {
             <Route path="problems/:detailId" element={<ProblemsDetail />} />
             <Route path="how-to-contribute" element={<HowToContributePage />} />
             <Route path="machine-spec" element={<MachineSpecPage />} />
+            <Route
+              path="/how-to-interact-with-judge"
+              element={<HowToInteractWithJudge />}
+            />
             <Route
               path="supported-provers"
               element={<SupportedProversPage />}

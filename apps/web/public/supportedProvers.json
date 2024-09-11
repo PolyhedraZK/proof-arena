@@ -8,13 +8,13 @@
   {
     "name": "Gnark",
     "inventor": "Consensys",
-    "status": "Tested on problem 1",
+    "status": "Tested on problem 2",
     "type": "ZK Circuit Prover"
   },
   {
     "name": "Plonky3",
     "inventor": "Polygon",
-    "status": "In Progress",
+    "status": "Tested on problem 2",
     "type": "ZK Circuit Prover"
   },
   {
@@ -43,14 +43,20 @@
   },
   {
     "name": "Valida",
-    "inventor": "Polygon & Lita",
+    "inventor": "Lita Foundation & Polygon",
     "status": "Not started",
     "type": "zkVM"
   },
   {
     "name": "Nexus 2.0",
-    "inventor": "zkVM",
+    "inventor": "Nexus",
     "status": "Not started",
     "type": "zkVM"
+  },
+  {
+    "name": "Halo2",
+    "inventor": "PSE",
+    "status": "Tested on problem 2",
+    "type": "ZK Circuit Prover"
   }
 ]
