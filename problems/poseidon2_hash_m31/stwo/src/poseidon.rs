@@ -126,7 +126,7 @@ pub struct LookupData {
 
 pub fn gen_trace(
     log_size: u32,
-    _instance_bytes: &[[u32; N_STATE]],
+    instance_bytes: &[[u32; N_STATE]],
 ) -> (
     ColumnVec<CircleEvaluation<SimdBackend, BaseField, BitReversedOrder>>,
     LookupData,
@@ -148,19 +148,12 @@ pub fn gen_trace(
         // Initial state.
         let mut col_index = 0;
         for rep_i in 0..N_INSTANCES_PER_ROW {
-            // somehow if we pass the instance_bytes here, the test fails.
-            //
-            // let mut state: [_; N_STATE] = std::array::from_fn(|state_i| {
-            //     PackedBaseField::from_array(std::array::from_fn(|i| {
-            //         BaseField::from_u32_unchecked(instance_bytes[state_i][i])
-            //     }))
-            // });
-
             let mut state: [_; N_STATE] = std::array::from_fn(|state_i| {
                 PackedBaseField::from_array(std::array::from_fn(|i| {
-                    BaseField::from_u32_unchecked((vec_index * 16 + i + state_i + rep_i) as u32)
+                    BaseField::partial_reduce(instance_bytes[state_i][i])
                 }))
             });
+
             state.iter().copied().for_each(|s| {
                 trace[col_index].data[vec_index] = s;
                 col_index += 1;
