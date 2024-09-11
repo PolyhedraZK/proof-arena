@@ -11,13 +11,11 @@ rm -f /tmp/spj_to_prover /tmp/prover_to_spj /tmp/spj_to_verifier /tmp/verifier_t
 cd problems/poseidon2_hash_m31/stwo/ && LOG_N_INSTANCES=18 RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release && cd -
 
 # build go SPJ
-go mod -C problems/poseidon2_hash_m31/expectedProver tidy
 go mod -C problems/poseidon2_hash_m31/SPJ tidy
-go build -C problems/poseidon2_hash_m31/expectedProver
 go build -C problems/poseidon2_hash_m31/SPJ
 
 # Run the SPJ
-problems/poseidon2_hash_m31/SPJ/SPJ -cpu 1 -largestN 136 \
+problems/poseidon2_hash_m31/SPJ/SPJ -cpu 16 -largestN 65536 \
   -memory 32768 -time 1200 \
   -json spj_output/poseidon2_hash_m31/Stwo-poseidon-m31.json \
   -prover "problems/poseidon2_hash_m31/stwo/target/release/prover" \

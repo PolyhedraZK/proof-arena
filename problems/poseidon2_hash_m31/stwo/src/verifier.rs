@@ -43,12 +43,13 @@ fn main() -> std::io::Result<()> {
     log_file.write_all(b"setups done\n")?;
 
     // Set number of verification repetitions
-    let repeat = 1000u64;
+    let repeat = 100u64;
 
     // Read proof, vk, and witnesses from SPJ
     let proof_bytes = read_blob(&mut spj_to_verifier_pipe)?;
     log_file
         .write_all(format!("proof extracted from pipe, size {}\n", proof_bytes.len()).as_bytes())?;
+    let proofs = parse_proof(&proof_bytes);
 
     let vk_bytes = read_blob(&mut spj_to_verifier_pipe)?;
     log_file.write_all(format!("vk extracted from pipe, size {}\n", vk_bytes.len()).as_bytes())?;
@@ -63,14 +64,15 @@ fn main() -> std::io::Result<()> {
 
     // Verify SNARK
 
-    let res = (0..repeat)
-        .map(|_| {
-            let timer = start_timer!(|| "verification time");
-            let res = verify_poseidon(&pcs_config, &proof_bytes);
-            end_timer!(timer);
+    let res = (0..repeat).all(|_| {
+        let timer = start_timer!(|| "verification time");
+        let res = proofs.iter().all(|proof| {
+            let res = verify_poseidon(&pcs_config, proof);
             res
-        })
-        .all(|x| x);
+        });
+        end_timer!(timer);
+        res
+    });
     log_file.write_all(format!("verification: {} \n", res).as_bytes())?;
 
     // Send verification result to SPJ
@@ -102,4 +104,14 @@ fn write_byte_array<W: Write>(writer: &mut W, arr: &[u8]) -> std::io::Result<()>
     writer.write_all(arr)?;
     writer.flush()?;
     Ok(())
+}
+
+/// parse the proof
+fn parse_proof(buf: &[u8]) -> Vec<&[u8]> {
+    let num_proofs = usize::from_le_bytes(buf[..8].try_into().unwrap());
+    let total_len = buf.len() - 8;
+    let proof_len = total_len / num_proofs;
+    (0..num_proofs)
+        .map(|i| &buf[8 + i * proof_len..8 + (i + 1) * proof_len])
+        .collect()
 }

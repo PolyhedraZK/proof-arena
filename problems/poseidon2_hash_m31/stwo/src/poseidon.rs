@@ -126,7 +126,7 @@ pub struct LookupData {
 
 pub fn gen_trace(
     log_size: u32,
-    _instance_bytes: Vec<[u32; N_STATE]>,
+    _instance_bytes: &[[u32; N_STATE]],
 ) -> (
     ColumnVec<CircleEvaluation<SimdBackend, BaseField, BitReversedOrder>>,
     LookupData,
@@ -276,7 +276,7 @@ pub fn setup(log_n_instances: u32) -> (PcsConfig, TwiddleTree<SimdBackend>) {
 pub fn prove_poseidon(
     config: &PcsConfig,
     twiddles: &TwiddleTree<SimdBackend>,
-    instance_bytes: Vec<[u32; N_STATE]>,
+    instance_bytes: &[[u32; N_STATE]],
 ) -> Vec<u8> {
     // Setup protocol.
     let channel = &mut Blake2sChannel::default();

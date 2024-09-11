@@ -2,15 +2,21 @@ use std::fs::File;
 use std::io::Read;
 use std::io::Write;
 
+use rayon::current_num_threads;
+use rayon::iter::IntoParallelRefIterator;
+use rayon::iter::ParallelIterator;
 use stwo_poseidon::prove_poseidon;
 use stwo_poseidon::setup;
 use stwo_poseidon::N_LOG_INSTANCES;
 use stwo_poseidon::N_STATE;
 
 fn main() -> std::io::Result<()> {
+    // current number of threads, should be governed by the SPJ
+    let num_threads = current_num_threads() as u64;
+
     // Initialize logging
     let mut log_file = File::create("/tmp/prover.log")?;
-    log_file.write_all(b"start \n")?;
+    log_file.write_all(format!("start with {} threads\n", num_threads).as_bytes())?;
 
     // Get pipe names from command-line arguments
     let args: Vec<String> = std::env::args().collect();
@@ -48,7 +54,10 @@ fn main() -> std::io::Result<()> {
     write_string(&mut prover_to_spj_pipe, "STWO")?;
 
     // Send N to SPJ (assuming MAX_NUM_HASHES is the N value)
-    write_u64(&mut prover_to_spj_pipe, 1 << N_LOG_INSTANCES as u64)?;
+    write_u64(
+        &mut prover_to_spj_pipe,
+        num_threads << N_LOG_INSTANCES as u64,
+    )?;
 
     // Read witness from SPJ
     let buf = read_blob(&mut spj_to_prover_pipe)?;
@@ -58,7 +67,7 @@ fn main() -> std::io::Result<()> {
     log_file.write_all(format!("buf: {:?}\n", buf[..32].as_ref()).as_bytes())?;
 
     // Parse witness and compute digests
-    let instance_bytes = parse_prover_in(&buf);
+    let instance_bytes = parse_prover_in(&buf, num_threads as usize);
     log_file.write_all(b"witness extracted from pipe\n")?;
 
     // Send digests back to SPJ
@@ -76,7 +85,13 @@ fn main() -> std::io::Result<()> {
     log_file.write_all(b"sending `witness generated` to SPJ\n")?;
 
     // Generate proof
-    let proof_bytes = prove_poseidon(&pcs_config, &twiddles, instance_bytes);
+    let proof_bytes = instance_bytes
+        .par_iter()
+        .map(|instance| prove_poseidon(&pcs_config, &twiddles, instance))
+        .collect::<Vec<_>>()
+        .concat();
+    // front pad the number of proofs
+    let proof_bytes = [num_threads.to_le_bytes().to_vec(), proof_bytes].concat();
 
     // Send proof to SPJ
     log_file
@@ -99,19 +114,27 @@ fn main() -> std::io::Result<()> {
     Ok(())
 }
 
-fn parse_prover_in(buf: &[u8]) -> Vec<[u32; N_STATE]> {
-    buf.chunks(N_STATE)
-        .map(|chunk| {
+fn parse_prover_in(buf: &[u8], number_threads: usize) -> Vec<Vec<[u32; N_STATE]>> {
+    let total_num = buf.len() / 4 / N_STATE;
+    let num_per_thread = total_num / number_threads;
+
+    let mut res = vec![];
+    for i in 0..number_threads {
+        let mut thread_res = vec![];
+        for j in 0..num_per_thread {
+            let thread_buf = &buf[(i * num_per_thread + j) * 4 * N_STATE
+                ..(i * num_per_thread + j + 1) * 4 * N_STATE];
             let mut tmp = [0u32; N_STATE];
 
-            chunk
+            thread_buf
                 .chunks(4)
                 .enumerate()
                 .for_each(|(i, buf)| tmp[i] = u32::from_le_bytes([buf[0], buf[1], buf[2], buf[3]]));
-
-            tmp
-        })
-        .collect()
+            thread_res.push(tmp);
+        }
+        res.push(thread_res);
+    }
+    res
 }
 
 // Helper functions for SPJ communication
