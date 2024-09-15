@@ -17,7 +17,7 @@ go build -C problems/poseidon2_hash_m31/expectedProver
 go build -C problems/poseidon2_hash_m31/SPJ
 
 # Run the SPJ
-problems/poseidon2_hash_m31/SPJ/SPJ -cpu 64 -largestN 136 \
+problems/poseidon2_hash_m31/SPJ/SPJ -cpu 64 -largestN 1024 \
   -memory 32768 -time 1200 \
   -json spj_output/poseidon2_hash_m31/Plonky3-poseidon-m31.json \
   -prover "problems/poseidon2_hash_m31/plonky3/target/release/prover" \
