@@ -1,5 +1,3 @@
-# How to Interact with SPJ (Go Version)
-
 ## Inter-process Communication (Prover, Verifier <-> SPJ)
 
 We use [named pipes](https://en.wikipedia.org/wiki/Named_pipe) for inter-process communication between the prover, verifier, and the Special Judge (SPJ).
