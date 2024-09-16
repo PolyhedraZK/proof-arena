@@ -6,7 +6,7 @@ pub use poseidon::*;
 #[cfg(test)]
 mod test;
 
-pub const N_LOG_INSTANCES: usize = 10;
+pub const N_LOG_INSTANCES: usize = 18;
 
 pub const N_LOG_INSTANCES_PER_ROW: usize = 3;
 
