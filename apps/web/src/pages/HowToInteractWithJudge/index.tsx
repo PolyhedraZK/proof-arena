@@ -15,14 +15,22 @@ const HowToInteractWithJudge = () => {
   const { styles } = useStyles();
 
   const {
-    data: HowToInteractWithSPJData,
-    error,
-    loading,
+    data: HowToInteractWithSPJDataGolang,
+    error: errorGolang,
+    loading: loadingGolang,
   } = useRequest(() =>
     fetch('/docs/how_to_interact_with_SPJ.md').then(res => res.text())
   );
 
-  if (error) {
+  const {
+    data: HowToInteractWithSPJDataRust,
+    error: errorRust,
+    loading: loadingRust,
+  } = useRequest(() =>
+    fetch('/docs/how_to_interact_with_SPJ_Rust.md').then(res => res.text())
+  );
+
+  if (errorGolang || errorRust) {
     return <div>Failed to load How to Contribute content</div>;
   }
 
@@ -38,31 +46,38 @@ const HowToInteractWithJudge = () => {
               <div className={styles.title}>
                 How to use SPJ <div className={styles.green} />
               </div>
-              {loading ? (
+              {loadingGolang ? (
                 <>
                   <Skeleton active />
                   <Skeleton active />
                 </>
               ) : (
-                HowToInteractWithSPJData && (
-                  <MdDescription mdFile={HowToInteractWithSPJData} />
+                HowToInteractWithSPJDataGolang && (
+                  <MdDescription mdFile={HowToInteractWithSPJDataGolang} />
                 )
               )}
-              {/* <div style={{ marginTop: '48px' }}>
-          <h2>Discussions</h2>
-          <Giscus
-            {...giscusConfig}
-            term="How to Contribute"
-            mapping="specific"
-          />
-        </div> */}
             </div>
           </TabPane>
           <TabPane
-            disabled
             tab={<span className={styles.tabTitle}>Rust</span>}
             key="zkvm"
-          />
+          >
+            <div className={styles.box}>
+              <div className={styles.title}>
+                How to use SPJ <div className={styles.green} />
+              </div>
+              {loadingRust ? (
+                <>
+                  <Skeleton active />
+                  <Skeleton active />
+                </>
+              ) : (
+                HowToInteractWithSPJDataRust && (
+                  <MdDescription mdFile={HowToInteractWithSPJDataRust} />
+                )
+              )}
+            </div>
+          </TabPane>
         </Tabs>
       </div>
     </div>
