@@ -54,10 +54,9 @@ fn main() -> std::io::Result<()> {
     write_string(&mut prover_to_spj_pipe, "STWO")?;
 
     // Send N to SPJ (assuming MAX_NUM_HASHES is the N value)
-    write_u64(
-        &mut prover_to_spj_pipe,
-        num_threads << N_LOG_INSTANCES as u64,
-    )?;
+    let num_instance = num_threads << N_LOG_INSTANCES as u64;
+    log_file.write_all(format!("num instance: {:?}\n", num_instance).as_bytes())?;
+    write_u64(&mut prover_to_spj_pipe, num_instance)?;
 
     // Read witness from SPJ
     let buf = read_blob(&mut spj_to_prover_pipe)?;
@@ -84,14 +83,27 @@ fn main() -> std::io::Result<()> {
     write_string(&mut prover_to_spj_pipe, "witness generated")?;
     log_file.write_all(b"sending `witness generated` to SPJ\n")?;
 
+    let start_time_orig = std::time::Instant::now();
     // Generate proof
-    let proof_bytes = instance_bytes
+    let proofs = instance_bytes
         .par_iter()
         .map(|instance| prove_poseidon(&pcs_config, &twiddles, instance))
-        .collect::<Vec<_>>()
-        .concat();
-    // front pad the number of proofs
-    let proof_bytes = [num_threads.to_le_bytes().to_vec(), proof_bytes].concat();
+        .collect::<Vec<_>>();
+    log_file.write_all(
+        format!(
+            "Finished proof generation.    Elapsed: {:?}\n",
+            start_time_orig.elapsed()
+        )
+        .as_bytes(),
+    )?;
+    let proof_bytes = bincode::serialize(&proofs).unwrap();
+    log_file.write_all(
+        format!(
+            "Finished proof serialization. Elapsed: {:?}\n",
+            start_time_orig.elapsed()
+        )
+        .as_bytes(),
+    )?;
 
     // Send proof to SPJ
     log_file
@@ -99,6 +111,13 @@ fn main() -> std::io::Result<()> {
     log_file
         .write_all(format!("first 32 of proof: {:?}\n", proof_bytes[..32].as_ref()).as_bytes())?;
     write_byte_array(&mut prover_to_spj_pipe, &proof_bytes)?;
+    log_file.write_all(
+        format!(
+            "Finished sending to pipe.     Elapsed: {:?}\n",
+            start_time_orig.elapsed()
+        )
+        .as_bytes(),
+    )?;
 
     // Send VK to SPJ
     let vk_bytes = vec![];

@@ -4,7 +4,7 @@ use std::{
 };
 
 use ark_std::{end_timer, start_timer};
-use stwo_poseidon::{setup, verify_poseidon, N_LOG_INSTANCES};
+use stwo_poseidon::{setup, verify_poseidon, WrappedProof, N_LOG_INSTANCES};
 
 fn main() -> std::io::Result<()> {
     // Initialize logging
@@ -49,7 +49,13 @@ fn main() -> std::io::Result<()> {
     let proof_bytes = read_blob(&mut spj_to_verifier_pipe)?;
     log_file
         .write_all(format!("proof extracted from pipe, size {}\n", proof_bytes.len()).as_bytes())?;
-    let proofs = parse_proof(&proof_bytes);
+    let proofs = bincode::deserialize::<Vec<WrappedProof>>(&proof_bytes).unwrap();
+    log_file
+        .write_all(format!("proof deserialized, {} proofs in total\n", proofs.len()).as_bytes())?;
+    let proof_bytes = proofs
+        .iter()
+        .map(|p| bincode::serialize(p).unwrap())
+        .collect::<Vec<_>>();
 
     let vk_bytes = read_blob(&mut spj_to_verifier_pipe)?;
     log_file.write_all(format!("vk extracted from pipe, size {}\n", vk_bytes.len()).as_bytes())?;
@@ -61,15 +67,14 @@ fn main() -> std::io::Result<()> {
 
     // Setup the parameters
     let (pcs_config, _twiddles) = setup(N_LOG_INSTANCES as u32);
+    log_file.write_all(b"finished setup\n")?;
 
     // Verify SNARK
-
     let res = (0..repeat).all(|_| {
         let timer = start_timer!(|| "verification time");
-        let res = proofs.iter().all(|proof| {
-            let res = verify_poseidon(&pcs_config, proof);
-            res
-        });
+        let res = proof_bytes
+            .iter()
+            .all(|proof| verify_poseidon(&pcs_config, proof));
         end_timer!(timer);
         res
     });
@@ -104,14 +109,4 @@ fn write_byte_array<W: Write>(writer: &mut W, arr: &[u8]) -> std::io::Result<()>
     writer.write_all(arr)?;
     writer.flush()?;
     Ok(())
-}
-
-/// parse the proof
-fn parse_proof(buf: &[u8]) -> Vec<&[u8]> {
-    let num_proofs = usize::from_le_bytes(buf[..8].try_into().unwrap());
-    let total_len = buf.len() - 8;
-    let proof_len = total_len / num_proofs;
-    (0..num_proofs)
-        .map(|i| &buf[8 + i * proof_len..8 + (i + 1) * proof_len])
-        .collect()
 }

@@ -270,7 +270,7 @@ pub fn prove_poseidon(
     config: &PcsConfig,
     twiddles: &TwiddleTree<SimdBackend>,
     instance_bytes: &[[u32; N_STATE]],
-) -> Vec<u8> {
+) -> WrappedProof {
     // Setup protocol.
     let channel = &mut Blake2sChannel::default();
     let commitment_scheme =
@@ -305,20 +305,19 @@ pub fn prove_poseidon(
 
     let sizes = component.trace_log_degree_bounds();
 
-    let wrapped_proof = WrappedProof {
+    WrappedProof {
         proof,
         claimed_sum,
         sizes,
-    };
-    bincode::serialize(&wrapped_proof).unwrap()
+    }
 }
 
-pub fn verify_poseidon(config: &PcsConfig, proof_bytes: &[u8]) -> bool {
+pub fn verify_poseidon(config: &PcsConfig, wrapped_proof_bytes: &[u8]) -> bool {
     let WrappedProof {
         proof,
         claimed_sum,
         sizes,
-    } = bincode::deserialize::<WrappedProof>(proof_bytes).unwrap();
+    } = bincode::deserialize(wrapped_proof_bytes).unwrap();
 
     // Verify.
     // TODO: Create Air instance independently.
@@ -355,6 +354,8 @@ pub fn verify_poseidon(config: &PcsConfig, proof_bytes: &[u8]) -> bool {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct WrappedProof {
+    // ZZ: it is quite strange that the proof doesn't implement Clone trait...
+    // So we have to pass the serialized proofs around
     pub proof: StarkProof<Blake2sMerkleHasher>,
     pub claimed_sum: SecureField,
     pub sizes: TreeVec<ColumnVec<u32>>,
