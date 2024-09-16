@@ -106,6 +106,12 @@ jobs:
 
         Please review the changes and merge if appropriate."
 
+        # Determine base branch
+        BASE_BRANCH="main"
+        if ! echo "$COMMIT_MSG" | grep -q "SUBMISSION_READY"; then
+          BASE_BRANCH="$CURRENT_BRANCH"
+        fi
+
         # Create a pull request using GitHub API
         PR_RESPONSE=$(curl -X POST \
           -H "Authorization: token $PAT" \
@@ -116,7 +122,7 @@ jobs:
           "title": "$PR_TITLE",
           "body": "$PR_BODY",
           "head": "$NEW_BRANCH",
-          "base": "$CURRENT_BRANCH"
+          "base": "$BASE_BRANCH"
         }
         EOF
         )
