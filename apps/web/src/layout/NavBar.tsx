@@ -14,6 +14,7 @@ import useStyles from './header.style';
 
 export const links = [
   { to: '/problems', label: 'Problems' },
+  { to: '/status', label: 'Status' },
   { to: '/how-to-contribute', label: 'How to Contribute' },
   { to: '/machine-spec', label: 'Machine Specification' },
   { to: '/supported-provers', label: 'Supported Provers' },

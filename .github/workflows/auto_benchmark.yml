@@ -18,20 +18,20 @@ jobs:
       id: extract_path
       run: |
         COMMIT_MSG=$(git log --format=%B -n 1 ${{ github.sha }})
-        SCRIPT_PATH=$(echo "$COMMIT_MSG" | grep -oP '(?<=\[script:).*?(?=\])' || true)
+        SCRIPT_PATH=$(echo "$COMMIT_MSG" | grep -oP '^\[script:.*?\]' | sed 's/^\[script://;s/\]$//' || true)
         if [ -n "$SCRIPT_PATH" ]; then
           echo "SCRIPT_PATH=$SCRIPT_PATH" >> $GITHUB_OUTPUT
           echo "EXTRACTION_SUCCESS=true" >> $GITHUB_OUTPUT
           echo "Script path found: $SCRIPT_PATH"
         else
-          echo "No script path found in commit message. Workflow will terminate gracefully."
+          echo "No valid script path found in commit message. Workflow will terminate gracefully."
           echo "EXTRACTION_SUCCESS=false" >> $GITHUB_OUTPUT
         fi
 
-    - name: Exit workflow if no script path found
+    - name: Exit workflow if no valid script path found
       if: steps.extract_path.outputs.EXTRACTION_SUCCESS != 'true'
       run: |
-        echo "No script path found. Exiting workflow successfully."
+        echo "No valid script path found or commit message format incorrect. Exiting workflow successfully."
         exit 0
     - name: Setup Go
       if: steps.extract_path.outputs.EXTRACTION_SUCCESS == 'true'
@@ -50,6 +50,9 @@ jobs:
           if [[ "$SCRIPT_PATH" == *.sh ]]; then
             chmod +x "$SCRIPT_PATH"
             ./"$SCRIPT_PATH"
+
+            PROBLEM_ID=$(jq -r '.problem_id' spj_output/result.json)
+            echo "PROBLEM_ID=$PROBLEM_ID" >> $GITHUB_OUTPUT
           elif [[ "$SCRIPT_PATH" == *.py ]]; then
             python "$SCRIPT_PATH"
           else
@@ -78,24 +81,36 @@ jobs:
       env:
         PAT: ${{ secrets.PAT }}
       run: |
-        # Create a new branch
-        BRANCH_NAME="auto-update-$(date +%Y%m%d-%H%M%S)"
-        git checkout -b $BRANCH_NAME
+        # Get the current branch name
+        CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 
-        # Commit changes
+        # Create a new branch based on the current branch
+        NEW_BRANCH="${CURRENT_BRANCH}-update-$(date +%Y%m%d-%H%M%S)"
+        git checkout -b $NEW_BRANCH
+
+        # Commit changes using the specified commit message format
         git config user.name github-actions
         git config user.email github-actions@github.com
         git add spj_output/
-        git commit -m "Auto-update: Changes in spj_output after script execution"
+        git commit -m "Auto-submission: Branch: $CURRENT_BRANCH"
 
-        # Push the branch to the remote repository
-        git push origin $BRANCH_NAME
+        # Push the new branch to the remote repository
+        git push origin $NEW_BRANCH
+
+        # Get current UTC time
+        UTC_TIME=$(date -u +"%Y-%m-%d %H:%M:%S UTC")
 
         # Prepare PR title and body
-        PR_TITLE="Auto-update: Changes in spj_output"
+        PR_TITLE="Auto-submission: Problem ID: $PROBLEM_ID, Branch: [$CURRENT_BRANCH ($UTC_TIME)]"
         PR_BODY="This pull request was automatically created by the CI workflow. It contains updates to the spj_output/ directory after script execution.
 
         Please review the changes and merge if appropriate."
+
+        # Determine base branch
+        BASE_BRANCH="main"
+        if ! echo "$COMMIT_MSG" | grep -q "SUBMISSION_READY"; then
+          BASE_BRANCH="$CURRENT_BRANCH"
+        fi
 
         # Create a pull request using GitHub API
         PR_RESPONSE=$(curl -X POST \
@@ -106,8 +121,8 @@ jobs:
         {
           "title": "$PR_TITLE",
           "body": "$PR_BODY",
-          "head": "$BRANCH_NAME",
-          "base": "main"
+          "head": "$NEW_BRANCH",
+          "base": "$BASE_BRANCH"
         }
         EOF
         )

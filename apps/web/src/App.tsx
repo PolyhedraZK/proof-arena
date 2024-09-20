@@ -18,6 +18,7 @@ const HowToInteractWithJudge = React.lazy(
 import '@/components/modal';
 
 import Loading from './components/base/Loading';
+import StatusPage from './pages/Status';
 
 function App() {
   return (
@@ -38,6 +39,7 @@ function App() {
               path="supported-provers"
               element={<SupportedProversPage />}
             />
+            <Route path="/status" element={<StatusPage />} />
           </Route>
         </Routes>
       </Suspense>
