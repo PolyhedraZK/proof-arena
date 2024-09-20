@@ -1,10 +1,10 @@
 # Proof Arena
 
-In recent years, there's been a lot of work on new zero-knowledge (ZK) technologies. We're excited to introduce Proof Arena, a platform for testing ZK algorithms that values fairness and detailed data. We invite everyone to help out by adding new tasks and algorithms.
+In recent years, there's been significant advancement in zero-knowledge (ZK) technologies. We're excited to introduce Proof Arena, a platform for benchmarking zero-knowledge (ZK) algorithms with a focus on fairness and comprehensive data. We invite the community to contribute by adding new tasks and algorithms.
 
-With the success of projects like ZCash and zkRollups/zkEVM, many new open-source ZK projects have appeared. However, benchmarking these projects has been a challenge. Some projects share impressive numbers without enough details for others to reproduce the results.
+With the success of projects like ZCash and zkRollups/zkEVM, many new open-source ZK projects have emerged. However, benchmarking these projects has been challenging. Some projects share impressive numbers without providing sufficient details for result reproduction.
 
-Let's use performance on CPU, GPU, and EVM to find the best algorithms, not just claims on social media with misleading numbers only.
+Let's use performance on CPU, GPU, and EVM to identify the best algorithms, rather than relying on potentially misleading claims on social media.
 
 ## Goals
 
@@ -13,7 +13,7 @@ Let's use performance on CPU, GPU, and EVM to find the best algorithms, not just
 3. **Accessibility:** Presenting data in an easy-to-understand manner.
 4. **Expandability:** Tracking the latest advancements in the field.
 5. **Comprehensiveness:** Benchmarking all aspects of a proving system.
-6. **Modernization:** Regularly updating our hardware. Hardware companies are welcome to submit new hardware requests; we are open to installing your chip for benchmarking.
+6. **Modernization:** Regularly updating our hardware to keep pace with technological advancements. We welcome hardware companies to submit new hardware requests for benchmarking.
 
 Here's a comparison of different benchmarking methods:
 
@@ -65,20 +65,20 @@ We are currently developing an automatic submission system. Until it is availabl
 
 | Number | Proof system name | Inventor | Integration status | Type |
 | --- | --- | --- | --- | --- |
-| 1 | Expander | Polyhedra Network | In Progress | ZK Circuit Prover |
-| 3 | Gnark | Consensys | Tested on problem 2 | ZK Circuit Prover |
-| 4 | Plonky3 | Polygon | Tested on problem 2 | ZK Circuit Prover |
-| 5 | Stwo | Starkware | In Progress | ZK Circuit Prover |
-| 6 | Risc0 | Risc0 | Not started | zkVM |
-| 7 | SP1 | Succinct | Not started | zkVM |
-| 8 | Boojum (Replica of Plonky2) | zkSync | Not started | ZK Circuit Prover |
-| 9 | Valida | Lita Foundation & Polygon | Not started | zkVM |
-| 10 | Nexus 2.0 | Nexus | Not started | zkVM |
-| 11 | Halo2 | PSE | Tested on problem 2 | ZK Circuit Prover |
+| 1 | Expander | Polyhedra Network | Problem 2 | ZK Circuit Prover |
+| 2 | Gnark | Consensys | In Progress | ZK Circuit Prover |
+| 3 | Halo2 | PSE | Problems 1,2 | ZK Circuit Prover |
+| 4 | Plonky3 | Polygon | Problems 1, 2, 3 | ZK Circuit Prover |
+| 5 | Stwo | Starkware | Problems 1, 3 | ZK Circuit Prover |
+<!-- | 6 | Risc0 | Risc0 | Not started | zkVM | -->
+<!-- | 7 | SP1 | Succinct | Not started | zkVM | -->
+<!-- | 8 | Boojum (Replica of Plonky2) | zkSync | Not started | ZK Circuit Prover | -->
+<!-- | 9 | Valida | Lita Foundation & Polygon | Not started | zkVM | -->
+<!-- | 10 | Nexus 2.0 | Nexus | Not started | zkVM | -->
 
 ### Thanks
 
-We thank Google Cloud for their support in developing this platform and Lianmin Zheng for inspiring us and giving us valuable suggestions.
+We extend our gratitude to Google Cloud for their support in developing this platform. We also thank Lianmin Zheng for the inspiration and valuable suggestions provided.
 
 ### How to Cite Us
 
