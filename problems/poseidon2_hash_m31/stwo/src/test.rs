@@ -18,7 +18,8 @@ fn test_simd_poseidon_prove() {
 
     let (pcs_config, twiddles) = setup(N_LOG_INSTANCES as u32);
 
-    let proof_bytes = prove_poseidon(&pcs_config, &twiddles, instance_bytes);
+    let proof = prove_poseidon(&pcs_config, &twiddles, instance_bytes.as_ref());
+    let proof_bytes = bincode::serialize(&proof).unwrap();
 
     let res = verify_poseidon(&pcs_config, &proof_bytes);
     assert!(res)
