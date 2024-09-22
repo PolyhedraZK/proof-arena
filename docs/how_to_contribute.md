@@ -59,6 +59,7 @@ Contributing a solution involves submitting a prover that can solve a problem li
 
 2. **Prepare Your Prover**:
 
+   - Fork the [Proof Arena GitHub repository](https://github.com/PolyhedraZK/proof-arena) to your GitHub account.
    - Implement your prover algorithm, meeting the API standards specified in the SPJ and [Proof Arena GitHub repository](https://github.com/PolyhedraZK/proof-arena).
    - Submitting source code is optional but encouraged for transparency.
    - **Verifier Code**: Submitting your verifier code is mandatory for auditing.
@@ -73,9 +74,9 @@ Contributing a solution involves submitting a prover that can solve a problem li
    - Create a directory for your prover at `problems/[PROBLEM_NAME]/[YOUR_PROVER_NAME]` in your forked repository.
    - Include all necessary files: binaries, verifier code, and documentation.
 
-5. **Trigger CI Process**:
+5. **Trigger Judgement Process**:
 
-   - To trigger the CI process, start with a specific script path in your commit message:
+   - To trigger the judgement process, start with a specific script path in your pull request message:
 
      ```
      [script:problems/[PROBLEM_NAME]/[YOUR_PROVER_NAME]/run.sh]

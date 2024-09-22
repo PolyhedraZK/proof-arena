@@ -2,6 +2,8 @@ name: Execute Script and Create Pull Request
 
 on:
   push:
+  pull_request:
+    types: [opened, synchronize]
 
 jobs:
   execute-script-and-create-pr:
@@ -156,6 +158,7 @@ jobs:
 
     - name: Create Pull Request
       if: |
+        github.event_name == 'push' &&
         steps.check_changes.outputs.CHANGES_EXIST == 'true' &&
         steps.check_submission_ready.outputs.SUBMISSION_READY == 'true'
       env:
@@ -183,12 +186,6 @@ jobs:
 
         Please review the changes and merge if appropriate."
 
-        # Determine base branch
-        BASE_BRANCH="main"
-        if ! echo "$COMMIT_MSG" | grep -q "SUBMISSION_READY"; then
-          BASE_BRANCH="$CURRENT_BRANCH"
-        fi
-
         # Create a pull request using GitHub API
         PR_RESPONSE=$(curl -X POST \
           -H "Authorization: token $PAT" \
@@ -212,3 +209,25 @@ jobs:
           echo "$PR_RESPONSE" | jq .
           exit 1
         fi
+
+    - name: Send email if submission is ready
+      if: |
+        github.event_name == 'pull_request' &&
+        steps.check_changes.outputs.CHANGES_EXIST == 'true' &&
+        steps.check_submission_ready.outputs.SUBMISSION_READY == 'true'
+      uses: dawidd6/action-send-mail@v3
+      with:
+        server_address: smtp.gmail.com
+        server_port: 587
+        username: ${{ secrets.SMTP_USERNAME }}
+        password: ${{ secrets.SMTP_PASSWORD }}
+        subject: "Proof Arena: Submission Ready for Problem ${{ steps.extract_info.outputs.PROBLEM_ID }}, Prover ${{ steps.extract_info.outputs.PROVER_NAME }}"
+        body: |
+          A new submission is ready for review on Proof Arena.
+
+          Problem ID: ${{ steps.extract_info.outputs.PROBLEM_ID }}
+          Prover Name: ${{ steps.extract_info.outputs.PROVER_NAME }}
+
+          Please review the submission and take necessary actions.
+        from: Proof Arena CI <noreply-proof-arena@polyhedra.network>
+        to: arena@polyhedra.network
