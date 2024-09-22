@@ -1,0 +1,17 @@
+{
+  "problem_id": 1,
+  "prover_name": "STWO XOR Prover",
+  "proof_system": "STWO",
+  "algorithm": "STARK",
+  "setup_time": 0.0008622343125,
+  "witness_generation_time": 0.0022024629375,
+  "proof_generation_time": 0.061726850375,
+  "verify_time": 0.00005139,
+  "peak_memory": 4766.5,
+  "proof_size": 1189.75,
+  "status": true,
+  "error_msg": "",
+  "max_cpu": 64,
+  "n": 16,
+  "verifier_num_repeats": 2
+}

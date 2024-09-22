@@ -162,7 +162,7 @@ jobs:
         CURRENT_BRANCH="${{ steps.get_branch.outputs.CURRENT_BRANCH }}"
         PROBLEM_ID="${{ steps.extract_problem_id.outputs.PROBLEM_ID }}"
 
-        # Commit changes
+        # Commit changes using the specified commit message format
         git config user.name github-actions
         git config user.email github-actions@github.com
         git add .
@@ -177,6 +177,12 @@ jobs:
         PR_BODY="This pull request was automatically created by the CI workflow. It contains updates to the spj_output/ directory after script execution.
 
         Please review the changes and merge if appropriate."
+
+        # Determine base branch
+        BASE_BRANCH="main"
+        if ! echo "$COMMIT_MSG" | grep -q "SUBMISSION_READY"; then
+          BASE_BRANCH="$CURRENT_BRANCH"
+        fi
 
         # Create a pull request using GitHub API
         PR_RESPONSE=$(curl -X POST \
