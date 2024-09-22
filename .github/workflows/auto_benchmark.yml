@@ -106,16 +106,6 @@ jobs:
           cd /home/ubuntu/
           rm -rf /home/ubuntu/judger/
         "
-    - name: Extract problem ID and prover name
-      id: extract_info
-      run: |
-        PROBLEM_ID=$(jq -r '.problem_id' spj_output/result.json)
-        PROVER_NAME=$(jq -r '.prover_name' spj_output/result.json)
-        echo "PROBLEM_ID=$PROBLEM_ID" >> $GITHUB_OUTPUT
-        echo "PROVER_NAME=$PROVER_NAME" >> $GITHUB_OUTPUT
-    - name: display result.json
-      run: |
-        cat spj_output/result.json
 
     - name: Check for changes
       id: check_changes
@@ -127,6 +117,20 @@ jobs:
         else
             echo "CHANGES_EXIST=true" >> $GITHUB_OUTPUT
         fi
+
+    - name: Extract problem ID and prover name
+      id: extract_info
+      if: steps.check_changes.outputs.CHANGES_EXIST == 'true'
+      run: |
+        PROBLEM_ID=$(jq -r '.problem_id' spj_output/result.json)
+        PROVER_NAME=$(jq -r '.prover_name' spj_output/result.json)
+        echo "PROBLEM_ID=$PROBLEM_ID" >> $GITHUB_OUTPUT
+        echo "PROVER_NAME=$PROVER_NAME" >> $GITHUB_OUTPUT
+
+    - name: display result.json
+      if: steps.check_changes.outputs.CHANGES_EXIST == 'true'
+      run: |
+        cat spj_output/result.json
 
     - name: Get current branch
       id: get_branch
