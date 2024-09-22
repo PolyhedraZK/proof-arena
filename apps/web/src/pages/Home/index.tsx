@@ -129,7 +129,7 @@ const HomePage: React.FC = () => {
               <Link to="/problems">Explore Problems</Link>
             </Button>
             <Button size="large">
-              <Link to="/how-to-contribute">How to Contribute</Link>
+              <Link to="/how-to-submit-new-prover">How to Contribute</Link>
             </Button>
           </Flex>
         </section>

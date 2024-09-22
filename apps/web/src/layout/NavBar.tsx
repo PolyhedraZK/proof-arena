@@ -16,7 +16,7 @@ export const links = [
   { to: '/problems', label: 'Problems' },
   { to: '/status', label: 'Status' },
   {
-    label: 'Submit',
+    label: 'How to Contribute',
     children: [
       { to: '/how-to-submit-new-prover', label: 'How to Submit New Prover' },
       { to: '/how-to-submit-new-problem', label: 'How to Submit New Problem' },
