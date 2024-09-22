@@ -28,6 +28,7 @@ jobs:
 
     - name: Send repository to machine B
       run: |
+        ssh -i ~/.ssh/judger_ssh -o StrictHostKeyChecking=no ubuntu@arena-worker.proof.cloud "mkdir -p /home/ubuntu/judger/"
         scp -i ~/.ssh/judger_ssh -o StrictHostKeyChecking=no repo.zip ubuntu@arena-worker.proof.cloud:/home/ubuntu/judger/
 
     - name: Send unzip instruction to machine B
@@ -102,10 +103,8 @@ jobs:
     - name: Clean up machine B
       run: |
         ssh -i ~/.ssh/judger_ssh -o StrictHostKeyChecking=no ubuntu@arena-worker.proof.cloud "
-          cd /home/ubuntu/judger/
-          rm -rf *
-          rm -f .gitignore
-          rm -f .git
+          cd /home/ubuntu/
+          rm -rf /home/ubuntu/judger/
         "
     - name: Extract problem ID and prover name
       id: extract_info

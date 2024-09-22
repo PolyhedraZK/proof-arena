@@ -53,3 +53,5 @@ target/
 
 # auto-submission
 spj_output/result.json
+repo.zip
+repo_updated.zip
