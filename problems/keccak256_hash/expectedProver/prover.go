@@ -253,7 +253,6 @@ func main() {
 	pipeToProver := flag.String("toMe", "", "pipe to prover")
 	pipeToSPJ := flag.String("toSPJ", "", "pipe to SPJ")
 	flag.Parse()
-
 	// open a named pipe to avoid blocking on stdin
 	// read pipe name from stdin
 	spjToProverPipeName := *pipeToProver
