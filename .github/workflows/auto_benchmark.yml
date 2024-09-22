@@ -6,6 +6,9 @@ on:
 jobs:
   execute-script-and-create-pr:
     runs-on: ubuntu-latest
+    concurrency:
+      group: arena-judge
+      cancel-in-progress: false
     steps:
     - name: Checkout repository on machine A
       uses: actions/checkout@v2
