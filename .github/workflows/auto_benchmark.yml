@@ -157,7 +157,7 @@ jobs:
       - name: Check if submission is ready
         id: check_submission_ready
         run: |
-          submission_title=${{ steps.extract_path.outputs.SUBMISSION_TITLE }}
+          submission_title="${{ steps.extract_path.outputs.SUBMISSION_TITLE }}"
           if echo "$submission_title" | grep -q "SUBMISSION_READY"; then
             echo "SUBMISSION_READY=true" >> $GITHUB_OUTPUT
           else
@@ -171,17 +171,22 @@ jobs:
         env:
           PAT: ${{ secrets.PAT }}
         run: |
-          CURRENT_BRANCH="${{ steps.get_branch.outputs.CURRENT_BRANCH }}"
+          CURRENT_BRANCH="auto-submission-${GITHUB_SHA}"
           PROBLEM_ID="${{ steps.extract_info.outputs.PROBLEM_ID }}"
           PROVER_NAME="${{ steps.extract_info.outputs.PROVER_NAME }}"
           # Sanitize PROVER_NAME to prevent potential attacks
           PROVER_NAME=$(echo "$PROVER_NAME" | tr -d '"')
+
+          # Create a new local branch
+          git checkout -b $CURRENT_BRANCH
 
           # Commit changes using the specified commit message format
           git config user.name github-actions
           git config user.email github-actions@github.com
           git add .
           git commit -m "Auto-submission: Branch: $CURRENT_BRANCH"
+
+          # Push the new branch to the repository
           git push origin $CURRENT_BRANCH
 
           # Get current UTC time
