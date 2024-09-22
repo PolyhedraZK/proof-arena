@@ -75,7 +75,6 @@ const StatusPage: React.FC = () => {
         });
     }
   );
-
   const columns: ColumnsType<PRStatus> = [
     {
       title: 'Problem ID',
