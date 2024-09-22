@@ -88,6 +88,6 @@ If you find our work useful, please cite:
 @misc{ProofArena,
   title = {Proof Arena},
   year = {2024},
-  url = {https://arena.proof.cloud}
+  url = {https://proofarena.org}
 }
 ```
