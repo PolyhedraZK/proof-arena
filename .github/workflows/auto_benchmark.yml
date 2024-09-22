@@ -165,7 +165,7 @@ jobs:
         PROBLEM_ID="${{ steps.extract_info.outputs.PROBLEM_ID }}"
         PROVER_NAME="${{ steps.extract_info.outputs.PROVER_NAME }}"
         # Sanitize PROVER_NAME to prevent potential attacks
-        PROVER_NAME=$(echo "$PROVER_NAME" | awk '{print $1}' | tr -d '"')
+        PROVER_NAME=$(echo "$PROVER_NAME" | tr -d '"')
 
         # Commit changes using the specified commit message format
         git config user.name github-actions

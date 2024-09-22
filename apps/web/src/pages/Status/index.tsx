@@ -53,7 +53,7 @@ const StatusPage: React.FC = () => {
 
           if (pr.title.startsWith('Auto-submission: Problem ID:')) {
             const match = pr.title.match(
-              /Auto-submission: Problem ID: (\d+), PROVER: (\w+), Branch: \[(.+?) \((.+?)\)\]/
+              /Auto-submission: Problem ID: (\d+), PROVER: ([^,]+), Branch: \[(.+?) \((.+?)\)\]/
             );
             if (match) {
               problemId = parseInt(match[1]);
