@@ -47,17 +47,24 @@ jobs:
         run: |
           ssh -i ~/.ssh/judger_ssh -o StrictHostKeyChecking=no ubuntu@arena-worker.proof.cloud "unzip -o /home/ubuntu/judger/repo.zip -d /home/ubuntu/judger/"
 
-      - name: Extract script path from commit message
+      - name: Extract script path from PR title or commit message
         id: extract_path
         run: |
-          COMMIT_MSG=$(git log --format=%B -n 1 ${{ github.event.pull_request.head.sha }})
-          SCRIPT_PATH=$(echo "$COMMIT_MSG" | grep -oP '^\[script:.*?\]' | sed 's/^\[script://;s/\]$//' || true)
+          SCRIPT_PATH=""
+          if [[ "${{ github.event_name }}" == "pull_request" || "${{ github.event_name }}" == "pull_request_target" ]]; then
+            PR_TITLE="${{ github.event.pull_request.title }}"
+            SCRIPT_PATH=$(echo "$PR_TITLE" | grep -oP '^\[script:.*?\]' | sed 's/^\[script://;s/\]$//' || true)
+          fi
+          if [ -z "$SCRIPT_PATH" ]; then
+            COMMIT_MSG=$(git log --format=%B -n 1 ${{ github.event.pull_request.head.sha || github.sha }})
+            SCRIPT_PATH=$(echo "$COMMIT_MSG" | grep -oP '^\[script:.*?\]' | sed 's/^\[script://;s/\]$//' || true)
+          fi
           if [ -n "$SCRIPT_PATH" ]; then
             echo "SCRIPT_PATH=$SCRIPT_PATH" >> $GITHUB_OUTPUT
             echo "EXTRACTION_SUCCESS=true" >> $GITHUB_OUTPUT
             echo "Script path found: $SCRIPT_PATH"
           else
-            echo "No valid script path found in commit message. Workflow will terminate gracefully."
+            echo "No valid script path found in PR title or commit message. Workflow will terminate gracefully."
             echo "EXTRACTION_SUCCESS=false" >> $GITHUB_OUTPUT
           fi
 
