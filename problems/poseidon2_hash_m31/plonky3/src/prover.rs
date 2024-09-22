@@ -13,11 +13,17 @@ use plonky3_hash_m31::PARTIAL_ROUNDS;
 use plonky3_hash_m31::SBOX_DEGREE;
 use plonky3_hash_m31::SBOX_REGISTERS;
 use plonky3_hash_m31::WIDTH;
+use rayon::current_num_threads;
+use rayon::iter::IntoParallelRefIterator;
+use rayon::iter::ParallelIterator;
 
 fn main() -> std::io::Result<()> {
+    // current number of threads, should be governed by the SPJ
+    let num_threads = current_num_threads() as u64;
+
     // Initialize logging
     let mut log_file = File::create("/tmp/prover.log")?;
-    log_file.write_all(b"start \n")?;
+    log_file.write_all(format!("start with {} threads\n", num_threads).as_bytes())?;
 
     // Get pipe names from command-line arguments
     let args: Vec<String> = std::env::args().collect();
@@ -55,7 +61,7 @@ fn main() -> std::io::Result<()> {
     write_string(&mut prover_to_spj_pipe, "Plony3")?;
 
     // Send N to SPJ (assuming MAX_NUM_HASHES is the N value)
-    write_u64(&mut prover_to_spj_pipe, NUM_HASHES as u64)?;
+    write_u64(&mut prover_to_spj_pipe, NUM_HASHES as u64 * num_threads)?;
 
     // Read witness from SPJ
     let buf = read_blob(&mut spj_to_prover_pipe)?;
@@ -65,7 +71,7 @@ fn main() -> std::io::Result<()> {
     log_file.write_all(format!("buf: {:?}\n", buf[..32].as_ref()).as_bytes())?;
 
     // Parse witness and compute digests
-    let inputs = parse_prover_in(&buf);
+    let inputs = parse_prover_in(&buf, num_threads as usize);
     log_file.write_all(b"witness extracted from pipe\n")?;
 
     // Send digests back to SPJ
@@ -76,23 +82,34 @@ fn main() -> std::io::Result<()> {
     let (perm, config, air) = setup();
 
     // Generate the witnesses
-    // let inputs = (0..NUM_HASHES).map(|_| random()).collect::<Vec<_>>();
-    let trace = generate_trace_rows::<
-        KoalaBear,
-        WIDTH,
-        SBOX_DEGREE,
-        SBOX_REGISTERS,
-        HALF_FULL_ROUNDS,
-        PARTIAL_ROUNDS,
-    >(inputs);
+    let traces = inputs
+        .par_iter()
+        .map(|input| {
+            generate_trace_rows::<
+                KoalaBear,
+                WIDTH,
+                SBOX_DEGREE,
+                SBOX_REGISTERS,
+                HALF_FULL_ROUNDS,
+                PARTIAL_ROUNDS,
+            >(input.clone()) // weird this API doesn't take a reference
+        })
+        .collect::<Vec<_>>();
 
     // Notify SPJ that witness is generated
     write_string(&mut prover_to_spj_pipe, "witness generated")?;
     log_file.write_all(b"sending `witness generated` to SPJ\n")?;
 
     // Generate proof
-    let proof = prove_poseidon(&perm, &config, &air, trace);
-    let proof_bytes = bincode::serialize(&proof).unwrap();
+    let proof_bytes = traces
+        .par_iter()
+        .flat_map(|trace| {
+            let proof = prove_poseidon(&perm, &config, &air, trace.clone());
+            bincode::serialize(&proof).unwrap()
+        })
+        .collect::<Vec<_>>();
+    // front pad the number of proofs
+    let proof_bytes = [num_threads.to_le_bytes().to_vec(), proof_bytes].concat();
 
     // Send proof to SPJ
     log_file
@@ -115,19 +132,27 @@ fn main() -> std::io::Result<()> {
     Ok(())
 }
 
-fn parse_prover_in(buf: &[u8]) -> Vec<[KoalaBear; WIDTH]> {
-    buf.chunks(4 * WIDTH)
-        .map(|chunk| {
-            let mut tmp = [KoalaBear::default(); WIDTH];
+fn parse_prover_in(buf: &[u8], number_threads: usize) -> Vec<Vec<[KoalaBear; WIDTH]>> {
+    let total_num = buf.len() / 4 / WIDTH;
+    let num_per_thread = total_num / number_threads;
 
-            for (i, chunk) in chunk.chunks(4).enumerate() {
-                let data32 = u32::from_le_bytes(chunk.try_into().unwrap());
-                tmp[i] = KoalaBear::new(data32);
+    let mut res = vec![];
+    for i in 0..number_threads {
+        let mut thread_res = vec![];
+        for j in 0..num_per_thread {
+            let thread_buf = &buf
+                [(i * num_per_thread + j) * 4 * WIDTH..(i * num_per_thread + j + 1) * 4 * WIDTH];
+            let mut thread_row = [KoalaBear::default(); WIDTH];
+            for k in 0..WIDTH {
+                let mut bytes = [0u8; 4];
+                bytes.copy_from_slice(&thread_buf[k * 4..(k + 1) * 4]);
+                thread_row[k] = KoalaBear::new(u32::from_le_bytes(bytes));
             }
-
-            tmp
-        })
-        .collect()
+            thread_res.push(thread_row);
+        }
+        res.push(thread_res);
+    }
+    res
 }
 
 // Helper functions for SPJ communication

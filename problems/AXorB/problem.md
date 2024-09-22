@@ -98,9 +98,9 @@ Your prover program must read bytes from stdin and print bytes to stdout. We wil
 3. **Prover make all precomputes in this step**
 You can do arbitary one-time precomputing (including setup/compile your circuit, prepare your proving key, etc.).
 
-4. **Output the Number of Keccak Instances:**
+4. **Output the Number of xor bytes:**
 
-   - Print an 8-byte, little-endian long integer `N` to stdout. This indicates the number of Keccak instances you are going to prove. Provers can choose `N` to optimize performance.
+   - Print an 8-byte, little-endian long integer `N` to stdout. This indicates the number of xor bytes you are going to prove. Provers can choose `N` to optimize performance.
    - Prover Sample:
 
    ```golang
@@ -118,7 +118,7 @@ You can do arbitary one-time precomputing (including setup/compile your circuit,
 
 6. **Xor the Data:**
 
-   - For each 64-byte block, compute the Keccak hash, resulting in a 32-byte output.
+   - Between first N bytes and next N bytes, compute Xor.
    - The prover sends the hash results to the SPJ.
    - Prover Sample:
 

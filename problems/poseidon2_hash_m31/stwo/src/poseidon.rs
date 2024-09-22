@@ -126,7 +126,7 @@ pub struct LookupData {
 
 pub fn gen_trace(
     log_size: u32,
-    _instance_bytes: Vec<[u32; N_STATE]>,
+    instance_bytes: &[[u32; N_STATE]],
 ) -> (
     ColumnVec<CircleEvaluation<SimdBackend, BaseField, BitReversedOrder>>,
     LookupData,
@@ -148,19 +148,12 @@ pub fn gen_trace(
         // Initial state.
         let mut col_index = 0;
         for rep_i in 0..N_INSTANCES_PER_ROW {
-            // somehow if we pass the instance_bytes here, the test fails.
-            //
-            // let mut state: [_; N_STATE] = std::array::from_fn(|state_i| {
-            //     PackedBaseField::from_array(std::array::from_fn(|i| {
-            //         BaseField::from_u32_unchecked(instance_bytes[state_i][i])
-            //     }))
-            // });
-
             let mut state: [_; N_STATE] = std::array::from_fn(|state_i| {
                 PackedBaseField::from_array(std::array::from_fn(|i| {
-                    BaseField::from_u32_unchecked((vec_index * 16 + i + state_i + rep_i) as u32)
+                    BaseField::partial_reduce(instance_bytes[state_i][i])
                 }))
             });
+
             state.iter().copied().for_each(|s| {
                 trace[col_index].data[vec_index] = s;
                 col_index += 1;
@@ -276,8 +269,8 @@ pub fn setup(log_n_instances: u32) -> (PcsConfig, TwiddleTree<SimdBackend>) {
 pub fn prove_poseidon(
     config: &PcsConfig,
     twiddles: &TwiddleTree<SimdBackend>,
-    instance_bytes: Vec<[u32; N_STATE]>,
-) -> Vec<u8> {
+    instance_bytes: &[[u32; N_STATE]],
+) -> WrappedProof {
     // Setup protocol.
     let channel = &mut Blake2sChannel::default();
     let commitment_scheme =
@@ -312,20 +305,19 @@ pub fn prove_poseidon(
 
     let sizes = component.trace_log_degree_bounds();
 
-    let wrapped_proof = WrappedProof {
+    WrappedProof {
         proof,
         claimed_sum,
         sizes,
-    };
-    bincode::serialize(&wrapped_proof).unwrap()
+    }
 }
 
-pub fn verify_poseidon(config: &PcsConfig, proof_bytes: &[u8]) -> bool {
+pub fn verify_poseidon(config: &PcsConfig, wrapped_proof_bytes: &[u8]) -> bool {
     let WrappedProof {
         proof,
         claimed_sum,
         sizes,
-    } = bincode::deserialize::<WrappedProof>(proof_bytes).unwrap();
+    } = bincode::deserialize(wrapped_proof_bytes).unwrap();
 
     // Verify.
     // TODO: Create Air instance independently.
@@ -362,6 +354,8 @@ pub fn verify_poseidon(config: &PcsConfig, proof_bytes: &[u8]) -> bool {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct WrappedProof {
+    // ZZ: it is quite strange that the proof doesn't implement Clone trait...
+    // So we have to pass the serialized proofs around
     pub proof: StarkProof<Blake2sMerkleHasher>,
     pub claimed_sum: SecureField,
     pub sizes: TreeVec<ColumnVec<u32>>,
