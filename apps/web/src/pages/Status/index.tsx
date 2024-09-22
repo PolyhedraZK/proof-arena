@@ -49,21 +49,23 @@ const StatusPage: React.FC = () => {
             pr.title.startsWith('Auto-update:')
         )
         .map(pr => {
-          let branch, titleTime, problemId;
+          let branch, titleTime, problemId, proverName;
 
           if (pr.title.startsWith('Auto-submission: Problem ID:')) {
             const match = pr.title.match(
-              /Auto-submission: Problem ID: (\d+), Branch: \[(.+?) \((.+?)\)\]/
+              /Auto-submission: Problem ID: (\d+), PROVER: (\w+), Branch: \[(.+?) \((.+?)\)\]/
             );
             if (match) {
               problemId = parseInt(match[1]);
-              branch = match[2];
-              titleTime = match[3];
+              proverName = match[2];
+              branch = match[3];
+              titleTime = match[4];
             }
           }
 
           return {
             problemId: problemId || null,
+            proverName: proverName || null,
             branch: branch || pr.head.ref,
             status: pr.merged_at ? 'merged' : pr.state,
             link: pr.html_url,
@@ -89,8 +91,15 @@ const StatusPage: React.FC = () => {
             {problemId}
           </a>
         ) : (
-          'N/A'
+          'Initial Submission'
         ),
+    },
+    {
+      title: 'PROVER',
+      dataIndex: 'proverName',
+      key: 'proverName',
+      render: (proverName: string | null) =>
+        proverName ? <span>{proverName}</span> : 'Initial Submission',
     },
     {
       title: 'PR Branch',

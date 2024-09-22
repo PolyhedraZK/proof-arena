@@ -164,6 +164,8 @@ jobs:
         CURRENT_BRANCH="${{ steps.get_branch.outputs.CURRENT_BRANCH }}"
         PROBLEM_ID="${{ steps.extract_info.outputs.PROBLEM_ID }}"
         PROVER_NAME="${{ steps.extract_info.outputs.PROVER_NAME }}"
+        # Sanitize PROVER_NAME to prevent potential attacks
+        PROVER_NAME=$(echo "$PROVER_NAME" | awk '{print $1}' | tr -d '"')
 
         # Commit changes using the specified commit message format
         git config user.name github-actions
@@ -176,7 +178,7 @@ jobs:
         UTC_TIME=$(date -u +"%Y-%m-%d %H:%M:%S UTC")
 
         # Prepare PR title and body
-        PR_TITLE="Auto-submission: Problem ID: $PROBLEM_ID, PROVER: $PROVER_NAME, Branch: [$CURRENT_BRANCH ($UTC_TIME)]"
+        PR_TITLE="Auto-submission: Problem ID: $PROBLEM_ID, PROVER: "$PROVER_NAME", Branch: [$CURRENT_BRANCH ($UTC_TIME)]"
         PR_BODY="This pull request was automatically created by the CI workflow. It contains updates to the spj_output/ directory after script execution.
 
         Please review the changes and merge if appropriate."
