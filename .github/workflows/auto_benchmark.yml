@@ -5,14 +5,34 @@ on:
 
 jobs:
   execute-script-and-create-pr:
-    runs-on: arena-cpu-judger
+    runs-on: ubuntu-latest
     steps:
-    - name: Checkout repository
+    - name: Checkout repository on machine A
       uses: actions/checkout@v2
       with:
         fetch-depth: 0
         submodules: 'true'
         token: ${{ secrets.PAT }}
+
+    - name: Compress repository on machine A
+      run: |
+        zip -r repo.zip .
+
+    - name: Install SSH key
+      env:
+        JUDGER_SSH_KEY: ${{ secrets.JUDGERSSH }}
+      run: |
+        mkdir -p ~/.ssh
+        echo "$JUDGER_SSH_KEY" > ~/.ssh/judger_ssh
+        chmod 600 ~/.ssh/judger_ssh
+
+    - name: Send repository to machine B
+      run: |
+        scp -i ~/.ssh/judger_ssh -o StrictHostKeyChecking=no repo.zip ubuntu@arena-worker.proof.cloud:/home/ubuntu/judger/
+
+    - name: Send unzip instruction to machine B
+      run: |
+        ssh -i ~/.ssh/judger_ssh -o StrictHostKeyChecking=no ubuntu@arena-worker.proof.cloud "unzip -o /home/ubuntu/judger/repo.zip -d /home/ubuntu/judger/"
 
     - name: Extract script path from commit message
       id: extract_path
@@ -33,39 +53,72 @@ jobs:
       run: |
         echo "No valid script path found or commit message format incorrect. Exiting workflow successfully."
         exit 0
-    - name: Setup Go
-      if: steps.extract_path.outputs.EXTRACTION_SUCCESS == 'true'
-      uses: actions/setup-go@v5
-      with:
-        go-version: '1.23'  # You can specify your desired Go version here
-    - name: Setup Rust
-      if: steps.extract_path.outputs.EXTRACTION_SUCCESS == 'true'
-      uses: dtolnay/rust-toolchain@nightly
-    
-    - name: Validate and execute script
+
+    - name: Send repository to machine B
+      run: |
+        scp -i ~/.ssh/judger_ssh -o StrictHostKeyChecking=no repo.zip ubuntu@arena-worker.proof.cloud:/home/ubuntu/judger/
+
+    - name: Send unzip instruction to machine B
+      run: |
+        ssh -i ~/.ssh/judger_ssh -o StrictHostKeyChecking=no ubuntu@arena-worker.proof.cloud "unzip -o /home/ubuntu/judger/repo.zip -d /home/ubuntu/judger/"
+
+    - name: Send script execution instruction to machine B
       if: steps.extract_path.outputs.EXTRACTION_SUCCESS == 'true'
       run: |
-        SCRIPT_PATH="${{ steps.extract_path.outputs.SCRIPT_PATH }}"
-        if [[ -f "$SCRIPT_PATH" ]]; then
-          if [[ "$SCRIPT_PATH" == *.sh ]]; then
-            chmod +x "$SCRIPT_PATH"
-            ./"$SCRIPT_PATH"
-
-            PROBLEM_ID=$(jq -r '.problem_id' spj_output/result.json)
-            echo "PROBLEM_ID=$PROBLEM_ID" >> $GITHUB_OUTPUT
-          elif [[ "$SCRIPT_PATH" == *.py ]]; then
-            python "$SCRIPT_PATH"
+        ssh -i ~/.ssh/judger_ssh -o StrictHostKeyChecking=no ubuntu@arena-worker.proof.cloud "
+          cd /home/ubuntu/judger/
+          SCRIPT_PATH='${{ steps.extract_path.outputs.SCRIPT_PATH }}'
+          if [[ -f \"\$SCRIPT_PATH\" ]]; then
+            if [[ \"\$SCRIPT_PATH\" == *.sh ]]; then
+              chmod +x \"\$SCRIPT_PATH\"
+              ./\"\$SCRIPT_PATH\"
+            elif [[ \"\$SCRIPT_PATH\" == *.py ]]; then
+              python \"\$SCRIPT_PATH\"
+            else
+              echo \"Unsupported script type. Only .sh and .py files are allowed.\"
+              exit 1
+            fi
           else
-            echo "Unsupported script type. Only .sh and .py files are allowed."
+            echo \"Script not found in the repository: \$SCRIPT_PATH\"
             exit 1
           fi
-        else
-          echo "Script not found in the repository: $SCRIPT_PATH"
-          exit 1
-        fi
+        "
+
+    - name: Send zip instruction to machine B
+      run: |
+        ssh -i ~/.ssh/judger_ssh -o StrictHostKeyChecking=no ubuntu@arena-worker.proof.cloud "
+          cd /home/ubuntu/judger/
+          zip -r repo_updated.zip .
+        "
+
+    - name: Retrieve updated repository from machine B
+      run: |
+        scp -i ~/.ssh/judger_ssh -o StrictHostKeyChecking=no ubuntu@arena-worker.proof.cloud:/home/ubuntu/judger/repo_updated.zip .
+
+    - name: Unzip updated repository on machine A
+      run: |
+        unzip -o repo_updated.zip
+
+    - name: Clean up machine B
+      run: |
+        ssh -i ~/.ssh/judger_ssh -o StrictHostKeyChecking=no ubuntu@arena-worker.proof.cloud "
+          cd /home/ubuntu/judger/
+          rm -rf *
+          rm -f .gitignore
+          rm -f .git
+        "
+    - name: Extract problem ID and prover name
+      id: extract_info
+      run: |
+        PROBLEM_ID=$(jq -r '.problem_id' spj_output/result.json)
+        PROVER_NAME=$(jq -r '.prover_name' spj_output/result.json)
+        echo "PROBLEM_ID=$PROBLEM_ID" >> $GITHUB_OUTPUT
+        echo "PROVER_NAME=$PROVER_NAME" >> $GITHUB_OUTPUT
+    - name: display result.json
+      run: |
+        cat spj_output/result.json
 
     - name: Check for changes
-      if: steps.extract_path.outputs.EXTRACTION_SUCCESS == 'true'
       id: check_changes
       run: |
         if git status --porcelain spj_output/ | grep -q '^??'; then
@@ -76,26 +129,39 @@ jobs:
             echo "CHANGES_EXIST=true" >> $GITHUB_OUTPUT
         fi
 
-    - name: Create Pull Request
+    - name: Get current branch
+      id: get_branch
       if: steps.check_changes.outputs.CHANGES_EXIST == 'true'
+      run: |
+        CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+        echo "CURRENT_BRANCH=$CURRENT_BRANCH" >> $GITHUB_OUTPUT
+
+    - name: Check if submission is ready
+      id: check_submission_ready
+      if: steps.check_changes.outputs.CHANGES_EXIST == 'true'
+      run: |
+        if git log -1 --pretty=%B | grep -q "SUBMISSION_READY"; then
+          echo "SUBMISSION_READY=true" >> $GITHUB_OUTPUT
+        else
+          echo "SUBMISSION_READY=false" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Create Pull Request
+      if: |
+        steps.check_changes.outputs.CHANGES_EXIST == 'true' &&
+        steps.check_submission_ready.outputs.SUBMISSION_READY == 'true'
       env:
         PAT: ${{ secrets.PAT }}
       run: |
-        # Get the current branch name
-        CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+        CURRENT_BRANCH="${{ steps.get_branch.outputs.CURRENT_BRANCH }}"
+        PROBLEM_ID="${{ steps.extract_problem_id.outputs.PROBLEM_ID }}"
 
-        # Create a new branch based on the current branch
-        NEW_BRANCH="${CURRENT_BRANCH}-update-$(date +%Y%m%d-%H%M%S)"
-        git checkout -b $NEW_BRANCH
-
-        # Commit changes using the specified commit message format
+        # Commit changes
         git config user.name github-actions
         git config user.email github-actions@github.com
-        git add spj_output/
+        git add .
         git commit -m "Auto-submission: Branch: $CURRENT_BRANCH"
-
-        # Push the new branch to the remote repository
-        git push origin $NEW_BRANCH
+        git push origin $CURRENT_BRANCH
 
         # Get current UTC time
         UTC_TIME=$(date -u +"%Y-%m-%d %H:%M:%S UTC")
@@ -106,12 +172,6 @@ jobs:
 
         Please review the changes and merge if appropriate."
 
-        # Determine base branch
-        BASE_BRANCH="main"
-        if ! echo "$COMMIT_MSG" | grep -q "SUBMISSION_READY"; then
-          BASE_BRANCH="$CURRENT_BRANCH"
-        fi
-
         # Create a pull request using GitHub API
         PR_RESPONSE=$(curl -X POST \
           -H "Authorization: token $PAT" \
@@ -121,8 +181,8 @@ jobs:
         {
           "title": "$PR_TITLE",
           "body": "$PR_BODY",
-          "head": "$NEW_BRANCH",
-          "base": "$BASE_BRANCH"
+          "head": "$CURRENT_BRANCH",
+          "base": "main"
         }
         EOF
         )
@@ -134,18 +194,4 @@ jobs:
           echo "Failed to create pull request. API response:"
           echo "$PR_RESPONSE" | jq .
           exit 1
-        fi
-
-    - name: Workflow summary
-      if: always()
-      run: |
-        if [ "${{ steps.extract_path.outputs.EXTRACTION_SUCCESS }}" == "true" ]; then
-          echo "Script path was successfully extracted and executed."
-          if [ "${{ steps.check_changes.outputs.CHANGES_EXIST }}" == "true" ]; then
-            echo "Changes were detected in spj_output/ and a pull request was created."
-          else
-            echo "No changes were detected in spj_output/. No pull request was created."
-          fi
-        else
-          echo "No script path was found in the commit message. Workflow terminated gracefully."
         fi

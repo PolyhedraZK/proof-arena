@@ -1,77 +1,139 @@
-Proof Arena is an open platform for benchmarking zero-knowledge (ZK) algorithms, and we welcome contributions from the community. Whether you're interested in proposing a new problem or contributing a solution, this guide will walk you through the process.
+Proof Arena is an open platform for benchmarking zero-knowledge (ZK) algorithms, and we welcome contributions from the community. Whether you're interested in proposing a new problem or contributing a solution, this guide will walk you through the updated process.
 
 ## How to Contribute a Problem
 
-Contributing a problem allows you to define new challenges that will be used to benchmark ZK algorithms. Follow these steps to submit a problem:
+Contributing a problem allows you to define new challenges for benchmarking ZK algorithms. Follow these steps:
 
 1. **Fork the Repository**: Start by forking the [Proof Arena GitHub repository](https://github.com/PolyhedraZK/proof-arena) to your GitHub account.
 
-2. **Create a New Problem File**:
+2. **Create a New Problem Directory**:
 
    - Navigate to the `problems` directory.
    - Create a new directory with a descriptive name for your problem.
-   - Inside this directory, create a `problem.md` file. This file should a header of following format:
+   - Inside this directory, create a `problem.md` file with the following header format:
 
-   ![Problem Header format](https://storage.googleapis.com/proof-cloud-assets/problem-header.png)
+     ```yaml
+     ---
+     problem_id: [Unique Problem ID]
+     title: [Problem Title]
+     description: [Brief Description]
+     draft: false
+     enable_comments: true
+     proposer: [Your Name or Organization]
+     proposer_icon: [Path to Your Icon (24x24)]
+     ---
+     ```
 
-   - Fill in the header with the appropriate information for your problem.
-   - Write a detailed description of the problem in markdown format, typically including the following sections:
-     - **Problem Description**: A detailed description of the problem, including any relevant background information.
-     - **Interaction Instruction**: Instructions for how the prover should interact with the special judge program (SPJ).
-     - **Test Vectors**: Provide example inputs and expected outputs to help others test their solutions.
-     - **References**: Include any references or links to related materials.
+   - Fill in the header with appropriate information.
+   - Write a detailed problem description in Markdown format, including:
 
-   You should also write a special judge program (SPJ) to interact with the prover. The SPJ will provide inputs and check outputs, as well as invoke the verifier to check the proof. Please check our sample SPJ code in the [Proof Arena GitHub repository](https://github.com/PolyhedraZK/proof-arena/tree/main/problems/keccak256_hash/spj).
+     - **Problem Description**: Detailed explanation with background information.
+     - **Interaction Instructions**: How the prover should interact with the Special Judge Program (SPJ).
+     - **Test Vectors**: Example inputs and expected outputs.
+     - **References**: Any relevant links or materials.
 
-   You need to define how a prover should interact with the SPJ in the "Interaction Instruction" section of your problem file. This will include steps for the prover to follow when receiving inputs and sending outputs.
+   - Write a Special Judge Program (SPJ) to interact with the prover. The SPJ will provide inputs, check outputs, and invoke the verifier. Refer to our [sample SPJ code](https://github.com/PolyhedraZK/proof-arena/tree/main/problems/keccak256_hash/SPJ).
 
 3. **Submit a Pull Request**:
 
-   - Once your problem file and SPJ is ready, commit the changes to your forked repository.
-   - Open a pull request (PR) against the main `Proof Arena` repository, providing a clear and concise explanation of your problem.
+   - Commit your changes to your forked repository.
+   - Open a Pull Request (PR) to the main Proof Arena repository with a clear explanation of your problem.
 
 4. **Community Review**:
 
-   - Your problem submission will be reviewed by the community and the Proof Arena maintainers.
-   - Address any feedback provided during the review process.
+   - Your submission will be reviewed by the community and maintainers.
+   - Address any feedback during the review process.
 
 5. **Approval and Integration**:
-   - Once your problem is approved, it will be merged into the main repository and become available for benchmarking.
+
+   - Once approved, your problem will be merged and made available on the platform.
 
 ## How to Contribute a Solution
 
-Contributing a solution involves submitting a ZK prover algorithm that can solve one or more of the problems listed on Proof Arena. Here's how to do it:
+Contributing a solution involves submitting a prover that can solve a problem listed on Proof Arena. Follow these steps:
 
-1. **Understand the Problem**:
+1. **Select a Problem**:
 
-   - Visit the [Proof Arena website](https://proofarena.org) and review the problems currently available.
-   - Choose a problem that you want to solve, and make sure you understand the input/output requirements and any specific constraints.
+   - Visit the [Proof Arena website](https://proofarena.org) and choose a problem to solve.
+   - Ensure you understand the problem's requirements and constraints.
 
 2. **Prepare Your Prover**:
 
-   - Implement your prover algorithm, ensuring it meets the API standards specified in by the SPJ and [Proof Arena GitHub repository](https://github.com/PolyhedraZK/proof-arena).
-   - While submitting the source code is optional, it is encouraged to enhance transparency and reproducibility.
-   - **Verifier Code**: Submitting your verifier code is mandatory, as it will be audited to ensure correctness.
+   - Implement your prover algorithm, meeting the API standards specified in the SPJ and [Proof Arena GitHub repository](https://github.com/PolyhedraZK/proof-arena).
+   - Submitting source code is optional but encouraged for transparency.
+   - **Verifier Code**: Submitting your verifier code is mandatory for auditing.
 
-3. **Test Locally**:
+3. **Local Testing**:
 
-   - Before submitting, run your prover locally to verify it works correctly with the provided test vectors.
-   - Ensure that your prover meets the performance requirements for the task.
+   - Test your prover locally with provided test vectors.
+   - Ensure your prover meets performance requirements.
 
 4. **Submit Your Prover**:
 
-   - Create a directory for your prover within the `problems/YOUR_CHOSEN_PROBLEM/YOUR_PROVER_NAME` directory in your forked repository.
+   - Create a directory for your prover at `problems/[PROBLEM_NAME]/[YOUR_PROVER_NAME]` in your forked repository.
    - Include all necessary files: binaries, verifier code, and documentation.
-   - Submit a pull request to the main repository with your prover solution.
 
-5. **Benchmarking Process**:
+5. **Trigger CI Process**:
 
-   - Once your prover is accepted, it will be run on the Main CPU Judger or the Main GPU Judger, depending on the problem requirements.
-   - The results, including time and memory usage, will be automatically displayed on the Proof Arena website.
+   - To trigger the CI process, start with a specific script path in your commit message:
 
-6. **Engage with Feedback**:
+     ```
+     [script:problems/[PROBLEM_NAME]/[YOUR_PROVER_NAME]/run.sh]
+     ```
 
-   - The community may provide feedback on your prover’s performance. Be prepared to discuss and iterate on your submission if necessary.
+     For example:
 
-7. **Stay Involved**:
-   - Monitor the performance of your prover over time, and consider submitting updates or optimizations as new hardware or techniques become available.
+     ```
+     [script:problems/keccak256_hash/my_prover/run.sh]
+     ```
+
+     If you are ready for review, add `SUBMISSION_READY` to the end of your commit message:
+
+     For example:
+
+     ```
+     [script:problems/[PROBLEM_NAME]/[YOUR_PROVER_NAME]/run.sh] SUBMISSION_READY
+     ```
+
+6. **CI Execution**:
+
+   - The CI will execute the specified script to automate testing and verification.
+   - Ensure your script is executable and located at the specified path.
+
+7. **Automatic Pull Request Creation**:
+
+   - If your prover runs successfully and generates updates in the `spj_output/` directory, the CI will automatically create a Pull Request with the results.
+
+8. **Review and Merge**:
+
+   - Maintainers will review the PR generated by the CI.
+   - Address any feedback or required changes.
+   - Once approved, your solution will be merged and displayed on the platform.
+
+## Notes
+
+- **Code Formatting**: When including code in your submissions, ensure clean code blocks without line numbers or prefixes. For example:
+
+  ```go
+  func main() {
+      fmt.Println("Hello, World!")
+  }
+  ```
+
+- **CI Requirements**:
+
+  - The CI workflow looks for the script path in the commit message to determine whether to execute your prover.
+  - If the script path is not provided or incorrect, the CI will terminate gracefully without executing your prover.
+  - Ensure your script is executable and compatible with the CI environment.
+
+- **Branching and Permissions**:
+
+  - You may not have permission to push directly to the main branch.
+  - All changes should be submitted via Pull Requests and will be reviewed before merging.
+
+- **Feedback Loop**:
+
+  - If you encounter issues with the CI process or need assistance, feel free to comment in your Pull Request.
+  - Engage with maintainers and the community for support.
+
+For detailed instructions on how to interact with the SPJ, refer to the [How to Interact with SPJ](https://github.com/PolyhedraZK/proof-arena/blob/main/docs/how_to_interact_with_SPJ.md) document.

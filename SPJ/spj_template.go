@@ -33,13 +33,10 @@ func parseFlags() Config {
 	cpuLimit := flag.Int("cpu", 0, "CPU limit")
 	instanceUpperLimit := flag.Uint64("largestN", 0, "Instance upper limit in bytes")
 	jsonOutputPath := flag.String("json", "", "Path to the output JSON file")
+	judgerMode := flag.Bool("judger", false, "Enable judger mode (disable prints and redirections)")
 
 	flag.Parse()
 
-	if flag.NFlag() != 7 {
-		flag.Usage()
-		os.Exit(1)
-	}
 	config.ProverPath, config.ProverArg = strings.Split(config.ProverPath, " ")[0], strings.Split(config.ProverPath, " ")[1:]
 	config.VerifierPath, config.VerifierArg = strings.Split(config.VerifierPath, " ")[0], strings.Split(config.VerifierPath, " ")[1:]
 	config.JsonOutputPath = *jsonOutputPath
@@ -49,7 +46,7 @@ func parseFlags() Config {
 		CPULimit:           *cpuLimit,
 		InstanceUpperLimit: *instanceUpperLimit,
 	}
-
+	config.JudgerMode = *judgerMode
 	return config
 }
 
@@ -75,6 +72,10 @@ func NewSPJTemplate(impl SPJImplementation) (*SPJTemplate, error) {
 }
 
 func (spj *SPJTemplate) Run() error {
+	if !spj.config.JudgerMode {
+		fmt.Println("Starting SPJ execution...")
+	}
+
 	ctx := context.Background()
 	defer spj.pipeManager.Close()
 
@@ -94,16 +95,22 @@ func (spj *SPJTemplate) Run() error {
 }
 
 func (spj *SPJTemplate) runProver(ctx context.Context) (*ProofData, error) {
-	spj.logger.Log("Running prover...")
+	if !spj.config.JudgerMode {
+		spj.logger.Log("Running prover...")
+	}
 	pipeNames, err := spj.pipeManager.GetProverPipeNames()
 	spjToProver, proverToSPJ := pipeNames[0], pipeNames[1]
 	if err != nil {
 		return nil, fmt.Errorf("failed to get prover pipe names: %w", err)
 	}
 	spj.config.ProverArg = append(spj.config.ProverArg, "-toMe", spjToProver, "-toSPJ", proverToSPJ)
-	fmt.Println(spj.config.ProverArg)
+	if !spj.config.JudgerMode {
+		fmt.Println(spj.config.ProverArg)
+	}
 	cmd := exec.CommandContext(ctx, spj.config.ProverPath, spj.config.ProverArg...)
-	fmt.Println(cmd.String())
+	if !spj.config.JudgerMode {
+		fmt.Println(cmd.String())
+	}
 	proverStdout, _ := cmd.StdoutPipe()
 	proverStderr, _ := cmd.StderrPipe()
 
@@ -111,8 +118,10 @@ func (spj *SPJTemplate) runProver(ctx context.Context) (*ProofData, error) {
 	if err := cmd.Start(); err != nil {
 		return nil, fmt.Errorf("failed to start prover: %w", err)
 	}
-	go io.Copy(os.Stdout, proverStdout)
-	go io.Copy(os.Stderr, proverStderr)
+	if !spj.config.JudgerMode {
+		go io.Copy(os.Stdout, proverStdout)
+		go io.Copy(os.Stderr, proverStderr)
+	}
 
 	done := spj.resourceMonitor.StartPeriodicUpdate(ctx, time.Millisecond, cmd.Process.Pid)
 	defer close(done)
@@ -125,9 +134,13 @@ func (spj *SPJTemplate) runProver(ctx context.Context) (*ProofData, error) {
 	}()
 
 	if err := spj.resourceMonitor.SetCPUAffinity(cmd.Process.Pid, spj.config.Requirements.CPULimit); err != nil {
-		spj.logger.Log(fmt.Sprintf("Warning: Failed to set CPU affinity: %v", err))
+		if !spj.config.JudgerMode {
+			spj.logger.Log(fmt.Sprintf("Warning: Failed to set CPU affinity: %v", err))
+		}
 	} else {
-		spj.logger.Log(fmt.Sprintf("Successfully set CPU affinity to %d cores", spj.config.Requirements.CPULimit))
+		if !spj.config.JudgerMode {
+			spj.logger.Log(fmt.Sprintf("Successfully set CPU affinity to %d cores", spj.config.Requirements.CPULimit))
+		}
 	}
 	setupDone := make(chan error, 1)
 	go func() {
@@ -221,7 +234,9 @@ func (spj *SPJTemplate) runProver(ctx context.Context) (*ProofData, error) {
 }
 
 func (spj *SPJTemplate) runVerifier(ctx context.Context, proof *ProofData) error {
-	spj.logger.Log("Running verifier...")
+	if !spj.config.JudgerMode {
+		spj.logger.Log("Running verifier...")
+	}
 
 	pipeNames, err := spj.pipeManager.GetVerifierPipeNames()
 	spjToVerifier, verifierToSPJ := pipeNames[0], pipeNames[1]
@@ -245,9 +260,13 @@ func (spj *SPJTemplate) runVerifier(ctx context.Context, proof *ProofData) error
 
 	// limit to 1 CPU core
 	if err := spj.resourceMonitor.SetCPUAffinity(cmd.Process.Pid, 1); err != nil {
-		spj.logger.Log(fmt.Sprintf("Warning: Failed to set CPU affinity: %v", err))
+		if !spj.config.JudgerMode {
+			spj.logger.Log(fmt.Sprintf("Warning: Failed to set CPU affinity: %v", err))
+		}
 	} else {
-		spj.logger.Log(fmt.Sprintf("Successfully set CPU affinity to 1 core"))
+		if !spj.config.JudgerMode {
+			spj.logger.Log(fmt.Sprintf("Successfully set CPU affinity to 1 core"))
+		}
 	}
 
 	processDone := make(chan error, 1)
@@ -255,8 +274,10 @@ func (spj *SPJTemplate) runVerifier(ctx context.Context, proof *ProofData) error
 		processDone <- cmd.Wait()
 	}()
 
-	go io.Copy(os.Stdout, verifierStdout)
-	go io.Copy(os.Stderr, verifierStderr)
+	if !spj.config.JudgerMode {
+		go io.Copy(os.Stdout, verifierStdout)
+		go io.Copy(os.Stderr, verifierStderr)
+	}
 
 	spj.timer.Start("verify")
 
@@ -289,7 +310,9 @@ func (spj *SPJTemplate) runVerifier(ctx context.Context, proof *ProofData) error
 
 		switch result[0] {
 		case 0xff:
-			spj.logger.Log("Verification successful")
+			if !spj.config.JudgerMode {
+				spj.logger.Log("Verification successful")
+			}
 		case 0x00:
 			proofVerifyError <- fmt.Errorf("verification failed")
 		default:
@@ -310,7 +333,9 @@ func (spj *SPJTemplate) runVerifier(ctx context.Context, proof *ProofData) error
 					return fmt.Errorf("verification failed")
 				}
 				verificationResult = true
-				fmt.Println("Verification done")
+				if !spj.config.JudgerMode {
+					fmt.Println("Verification done")
+				}
 				spj.timer.Stop("verify")
 				break
 			default:
@@ -348,9 +373,11 @@ func (spj *SPJTemplate) readProverInfo() error {
 		return err
 	}
 
-	spj.logger.Log(fmt.Sprintf("Prover Name: %s", proverName))
-	spj.logger.Log(fmt.Sprintf("Algorithm Name: %s", algorithmName))
-	spj.logger.Log(fmt.Sprintf("Proof System Name: %s", proofSystemName))
+	if !spj.config.JudgerMode {
+		spj.logger.Log(fmt.Sprintf("Prover Name: %s", proverName))
+		spj.logger.Log(fmt.Sprintf("Algorithm Name: %s", algorithmName))
+		spj.logger.Log(fmt.Sprintf("Proof System Name: %s", proofSystemName))
+	}
 
 	spj.resultCollector.SetProverInfo(proverName, proofSystemName, algorithmName)
 
@@ -366,4 +393,5 @@ func (spj *SPJTemplate) collectResults() {
 
 func (spj *SPJTemplate) outputResults() {
 	spj.resultCollector.OutputResults(spj.config.JsonOutputPath)
+	spj.resultCollector.OutputResults("spj_output/result.json")
 }

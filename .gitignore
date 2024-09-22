@@ -50,3 +50,6 @@ target/
 
 # halo2 proof temp files
 *.data
+
+# auto-submission
+spj_output/result.json

@@ -7,6 +7,7 @@ type Config struct {
 	VerifierArg    []string
 	Requirements   ProblemRequirement
 	JsonOutputPath string
+	JudgerMode     bool
 }
 
 type ProblemRequirement struct {
