@@ -47,17 +47,25 @@ jobs:
         run: |
           ssh -i ~/.ssh/judger_ssh -o StrictHostKeyChecking=no ubuntu@arena-worker.proof.cloud "unzip -o /home/ubuntu/judger/repo.zip -d /home/ubuntu/judger/"
 
-      - name: Extract script path from commit message
+      - name: Extract submission title and script path
         id: extract_path
         run: |
-          COMMIT_MSG=$(git log --format=%B -n 1 ${{ github.event.pull_request.head.sha }})
-          SCRIPT_PATH=$(echo "$COMMIT_MSG" | grep -oP '^\[script:.*?\]' | sed 's/^\[script://;s/\]$//' || true)
+          if [[ "${{ github.event_name }}" == "pull_request" || "${{ github.event_name }}" == "pull_request_target" ]]; then
+            SUBMISSION_TITLE="${{ github.event.pull_request.title }}"
+          else
+            SUBMISSION_TITLE=$(git log --format=%B -n 1 ${{ github.event.pull_request.head.sha || github.sha }})
+          fi
+          
+          SCRIPT_PATH=$(echo "$SUBMISSION_TITLE" | grep -oP '^\[script:.*?\]' | sed 's/^\[script://;s/\]$//' || true)
+          echo "SUBMISSION_TITLE=$SUBMISSION_TITLE" >> $GITHUB_OUTPUT
+          
           if [ -n "$SCRIPT_PATH" ]; then
             echo "SCRIPT_PATH=$SCRIPT_PATH" >> $GITHUB_OUTPUT
             echo "EXTRACTION_SUCCESS=true" >> $GITHUB_OUTPUT
             echo "Script path found: $SCRIPT_PATH"
+            echo "Submission title: $SUBMISSION_TITLE"
           else
-            echo "No valid script path found in commit message. Workflow will terminate gracefully."
+            echo "No valid script path found in submission title. Workflow will terminate gracefully."
             echo "EXTRACTION_SUCCESS=false" >> $GITHUB_OUTPUT
           fi
 
@@ -150,7 +158,8 @@ jobs:
       - name: Check if submission is ready
         id: check_submission_ready
         run: |
-          if git log -1 --pretty=%B | grep -q "SUBMISSION_READY"; then
+          submission_title = ${{ steps.extract_path.outputs.SUBMISSION_TITLE }}
+          if echo "$submission_title" | grep -q "SUBMISSION_READY"; then
             echo "SUBMISSION_READY=true" >> $GITHUB_OUTPUT
           else
             echo "SUBMISSION_READY=false" >> $GITHUB_OUTPUT
