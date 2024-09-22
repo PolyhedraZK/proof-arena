@@ -72,7 +72,7 @@ jobs:
         ssh -i ~/.ssh/judger_ssh -o StrictHostKeyChecking=no ubuntu@arena-worker.proof.cloud "
           cd /home/ubuntu/judger/
           SCRIPT_PATH='${{ steps.extract_path.outputs.SCRIPT_PATH }}'
-          go version
+          source /home/ubuntu/.bashrc
           if [[ -f \"\$SCRIPT_PATH\" ]]; then
             if [[ \"\$SCRIPT_PATH\" == *.sh ]]; then
               chmod +x \"\$SCRIPT_PATH\"
