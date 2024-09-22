@@ -73,6 +73,7 @@ jobs:
           cd /home/ubuntu/judger/
           SCRIPT_PATH='${{ steps.extract_path.outputs.SCRIPT_PATH }}'
           source /home/ubuntu/.bashrc
+          go version
           if [[ -f \"\$SCRIPT_PATH\" ]]; then
             if [[ \"\$SCRIPT_PATH\" == *.sh ]]; then
               chmod +x \"\$SCRIPT_PATH\"
