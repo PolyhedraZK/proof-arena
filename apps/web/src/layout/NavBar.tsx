@@ -1,5 +1,5 @@
-import Icon, { CloseOutlined } from '@ant-design/icons';
-import { Drawer, Menu } from 'antd';
+import Icon, { CloseOutlined, DownOutlined } from '@ant-design/icons';
+import { Drawer, Dropdown,Menu } from 'antd';
 import { useResponsive, useThemeMode } from 'antd-style';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
@@ -15,10 +15,19 @@ import useStyles from './header.style';
 export const links = [
   { to: '/problems', label: 'Problems' },
   { to: '/status', label: 'Status' },
-  { to: '/how-to-contribute', label: 'How to Contribute' },
+  {
+    label: 'How to Contribute',
+    children: [
+      { to: '/how-to-submit-new-prover', label: 'How to Submit New Prover' },
+      { to: '/how-to-submit-new-problem', label: 'How to Submit New Problem' },
+      {
+        to: '/how-to-interact-with-judge',
+        label: 'How to Interact with Judge',
+      },
+    ],
+  },
   { to: '/machine-spec', label: 'Machine Specification' },
   { to: '/supported-provers', label: 'Supported Provers' },
-  { to: '/how-to-interact-with-judge', label: 'How to interact with judge' },
 ];
 
 function NavBar() {
@@ -30,14 +39,31 @@ function NavBar() {
   const selectd = `/${location.pathname.split('/')[1]}`;
 
   const createMenuItems = () =>
-    links.map(item => ({
-      label: (
-        <Link key={item.label} to={item.to}>
-          {item.label}
-        </Link>
-      ),
-      key: item.to,
-    }));
+    links.map(item => {
+      if (item.children) {
+        return {
+          label: (
+            <Dropdown
+              menu={{
+                items: item.children.map(child => ({
+                  key: child.to,
+                  label: <Link to={child.to}>{child.label}</Link>,
+                })),
+              }}
+            >
+              <span>
+                {item.label} <DownOutlined />
+              </span>
+            </Dropdown>
+          ),
+          key: item.label,
+        };
+      }
+      return {
+        label: <Link to={item.to}>{item.label}</Link>,
+        key: item.to,
+      };
+    });
 
   return mobile ? (
     <div className={styles.navLinks}>
@@ -68,21 +94,45 @@ function NavBar() {
           />
         </div>
         <div className={styles.menuList}>
-          {links.map(item => (
-            <div
-              onClick={() => {
-                navigate(item.to);
-                setIsOpen(false);
-              }}
-              key={item.label}
-              className={styles.dropdownItem}
-            >
-              {item.label}
-              {item.to === selectd && (
-                <CheckMark className={styles.checkMarkIcon} />
-              )}
-            </div>
-          ))}
+          {links.map(item => {
+            if (item.children) {
+              return (
+                <div key={item.label}>
+                  <div className={styles.dropdownItem}>{item.label}</div>
+                  {item.children.map(child => (
+                    <div
+                      onClick={() => {
+                        navigate(child.to);
+                        setIsOpen(false);
+                      }}
+                      key={child.label}
+                      className={`${styles.dropdownItem} ${styles.dropdownSubItem}`}
+                    >
+                      {child.label}
+                      {child.to === selectd && (
+                        <CheckMark className={styles.checkMarkIcon} />
+                      )}
+                    </div>
+                  ))}
+                </div>
+              );
+            }
+            return (
+              <div
+                onClick={() => {
+                  navigate(item.to);
+                  setIsOpen(false);
+                }}
+                key={item.label}
+                className={styles.dropdownItem}
+              >
+                {item.label}
+                {item.to === selectd && (
+                  <CheckMark className={styles.checkMarkIcon} />
+                )}
+              </div>
+            );
+          })}
           <GighubButton
             className={styles.mdGithubBtn}
             onClick={() =>
@@ -99,7 +149,6 @@ function NavBar() {
         className={styles.antMenuStyle}
         mode="horizontal"
         items={createMenuItems()}
-        expandIcon
       />
     </div>
   );
