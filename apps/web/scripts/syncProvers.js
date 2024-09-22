@@ -17,12 +17,14 @@ async function syncProvers() {
     )[1];
     const proverLines = proverSection.trim().split('\n').slice(2); // Skip header lines
 
-    const provers = proverLines.map(line => {
-      const [, name, inventor, status, type] = line.match(
-        /\|\s*\d+\s*\|\s*(.*?)\s*\|\s*(.*?)\s*\|\s*(.*?)\s*\|\s*(.*?)\s*\|/
-      );
-      return { name, inventor, status, type };
-    });
+    const provers = proverLines
+      .filter(line => !line.trim().startsWith('<!--')) // Ignore markdown comments
+      .map(line => {
+        const [, name, inventor, status, type] = line.match(
+          /\|\s*\d+\s*\|\s*(.*?)\s*\|\s*(.*?)\s*\|\s*(.*?)\s*\|\s*(.*?)\s*\|/
+        );
+        return { name, inventor, status, type };
+      });
 
     // Write to supportedProvers.json
     const outputPath = path.join(

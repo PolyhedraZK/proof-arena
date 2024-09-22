@@ -120,6 +120,13 @@ export default createStyles(({ responsive, isDarkMode }) => {
       borderBottom: '1px solid #f0f0f0',
       background: '#fff',
     },
+    dropdownSubItem: {
+      fontSize: 16,
+      fontFamily: 'PingFang SC',
+      padding: '16px 0px 16px 24px',
+      borderBottom: '1px solid #f0f0f0',
+      background: '#f9f9f9',
+    },
     checkMarkIcon: {
       position: 'absolute',
       right: 26,

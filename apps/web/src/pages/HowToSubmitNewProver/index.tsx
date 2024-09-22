@@ -48,15 +48,15 @@ const useStyles = createStyles(({ isDarkMode, css, responsive }) => {
     `,
   };
 });
-const HowToContribute = () => {
+const HowToSubmitNewProver = () => {
   const { styles } = useStyles();
 
   const {
-    data: howToContributeData,
+    data: howToSubmitNewProverData,
     error,
     loading,
   } = useRequest(() =>
-    fetch('/docs/how_to_contribute.md').then(res => res.text())
+    fetch('/docs/how_to_submit_new_prover.md').then(res => res.text())
   );
 
   if (error) {
@@ -75,13 +75,15 @@ const HowToContribute = () => {
             <Skeleton active />
           </>
         ) : (
-          howToContributeData && <MdDescription mdFile={howToContributeData} />
+          howToSubmitNewProverData && (
+            <MdDescription mdFile={howToSubmitNewProverData} />
+          )
         )}
         <div style={{ marginTop: '48px' }}>
           <h2>Discussions</h2>
           <Giscus
             {...giscusConfig}
-            term="How to Contribute"
+            term="How to Submit New Prover"
             mapping="specific"
           />
         </div>
@@ -90,4 +92,4 @@ const HowToContribute = () => {
   );
 };
 
-export default HowToContribute;
+export default HowToSubmitNewProver;

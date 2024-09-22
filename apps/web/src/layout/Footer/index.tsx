@@ -39,7 +39,9 @@ const Footer = () => {
   ];
   const Copyright = () => (
     <div className={styles.copyright}>
-      © 2024 Proof Arena. All rights reserved
+      © 2024 Proof Arena. Developed by Polyhedra Network.
+      <br />
+      This work is licensed under MIT License.
     </div>
   );
   const IconsDom = () => (

@@ -2,61 +2,31 @@
   {
     "name": "Expander",
     "inventor": "Polyhedra Network",
-    "status": "In Progress",
+    "status": "Problem 2",
     "type": "ZK Circuit Prover"
   },
   {
     "name": "Gnark",
     "inventor": "Consensys",
-    "status": "Tested on problem 2",
+    "status": "In Progress",
+    "type": "ZK Circuit Prover"
+  },
+  {
+    "name": "Halo2",
+    "inventor": "PSE",
+    "status": "Problems 1,2",
     "type": "ZK Circuit Prover"
   },
   {
     "name": "Plonky3",
     "inventor": "Polygon",
-    "status": "Tested on problem 2",
+    "status": "Problems 1, 2, 3",
     "type": "ZK Circuit Prover"
   },
   {
     "name": "Stwo",
     "inventor": "Starkware",
-    "status": "In Progress",
-    "type": "ZK Circuit Prover"
-  },
-  {
-    "name": "Risc0",
-    "inventor": "Risc0",
-    "status": "Not started",
-    "type": "zkVM"
-  },
-  {
-    "name": "SP1",
-    "inventor": "Succinct",
-    "status": "Not started",
-    "type": "zkVM"
-  },
-  {
-    "name": "Boojum (Replica of Plonky2)",
-    "inventor": "zkSync",
-    "status": "Not started",
-    "type": "ZK Circuit Prover"
-  },
-  {
-    "name": "Valida",
-    "inventor": "Lita Foundation & Polygon",
-    "status": "Not started",
-    "type": "zkVM"
-  },
-  {
-    "name": "Nexus 2.0",
-    "inventor": "Nexus",
-    "status": "Not started",
-    "type": "zkVM"
-  },
-  {
-    "name": "Halo2",
-    "inventor": "PSE",
-    "status": "Tested on problem 2",
+    "status": "Problems 1, 3",
     "type": "ZK Circuit Prover"
   }
 ]
