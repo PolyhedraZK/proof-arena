@@ -1,5 +1,5 @@
 import Icon, { CloseOutlined, DownOutlined } from '@ant-design/icons';
-import { Drawer, Dropdown,Menu } from 'antd';
+import { Drawer, Dropdown, Menu } from 'antd';
 import { useResponsive, useThemeMode } from 'antd-style';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
@@ -16,7 +16,7 @@ export const links = [
   { to: '/problems', label: 'Problems' },
   { to: '/status', label: 'Status' },
   {
-    label: 'How to Contribute',
+    label: 'Submit',
     children: [
       { to: '/how-to-submit-new-prover', label: 'How to Submit New Prover' },
       { to: '/how-to-submit-new-problem', label: 'How to Submit New Problem' },
