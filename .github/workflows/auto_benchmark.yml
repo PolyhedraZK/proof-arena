@@ -1,7 +1,7 @@
 name: Execute Script and Create Pull Request
 
 on:
-  pull_request_target:
+  pull_request:
     types: [opened]
 
 jobs:
@@ -18,7 +18,7 @@ jobs:
       - name: Check for workflow changes
         id: check_files
         run: |
-          if [[ "${{ github.event_name }}" == "pull_request_target" ]]; then
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
             git fetch origin ${{ github.event.pull_request.head.sha }}
             CHANGED_FILES=$(git diff --name-only origin/main ${{ github.event.pull_request.head.sha }})
           else
@@ -83,7 +83,7 @@ jobs:
       - name: Extract submission title and script path
         id: extract_path
         run: |
-          if [[ "${{ github.event_name }}" == "pull_request" || "${{ github.event_name }}" == "pull_request_target" ]]; then
+          if [[ "${{ github.event_name }}" == "pull_request" || "${{ github.event_name }}" == "pull_request" ]]; then
             SUBMISSION_TITLE=$(echo "${{ github.event.pull_request.title }}" | sed 's/"/\\"/g')
           else
             SUBMISSION_TITLE=$(git log --format=%B -n 1 ${{ github.event.pull_request.head.sha || github.sha }})

@@ -18,31 +18,51 @@ const StatusPage: React.FC = () => {
 
   const { data: prStatuses, loading } = useRequest<PRStatus[], never>(
     async () => {
-      const response = await fetch(
-        'https://api.github.com/repos/PolyhedraZK/proof-arena/pulls?state=all',
-        {
-          headers: {
-            Accept: 'application/vnd.github+json',
-            'X-GitHub-Api-Version': '2022-11-28',
-          },
-        }
-      );
+      let allPRs = [];
+      let page = 1;
+      const perPage = 100; // GitHub API maximum per page
 
-      if (!response.ok) {
-        console.error(
-          'GitHub API request failed:',
-          response.status,
-          response.statusText
+      // eslint-disable-next-line no-constant-condition
+      while (true) {
+        const response = await fetch(
+          `https://api.github.com/repos/PolyhedraZK/proof-arena/pulls?state=all&per_page=${perPage}&page=${page}`,
+          {
+            headers: {
+              Accept: 'application/vnd.github+json',
+              'X-GitHub-Api-Version': '2022-11-28',
+            },
+          }
         );
-        throw new Error(
-          `GitHub API request failed: ${response.status} ${response.statusText}`
-        );
+
+        if (!response.ok) {
+          console.error(
+            'GitHub API request failed:',
+            response.status,
+            response.statusText
+          );
+          throw new Error(
+            `GitHub API request failed: ${response.status} ${response.statusText}`
+          );
+        }
+
+        const prs = await response.json();
+        if (prs.length === 0) {
+          break; // No more PRs to fetch
+        }
+
+        allPRs = allPRs.concat(prs);
+        page++;
+
+        // Check if we've reached the last page
+        const linkHeader = response.headers.get('Link');
+        if (!linkHeader || !linkHeader.includes('rel="next"')) {
+          break;
+        }
       }
 
-      const prs = await response.json();
-      console.log(prs);
+      console.log(`Total PRs fetched: ${allPRs.length}`);
 
-      return prs
+      return allPRs
         .filter(
           pr =>
             pr.title.startsWith('Auto-submission: Problem ID:') ||
