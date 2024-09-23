@@ -3,9 +3,43 @@ name: Execute Script and Create Pull Request
 on:
   pull_request_target:
     types: [opened]
+  push:
 
 jobs:
+  check-workflow-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      workflow_changed: ${{ steps.check_files.outputs.workflow_changed }}
+    steps:
+      - name: Checkout base repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Check for workflow changes
+        id: check_files
+        run: |
+          if [[ "${{ github.event_name }}" == "pull_request_target" ]]; then
+            git fetch origin ${{ github.event.pull_request.head.sha }}
+            CHANGED_FILES=$(git diff --name-only origin/main ${{ github.event.pull_request.head.sha }})
+          else
+            CHANGED_FILES=$(git diff --name-only origin/main HEAD)
+          fi
+          
+          echo "Changed files:"
+          echo "$CHANGED_FILES"
+          
+          if echo "$CHANGED_FILES" | grep -q "^\.github/workflows/"; then
+            echo "workflow_changed=true" >> $GITHUB_OUTPUT
+            echo "Workflow files have been changed."
+          else
+            echo "workflow_changed=false" >> $GITHUB_OUTPUT
+            echo "No changes to workflow files detected."
+          fi
+
   execute-script-and-create-pr:
+    needs: check-workflow-changes
+    if: needs.check-workflow-changes.outputs.workflow_changed == 'false'
     runs-on: ubuntu-latest
     concurrency:
       group: arena-judge
