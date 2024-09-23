@@ -6,8 +6,6 @@ on:
 
 jobs:
   execute-script-and-create-pr:
-    needs: check-workflow-changes
-    if: needs.check-workflow-changes.outputs.workflow_changed == 'false'
     runs-on: ubuntu-latest
     concurrency:
       group: arena-judge
