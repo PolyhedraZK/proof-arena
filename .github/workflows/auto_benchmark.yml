@@ -1,1 +1,227 @@
-fff
+name: Execute Script and Create Pull Request
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  execute-script-and-create-pr:
+    runs-on: ubuntu-latest
+    concurrency:
+      group: arena-judge
+      cancel-in-progress: false
+    permissions:
+      contents: read  # Restrict permissions for safety
+    steps:
+      - name: Checkout base repository
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.base.ref }}
+          token: ${{ secrets.PAT }}
+          fetch-depth: 0
+          submodules: 'true'
+
+      - name: Fetch PR branch
+        run: |
+          git fetch origin pull/${{ github.event.pull_request.number }}/head:pr
+          git checkout pr
+
+      - name: Compress repository
+        run: |
+          zip -r repo.zip .
+
+      - name: Install SSH key
+        env:
+          JUDGER_SSH_KEY: ${{ secrets.JUDGERSSH }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$JUDGER_SSH_KEY" > ~/.ssh/judger_ssh
+          chmod 600 ~/.ssh/judger_ssh
+          cat ~/.ssh/judger_ssh
+
+      - name: Send repository to machine B
+        run: |
+          ssh -i ~/.ssh/judger_ssh -o StrictHostKeyChecking=no ubuntu@arena-worker.proof.cloud "mkdir -p /home/ubuntu/judger/"
+          scp -i ~/.ssh/judger_ssh -o StrictHostKeyChecking=no repo.zip ubuntu@arena-worker.proof.cloud:/home/ubuntu/judger/
+
+      - name: Send unzip instruction to machine B
+        run: |
+          ssh -i ~/.ssh/judger_ssh -o StrictHostKeyChecking=no ubuntu@arena-worker.proof.cloud "unzip -o /home/ubuntu/judger/repo.zip -d /home/ubuntu/judger/"
+
+      - name: Extract submission title and script path
+        id: extract_path
+        run: |
+          if [[ "${{ github.event_name }}" == "pull_request" || "${{ github.event_name }}" == "pull_request_target" ]]; then
+            SUBMISSION_TITLE=$(echo "${{ github.event.pull_request.title }}" | sed 's/"/\\"/g')
+          else
+            SUBMISSION_TITLE=$(git log --format=%B -n 1 ${{ github.event.pull_request.head.sha || github.sha }})
+          fi
+          
+          SCRIPT_PATH=$(echo "$SUBMISSION_TITLE" | grep -oP '^\[script:.*?\]' | sed 's/^\[script://;s/\]$//' || true)
+          echo "SUBMISSION_TITLE=$SUBMISSION_TITLE" >> $GITHUB_OUTPUT
+          
+          if [ -n "$SCRIPT_PATH" ]; then
+            echo "SCRIPT_PATH=$SCRIPT_PATH" >> $GITHUB_OUTPUT
+            echo "EXTRACTION_SUCCESS=true" >> $GITHUB_OUTPUT
+            echo "Script path found: $SCRIPT_PATH"
+            echo "Submission title: $SUBMISSION_TITLE"
+          else
+            echo "No valid script path found in submission title. Workflow will terminate gracefully."
+            echo "EXTRACTION_SUCCESS=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Exit workflow if no valid script path found
+        if: steps.extract_path.outputs.EXTRACTION_SUCCESS != 'true'
+        run: |
+          echo "No valid script path found or commit message format incorrect. Exiting workflow successfully."
+          exit 0
+
+      - name: Send script execution instruction to machine B
+        if: |
+          steps.extract_path.outputs.EXTRACTION_SUCCESS == 'true'
+        run: |
+          ssh -i ~/.ssh/judger_ssh -o StrictHostKeyChecking=no ubuntu@arena-worker.proof.cloud "
+            cd /home/ubuntu/judger/
+            SCRIPT_PATH='${{ steps.extract_path.outputs.SCRIPT_PATH }}'
+            . /home/ubuntu/.bash_profile
+            go version
+            if [[ -f \"\$SCRIPT_PATH\" ]]; then
+              if [[ \"\$SCRIPT_PATH\" == *.sh ]]; then
+                chmod +x \"\$SCRIPT_PATH\"
+                ./\"\$SCRIPT_PATH\"
+              elif [[ \"\$SCRIPT_PATH\" == *.py ]]; then
+                python \"\$SCRIPT_PATH\"
+              else
+                echo \"Unsupported script type. Only .sh and .py files are allowed.\"
+                exit 1
+              fi
+            else
+              echo \"Script not found in the repository: \$SCRIPT_PATH\"
+              exit 1
+            fi
+          "
+
+      - name: Send zip instruction to machine B
+        run: |
+          ssh -i ~/.ssh/judger_ssh -o StrictHostKeyChecking=no ubuntu@arena-worker.proof.cloud "
+            cd /home/ubuntu/judger/
+            zip -r repo_updated.zip .
+          "
+
+      - name: Retrieve updated repository from machine B
+        run: |
+          scp -i ~/.ssh/judger_ssh -o StrictHostKeyChecking=no ubuntu@arena-worker.proof.cloud:/home/ubuntu/judger/repo_updated.zip .
+
+      - name: Unzip updated repository
+        run: |
+          unzip -o repo_updated.zip
+
+      - name: Clean up machine B
+        run: |
+          ssh -i ~/.ssh/judger_ssh -o StrictHostKeyChecking=no ubuntu@arena-worker.proof.cloud "
+            cd /home/ubuntu/
+            rm -rf /home/ubuntu/judger/
+          "
+
+      - name: Check for changes
+        id: check_changes
+        run: |
+          if git status --porcelain spj_output/ | grep -q '^??'; then
+              echo "CHANGES_EXIST=true" >> $GITHUB_OUTPUT
+          elif git diff --exit-code --quiet spj_output/; then
+              echo "No changes detected in spj_output/"
+              echo "CHANGES_EXIST=false" >> $GITHUB_OUTPUT
+          else
+              echo "CHANGES_EXIST=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Extract problem ID and prover name
+        id: extract_info
+        if: steps.check_changes.outputs.CHANGES_EXIST == 'true'
+        run: |
+          PROBLEM_ID=$(jq -r '.problem_id' spj_output/result.json)
+          PROVER_NAME=$(jq -r '.prover_name' spj_output/result.json)
+          echo "PROBLEM_ID=$PROBLEM_ID" >> $GITHUB_OUTPUT
+          echo "PROVER_NAME=$PROVER_NAME" >> $GITHUB_OUTPUT
+
+      - name: Display result.json
+        if: steps.check_changes.outputs.CHANGES_EXIST == 'true'
+        run: |
+          cat spj_output/result.json
+
+      - name: Get current branch
+        id: get_branch
+        run: |
+          CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+          echo "CURRENT_BRANCH=$CURRENT_BRANCH" >> $GITHUB_OUTPUT
+
+      - name: Check if submission is ready
+        id: check_submission_ready
+        run: |
+          submission_title="${{ steps.extract_path.outputs.SUBMISSION_TITLE }}"
+          if echo "$submission_title" | grep -q "SUBMISSION_READY"; then
+            echo "SUBMISSION_READY=true" >> $GITHUB_OUTPUT
+          else
+            echo "SUBMISSION_READY=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create Pull Request
+        if: |
+          steps.check_changes.outputs.CHANGES_EXIST == 'true' &&
+          steps.check_submission_ready.outputs.SUBMISSION_READY == 'true'
+        env:
+          PAT: ${{ secrets.PAT }}
+        run: |
+          CURRENT_BRANCH_PR_TITLE="arena-${{ github.event.pull_request.head.user.login }}"
+          CURRENT_BRANCH="${CURRENT_BRANCH_PR_TITLE}-${{ github.event.pull_request.head.sha }}"
+          PROBLEM_ID="${{ steps.extract_info.outputs.PROBLEM_ID }}"
+          PROVER_NAME="${{ steps.extract_info.outputs.PROVER_NAME }}"
+          # Sanitize PROVER_NAME to prevent potential attacks
+          PROVER_NAME=$(echo "$PROVER_NAME" | tr -d '"')
+
+          # Create a new local branch
+          git checkout -b $CURRENT_BRANCH
+
+          # Commit changes using the specified commit message format
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add .
+          git commit -m "Auto-submission: Branch: $CURRENT_BRANCH_PR_TITLE"
+
+          # Push the new branch to the repository
+          git push origin $CURRENT_BRANCH
+
+          # Get current UTC time
+          UTC_TIME=$(date -u +"%Y-%m-%d %H:%M:%S UTC")
+
+          # Prepare PR title and body
+          PR_TITLE="Auto-submission: Problem ID: $PROBLEM_ID, PROVER: \"$PROVER_NAME\", Branch: [$CURRENT_BRANCH_PR_TITLE ($UTC_TIME)]"
+          PR_BODY="This pull request was automatically created by the CI workflow. It contains updates to the spj_output/ directory after script execution.
+
+          Please review the changes and merge if appropriate."
+
+          # Escape special characters in PR_TITLE and PR_BODY
+          PR_TITLE=$(echo "$PR_TITLE" | jq -R -s '.')
+          PR_BODY=$(echo "$PR_BODY" | jq -R -s '.')
+
+          # Create a pull request using GitHub API
+          PR_RESPONSE=$(curl -X POST \
+            -H "Authorization: token $PAT" \
+            -H "Accept: application/vnd.github.v3+json" \
+            https://api.github.com/repos/$GITHUB_REPOSITORY/pulls \
+            -d "{
+              \"title\": $PR_TITLE,
+              \"body\": $PR_BODY,
+              \"head\": \"$CURRENT_BRANCH\",
+              \"base\": \"main\"
+            }"
+          )
+
+          PR_URL=$(echo $PR_RESPONSE | jq -r .html_url)
+          if [ "$PR_URL" != "null" ]; then
+            echo "Pull request created: $PR_URL"
+          else
+            echo "Failed to create pull request. API response:"
+            echo "$PR_RESPONSE" | jq .
+            exit 1
+          fi
