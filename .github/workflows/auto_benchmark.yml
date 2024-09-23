@@ -198,19 +198,21 @@ jobs:
 
           Please review the changes and merge if appropriate."
 
+          # Escape special characters in PR_TITLE and PR_BODY
+          PR_TITLE=$(echo "$PR_TITLE" | jq -R -s '.')
+          PR_BODY=$(echo "$PR_BODY" | jq -R -s '.')
+
           # Create a pull request using GitHub API
           PR_RESPONSE=$(curl -X POST \
             -H "Authorization: token $PAT" \
             -H "Accept: application/vnd.github.v3+json" \
             https://api.github.com/repos/$GITHUB_REPOSITORY/pulls \
-            -d @- << EOF
-          {
-            "title": "$PR_TITLE",
-            "body": "$PR_BODY",
-            "head": "$CURRENT_BRANCH",
-            "base": "main"
-          }
-          EOF
+            -d "{
+              \"title\": $PR_TITLE,
+              \"body\": $PR_BODY,
+              \"head\": \"$CURRENT_BRANCH\",
+              \"base\": \"main\"
+            }"
           )
 
           PR_URL=$(echo $PR_RESPONSE | jq -r .html_url)
@@ -224,7 +226,6 @@ jobs:
 
       - name: Send email if submission is ready
         if: |
-          steps.check_changes.outputs.CHANGES_EXIST == 'true' &&
           steps.check_submission_ready.outputs.SUBMISSION_READY == 'true'
         uses: dawidd6/action-send-mail@v3
         with:
