@@ -1,7 +1,7 @@
 import 'react-chat-elements/dist/main.css';
 import 'katex/dist/katex.min.css'; // For math rendering
 
-import { Button, Input } from 'antd';
+import { Button, Input, Spin } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { MessageList } from 'react-chat-elements';
 import ReactMarkdown from 'react-markdown';
@@ -24,6 +24,7 @@ const ChatInterface: React.FC = () => {
     Array<{ position: string; text: string; date: Date }>
   >([]);
   const [input, setInput] = useState('');
+  const [loading, setLoading] = useState(false); // Add loading state
 
   useEffect(() => {
     const initialMessages = [
@@ -42,6 +43,7 @@ const ChatInterface: React.FC = () => {
     const newUserMessage = { position: 'right', text: input, date: new Date() };
     setMessages([...messages, newUserMessage]);
     setInput('');
+    setLoading(true); // Set loading to true before making the API call
 
     const response = await getChatCompletion([
       ...messages,
@@ -54,6 +56,15 @@ const ChatInterface: React.FC = () => {
       date: new Date(),
     };
     setMessages(prevMessages => [...prevMessages, newAssistantMessage]);
+    setLoading(false); // Set loading to false after receiving the response
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
+      setInput(''); // Clear the text box afterwards
+    }
   };
 
   return (
@@ -82,13 +93,24 @@ const ChatInterface: React.FC = () => {
         <Input.TextArea
           value={input}
           onChange={e => setInput(e.target.value)}
-          onPressEnter={handleSend}
+          onKeyDown={handleKeyDown}
           style={{ flexGrow: 1 }}
         />
         <Button onClick={handleSend} style={{ marginLeft: '10px' }}>
           Send
         </Button>
       </div>
+      {loading && (
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            marginTop: '10px',
+          }}
+        >
+          <Spin size="large" />
+        </div>
+      )}
     </div>
   );
 };
