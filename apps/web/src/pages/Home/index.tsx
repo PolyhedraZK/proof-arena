@@ -3,6 +3,8 @@ import { createStyles, useResponsive } from 'antd-style';
 import React from 'react';
 import { Link } from 'react-router-dom';
 
+import ChatInterface from '@/components/ChatInterface';
+
 const { Content } = Layout;
 
 const useStyles = createStyles(({ responsive, css }) => ({
@@ -123,15 +125,8 @@ const HomePage: React.FC = () => {
         </section>
 
         <section className={styles.section}>
-          <div className={styles.titleLevel2}>Get Started</div>
-          <Flex vertical={mobile} gap={24}>
-            <Button type="primary" size="large">
-              <Link to="/problems">Explore Problems</Link>
-            </Button>
-            <Button size="large">
-              <Link to="/how-to-submit-new-prover">How to Contribute</Link>
-            </Button>
-          </Flex>
+          <div className={styles.titleLevel2}>Chat with Proof Arena AI</div>
+          <ChatInterface />
         </section>
       </Content>
     </Layout>

@@ -1,4 +1,5 @@
 import './global.css';
+import 'react-chat-elements/dist/main.css';
 
 import { StyleProvider } from '@ant-design/cssinjs';
 import NiceModal from '@ebay/nice-modal-react';
