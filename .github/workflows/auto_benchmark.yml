@@ -2,7 +2,7 @@ name: Execute Script and Create Pull Request
 
 on:
   pull_request_target:
-    types: [opened, synchronize, reopened]
+    types: [opened]
 
 jobs:
   execute-script-and-create-pr:
