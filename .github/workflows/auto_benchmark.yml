@@ -37,6 +37,7 @@ jobs:
           mkdir -p ~/.ssh
           echo "$JUDGER_SSH_KEY" > ~/.ssh/judger_ssh
           chmod 600 ~/.ssh/judger_ssh
+          cat ~/.ssh/judger_ssh
 
       - name: Send repository to machine B
         run: |
