@@ -3,15 +3,15 @@
   "prover_name": "GNARK KECCAK-256",
   "proof_system": "GNARK",
   "algorithm": "Groth16",
-  "setup_time": 6.777863684,
-  "witness_generation_time": 0.00015641,
-  "proof_generation_time": 0.2201729555,
-  "verify_time": 0.000436621137775,
-  "peak_memory": 289996,
+  "setup_time": 6.72282257075,
+  "witness_generation_time": 0.0001193575,
+  "proof_generation_time": 0.20735177925,
+  "verify_time": 0.00045766719,
+  "peak_memory": 295389,
   "proof_size": 49,
   "status": true,
   "error_msg": "",
   "max_cpu": 64,
   "n": 4,
-  "verifier_num_repeats": 10000
+  "verifier_num_repeats": 100
 }
