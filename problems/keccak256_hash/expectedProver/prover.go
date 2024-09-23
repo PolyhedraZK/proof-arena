@@ -227,7 +227,7 @@ func verify(inputPipe *os.File, outputPipe *os.File) error {
 	if _, err := publicWitness.ReadFrom(bytes.NewReader(publicWitnessBytes)); err != nil {
 		return err
 	}
-	numRepeats := 10000
+	numRepeats := 100
 	for i := 0; i < numRepeats; i++ {
 		err = groth16.Verify(proof, vk, publicWitness)
 	}
