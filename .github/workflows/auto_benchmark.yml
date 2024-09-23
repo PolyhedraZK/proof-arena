@@ -51,7 +51,7 @@ jobs:
         id: extract_path
         run: |
           if [[ "${{ github.event_name }}" == "pull_request" || "${{ github.event_name }}" == "pull_request_target" ]]; then
-            SUBMISSION_TITLE="${{ github.event.pull_request.title }}"
+            SUBMISSION_TITLE=$(echo "${{ github.event.pull_request.title }}" | sed 's/"/\\"/g')
           else
             SUBMISSION_TITLE=$(git log --format=%B -n 1 ${{ github.event.pull_request.head.sha || github.sha }})
           fi
@@ -171,7 +171,8 @@ jobs:
         env:
           PAT: ${{ secrets.PAT }}
         run: |
-          CURRENT_BRANCH="auto-submission-${GITHUB_SHA}"
+          CURRENT_BRANCH_PR_TITLE="arena-${{ github.event.pull_request.head.user.login }}"
+          CURRENT_BRANCH="${CURRENT_BRANCH_PR_TITLE}-${{ github.event.pull_request.head.sha }}"
           PROBLEM_ID="${{ steps.extract_info.outputs.PROBLEM_ID }}"
           PROVER_NAME="${{ steps.extract_info.outputs.PROVER_NAME }}"
           # Sanitize PROVER_NAME to prevent potential attacks
@@ -184,7 +185,7 @@ jobs:
           git config user.name github-actions
           git config user.email github-actions@github.com
           git add .
-          git commit -m "Auto-submission: Branch: $CURRENT_BRANCH"
+          git commit -m "Auto-submission: Branch: $CURRENT_BRANCH_PR_TITLE"
 
           # Push the new branch to the repository
           git push origin $CURRENT_BRANCH
@@ -193,7 +194,7 @@ jobs:
           UTC_TIME=$(date -u +"%Y-%m-%d %H:%M:%S UTC")
 
           # Prepare PR title and body
-          PR_TITLE="Auto-submission: Problem ID: $PROBLEM_ID, PROVER: \"$PROVER_NAME\", Branch: [$CURRENT_BRANCH ($UTC_TIME)]"
+          PR_TITLE="Auto-submission: Problem ID: $PROBLEM_ID, PROVER: \"$PROVER_NAME\", Branch: [$CURRENT_BRANCH_PR_TITLE ($UTC_TIME)]"
           PR_BODY="This pull request was automatically created by the CI workflow. It contains updates to the spj_output/ directory after script execution.
 
           Please review the changes and merge if appropriate."
@@ -223,23 +224,3 @@ jobs:
             echo "$PR_RESPONSE" | jq .
             exit 1
           fi
-
-      - name: Send email if submission is ready
-        if: |
-          steps.check_submission_ready.outputs.SUBMISSION_READY == 'true'
-        uses: dawidd6/action-send-mail@v3
-        with:
-          server_address: smtp.gmail.com
-          server_port: 587
-          username: ${{ secrets.SMTP_USERNAME }}
-          password: ${{ secrets.SMTP_PASSWORD }}
-          subject: "Proof Arena: Submission Ready for Problem ${{ steps.extract_info.outputs.PROBLEM_ID }}, Prover ${{ steps.extract_info.outputs.PROVER_NAME }}"
-          body: |
-            A new submission is ready for review on Proof Arena.
-
-            Problem ID: ${{ steps.extract_info.outputs.PROBLEM_ID }}
-            Prover Name: ${{ steps.extract_info.outputs.PROVER_NAME }}
-
-            Please review the submission and take necessary actions.
-          from: Proof Arena CI <noreply-proof-arena@polyhedra.network>
-          to: arena@polyhedra.network
