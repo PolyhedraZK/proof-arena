@@ -5,7 +5,7 @@ const openai = new OpenAI({
   dangerouslyAllowBrowser: true,
 });
 
-const ASSISTANT_ID = 'asst_9u6L8p8awWfnXNlaBYfDAxEj'; // Replace with your actual Assistant ID
+const ASSISTANT_ID = 'asst_Tybkst3To19f9KaAkhYWNfoo'; // Replace with your actual Assistant ID
 let threadId: string | null = null; // Variable to store the thread ID
 
 export async function getChatCompletion(messages: Array<{ role: string; content: string }>) {
