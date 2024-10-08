@@ -124,28 +124,70 @@ fn add_naive<C: Config>(api: &mut API<C>, a: &Vec<Variable>, b: &Vec<Variable>) 
     c
 }
 
-fn add_brentkung<C: Config>(api: &mut API<C>, a: &Vec<Variable>, b: &Vec<Variable>, ci: Vec<Variable>) -> Vec<Variable> {
+fn add_brentkung<C: Config>(api: &mut API<C>, a: &Vec<Variable>, b: &Vec<Variable>) -> Vec<Variable> {
     let mut c = vec![api.constant(0); 32];
+    let ci = api.constant(0);
 
-    /*
     for i in 0..8 {
         let start = i * 4;
         let end = start + 4;
 
-        let (group_sum, group_carry) = brent_kung_adder_4_bits(api, &a[start..end], &b[start..end], carry);
+        let (sum, ci) = brent_kung_adder_4_bits(api, &a[start..end].to_vec(), &b[start..end].to_vec(), ci);
 
-        sum[start..end].copy_from_slice(&group_sum);
-        carry = group_carry;
+        c[start..end].copy_from_slice(&sum);
     }
 
-    (sum, carry)
-    */
     c
 }
 
+fn brent_kung_adder_4_bits<C: Config>(api: &mut API<C>, a: &Vec<Variable>, b: &Vec<Variable>, carry_in: Variable) -> ([Variable; 4], Variable) {
+    let mut g = [api.constant(0); 4];
+    let mut p = [api.constant(0); 4];
+
+    // Step 1: Generate and propagate
+    for i in 0..4 {
+        g[i] = api.mul(a[i], b[i]);
+        p[i] = api.add(a[i], b[i]);
+    }
+
+    // Step 2: Prefix computation
+    let p1g0 = api.mul(p[1], g[0]);
+    let p0p1 = api.mul(p[0], p[1]);
+    let p2p3 = api.mul(p[2], p[3]);
+
+    let g10 = api.add(g[1], p1g0);
+    let g20 = api.mul(p[2], g10);
+    let g20 = api.add(g[2], g20);
+    let g30 = api.mul(p[3], g20);
+    let g30 = api.add(g[3], g30);
+
+    // Step 3: Calculate carries
+    let mut c = [api.constant(0); 5];
+    c[0] = carry_in;
+    let tmp = api.mul(p[0], c[0]);
+    c[1] = api.add(g[0], tmp);
+    let tmp = api.mul(p0p1, c[0]);
+    c[2] = api.add(g10, tmp);
+    let tmp = api.mul(p[2], c[0]);
+    let tmp = api.mul(p0p1, tmp);
+    c[3] = api.add(g20, tmp);
+    let tmp = api.mul(p0p1, p2p3);
+    let tmp = api.mul(tmp, c[0]);
+    c[4] = api.add(g30, tmp);
+
+    // Step 4: Calculate sum
+    let mut sum = [api.constant(0); 4];
+    for i in 0..4 {
+        sum[i] = api.add(p[i], c[i]);
+    }
+
+    (sum, c[4])
+}
+
 pub fn add<C: Config>(api: &mut API<C>, a: Vec<Variable>, b: Vec<Variable>) -> Vec<Variable> {
-    add_moto(api, &a, &b)
+//    add_moto(api, &a, &b)
 //    add_naive(api, &a, &b)
+    add_brentkung(api, &a, &b)
 }
 
 
