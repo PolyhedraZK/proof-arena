@@ -12,6 +12,8 @@ cd problems/sha256_hash/expander-sha256 && \
 RUSTFLAGS="-C target-cpu=native" cargo build --release && \
 popd
 
+mkdir -p spj_output/sha256_hash
+
 # Run the SPJ
 # largestN = par_factor * N_hashes * 8
 # par_factor is the arg after the mode arg
