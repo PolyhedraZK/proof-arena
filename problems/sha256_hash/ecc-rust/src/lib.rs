@@ -85,45 +85,6 @@ pub fn add_const<C: Config>(api: &mut API<C>, a: Vec<Variable>, b: u32) -> Vec<V
     c
 }
 
-fn add_moto<C: Config>(api: &mut API<C>, a: &Vec<Variable>, b: &Vec<Variable>) -> Vec<Variable> {
-    let n = a.len();
-    let mut c = vec![api.constant(0); 32];
-    let mut ci = api.constant(0);
-    for i in 0..n {
-        let p = api.add(a[i].clone(), b[i].clone());
-        let g = api.mul(a[i].clone(), b[i].clone());
-
-        c[i] = api.add(p.clone(), ci.clone());
-        ci = api.mul(ci, p);
-        ci = api.add(ci, g);
-    }
-    c
-}
-
-fn add_naive<C: Config>(api: &mut API<C>, a: &Vec<Variable>, b: &Vec<Variable>) -> Vec<Variable> {
-    let n = a.len();
-    let mut c = a.clone();
-
-    let mut amulb = a.clone();
-    for i in 0..n {
-        amulb[i] =api.mul(a[i].clone(), b[i].clone());
-    }
-
-    let mut aaddb = a.clone();
-    for i in 0..n {
-        aaddb[i] =api.add(a[i].clone(), b[i].clone());
-    }
-
-    let mut ci = api.constant(0);
-    for i in 0..n {
-        c[i] = api.add(aaddb[i].clone(), ci.clone());
-
-        ci = api.mul(ci, aaddb[i]);
-        ci = api.add(ci, amulb[i]);
-    }
-    c
-}
-
 fn add_brentkung<C: Config>(api: &mut API<C>, a: &Vec<Variable>, b: &Vec<Variable>) -> Vec<Variable> {
     let mut c = vec![api.constant(0); 32];
     let ci = api.constant(0);
@@ -185,8 +146,6 @@ fn brent_kung_adder_4_bits<C: Config>(api: &mut API<C>, a: &Vec<Variable>, b: &V
 }
 
 pub fn add<C: Config>(api: &mut API<C>, a: Vec<Variable>, b: Vec<Variable>) -> Vec<Variable> {
-//    add_moto(api, &a, &b)
-//    add_naive(api, &a, &b)
     add_brentkung(api, &a, &b)
 }
 
