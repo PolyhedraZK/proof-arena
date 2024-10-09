@@ -73,55 +73,21 @@ fn compute_sha256<C: Config>(api: &mut API<C>, input: &Vec<Variable>) -> Vec<Var
         w[i] = add(api, s0, s1);
     }
 
-    /*
-    for i in 0..3 {
-        w[i] = add(api, w[i].clone(), h[7 - i].clone());
-    }
-    */
-
-//    let mut chl = vec![vec![api.constant(0); 32]; 64];
-//    let mut chr = vec![vec![api.constant(0); 32]; 64];
     for i in 0..64 {
         let s1 = sigma1(api, h[4].clone());
         let c = ch(api, h[4].clone(), h[5].clone(), h[6].clone());
         w[i] = add(api, w[i].clone(), h[7].clone());
-//        let ch = xor(api, chl[i].clone(), chr[i].clone());
-//        let ch = add(api, ch, w[i].clone());
-//        let s1 = add(api, h[7].clone(), s1);
-//        let c = add(api, c, k[i].clone());
         let c = add_const(api, c, k32[i].clone());
-//        let s1 = add(api, s1, ch);
         let s1 = add(api, s1, w[i].clone());
         let s1 = add(api, s1, c);
         let s0 = sigma0(api, h[0].clone());
         let m = maj(api, h[0].clone(), h[1].clone(), h[2].clone());
         let s0 = add(api, s0, m);
 
-        /*
-        if i < 61 {
-            w[i + 3] = add(api, w[i + 3].clone(), h[3].clone());
-        } else if i == 61 {
-            h[7] = h[4].clone();
-        }
-        */
         h[7] = h[6].clone();
         h[6] = h[5].clone();
         h[5] = h[4].clone();
-//        let h4 = h[4].clone();
         h[4] = add(api, h[3].clone(), s1.clone());
-        /*
-        if i < 62 {
-            let nh = not(api, h[4].clone());
-            chr[i + 2] = and(api, nh, h4.clone());
-        } else if i == 62 {
-            h[6] = h4.clone();
-        }
-        if i < 63 {
-            chl[i + 1] = and(api, h4.clone(), h[4].clone());
-        } else if i == 63 {
-            h[5] = h4.clone();
-        }
-        */
         h[3] = h[2].clone();
         h[2] = h[1].clone();
         h[1] = h[0].clone();
