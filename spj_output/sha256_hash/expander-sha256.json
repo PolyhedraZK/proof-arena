@@ -1,0 +1,17 @@
+{
+  "problem_id": 3,
+  "prover_name": "expander-sha256",
+  "proof_system": "Expander",
+  "algorithm": "GKR",
+  "setup_time": 0.0000612803384399414,
+  "witness_generation_time": 0.00000976810137939453,
+  "proof_generation_time": 0.0014537130567626954,
+  "verify_time": 0.0200526214052124,
+  "peak_memory": 417.0570068359375,
+  "proof_size": 191311.00415039062,
+  "status": true,
+  "error_msg": "",
+  "max_cpu": 16,
+  "n": 32768,
+  "verifier_num_repeats": 2
+}
