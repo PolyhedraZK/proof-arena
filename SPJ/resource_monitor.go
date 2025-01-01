@@ -32,7 +32,7 @@ func (rm *ResourceMonitor) SetCPUAffinity(pid int, numCPU int) error {
 		mask |= 1 << i
 	}
 
-	_, _, errno := unix.RawSyscall(unix.SYS_SCHED_SETAFFINITY, uintptr(pid), unsafe.Sizeof(mask), uintptr(unsafe.Pointer(&mask)))
+	_, _, errno := unix.RawSyscall(203, uintptr(pid), unsafe.Sizeof(mask), uintptr(unsafe.Pointer(&mask)))
 	if errno != 0 {
 		return fmt.Errorf("failed to set CPU affinity: %v", errno)
 	}
